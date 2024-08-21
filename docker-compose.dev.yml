@@ -1,0 +1,20 @@
+services:
+  portfolio:
+    container_name: portfolio
+    build:
+      context: ./portfolio
+      dockerfile: dev.Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./portfolio/src:/app/src
+      - ./portfolio/public:/app/public
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    external: true

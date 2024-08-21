@@ -1,0 +1,8 @@
+config:
+  no-duplicate-heading:
+   siblings_only: true
+globs:
+  - "**/*.md"
+  - "../README.md"
+ignores:
+  - "node_modules"
