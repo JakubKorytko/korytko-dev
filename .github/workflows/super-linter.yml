@@ -7,6 +7,13 @@ name: Run Super-Linter
 jobs:
   super-linter:
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      packages: read
+      # To report GitHub Actions status checks
+      statuses: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
