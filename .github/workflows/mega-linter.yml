@@ -1,5 +1,5 @@
 ---
-name: Run Super-Linter
+name: MegaLinter
 
 # in quotes to avoid YAMLLint thinking it's a boolean
 "on": push
@@ -7,19 +7,20 @@ name: Run Super-Linter
 permissions: {}
 
 jobs:
-  super-linter:
+  megalinter:
+    name: MegaLinter
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: read
-      packages: read
-      # To report GitHub Actions status checks
-      statuses: write
+      issues: read
+      pull-requests: read
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
       - name: Lint Code Base
