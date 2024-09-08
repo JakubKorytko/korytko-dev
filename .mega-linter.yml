@@ -1,0 +1,16 @@
+ENABLE:
+  - ACTION
+  - COPYPASTE
+  - CSS
+  - HTML
+  - JAVASCRIPT
+  - JSON
+  - MARKDOWN
+  - REPOSITORY
+  - SPELL
+  - TYPESCRIPT
+  - XML
+  - YAML
+  - ENV
+  - TSX
+  - JSX

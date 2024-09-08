@@ -53,6 +53,7 @@
     "eslint-plugin-storybook": "^0.8.0",
     "jscpd": "^4.0.5",
     "markdownlint-cli2": "^0.13.0",
+    "mega-linter-runner": "^8.0.0",
     "postcss": "^8",
     "sass": "^1.71.0",
     "sort-package-json": "^2.10.0",
