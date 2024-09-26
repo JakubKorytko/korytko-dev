@@ -16,4 +16,4 @@ ENABLE:
   - JSX
 LINTER_RULES_PATH: ./portfolio
 ADDITIONAL_EXCLUDED_DIRECTORIES:
-  - .next
+  - .idea
