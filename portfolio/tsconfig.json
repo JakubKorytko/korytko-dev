@@ -17,9 +17,7 @@
         "name": "next"
       }
     ],
-    "types": [
-      "cypress", "node"
-    ],
+    "types": ["cypress", "node"],
     "paths": {
       "@/*": ["./src/*"]
     }

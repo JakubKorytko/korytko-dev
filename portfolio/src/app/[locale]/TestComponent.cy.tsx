@@ -1,28 +1,25 @@
-import React from 'react'
+import React from "react";
 import TestComponent from "@/app/[locale]/TestComponent";
-import {TestComponentMessages} from "@/app/[locale]/TestComponent.type";
+import { TestComponentMessages } from "@/app/[locale]/TestComponent.type";
 
-describe('<TestComponent />', () => {
-
+describe("<TestComponent />", () => {
   const messages: TestComponentMessages = {
     title: "aaa",
-    content: "bbb"
-  }
+    content: "bbb",
+  };
 
-  it('renders', () => {
+  it("renders", () => {
     // see: https://on.cypress.io/mounting-react
-    cy.mount(<TestComponent messages={messages} />)
-  })
+    cy.mount(<TestComponent messages={messages} />);
+  });
 
-  it('modifies the text', () => {
-
-    cy.mount(<TestComponent messages={messages} />)
+  it("modifies the text", () => {
+    cy.mount(<TestComponent messages={messages} />);
 
     cy.get("button").click();
     cy.get(".text-xl").should("contain.text", messages.title.toUpperCase());
 
     cy.get("button").click();
     cy.get(".text-xl").should("contain.text", messages.title);
-
-  })
-})
+  });
+});

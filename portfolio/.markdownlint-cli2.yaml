@@ -1,6 +1,7 @@
+---
 config:
   no-duplicate-heading:
-   siblings_only: true
+    siblings_only: true
 globs:
   - "**/*.md"
   - "../README.md"

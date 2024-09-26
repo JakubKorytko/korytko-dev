@@ -1,5 +1,5 @@
-@use 'variables';
+@use "variables";
 
 .text {
-    color: variables.$primary-color;
+  color: variables.$primary-color;
 }
