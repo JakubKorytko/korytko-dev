@@ -1,5 +1,8 @@
 FROM node:20-alpine
 
+RUN useradd -m appuser
+USER appuser
+
 WORKDIR /app
 RUN corepack enable
 

@@ -6,7 +6,9 @@ services:
       dockerfile: prod.Dockerfile
     restart: always
     ports:
-      - 3000:3000
+      - 127.0.0.1:3000:3000
+    security_opt:
+      - apparmor:docker-default
     networks:
       - my_network
 

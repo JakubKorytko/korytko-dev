@@ -1,3 +1,4 @@
+APPLY_FIXES: ALL
 ENABLE:
   - ACTION
   - COPYPASTE
@@ -17,3 +18,7 @@ ENABLE:
 LINTER_RULES_PATH: ./portfolio
 ADDITIONAL_EXCLUDED_DIRECTORIES:
   - .idea
+PRE_COMMANDS:
+  - command: yarn install --frozen-lockfile --non-interactive
+    cwd: "root"
+    secured_env: true
