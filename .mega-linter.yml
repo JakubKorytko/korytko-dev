@@ -21,5 +21,5 @@ ADDITIONAL_EXCLUDED_DIRECTORIES:
   - .idea
 PRE_COMMANDS:
   - command: yarn install --frozen-lockfile --non-interactive
-    cwd: "root"
+    cwd: "portfolio"
     secured_env: true
