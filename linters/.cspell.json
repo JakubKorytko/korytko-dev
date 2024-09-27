@@ -8,5 +8,5 @@
       "addWords": true
     }
   ],
-  "ignorePaths": ["*pl.json"]
+  "ignorePaths": ["**/*pl.json"]
 }
