@@ -32,7 +32,7 @@ with or without Docker.
 
     ```sh
     git clone https://github.com/JakubKorytko/korytko-dev.git
-    cd korytko-dev/portfolio
+    cd korytko-dev
     ```
 
 1. Install dependencies:
@@ -55,7 +55,7 @@ with or without Docker.
 
     ```sh
     git clone https://github.com/JakubKorytko/korytko-dev.git
-    cd korytko-dev/portfolio
+    cd korytko-dev
     ```
 
 1. Build the project:

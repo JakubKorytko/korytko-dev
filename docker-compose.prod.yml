@@ -3,7 +3,6 @@ services:
   portfolio:
     container_name: portfolio
     build:
-      context: ./portfolio
       dockerfile: prod.Dockerfile
     restart: always
     ports:
