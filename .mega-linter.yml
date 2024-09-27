@@ -20,6 +20,18 @@ LINTER_RULES_PATH: ./linters
 ADDITIONAL_EXCLUDED_DIRECTORIES:
   - .idea
 PRE_COMMANDS:
-  - command: yarn install --frozen-lockfile --non-interactive
-    cwd: "portfolio"
+  - command: corepack enable
+    cwd: "root"
+    secured_env: true
+  - command: >
+      yarn add --frozen-lockfile --non-interactive
+      eslint
+      eslint-config-airbnb
+      eslint-config-airbnb-typescript
+      eslint-config-prettier
+      eslint-config-next
+      stylelint
+      stylelint-config-prettier-scss
+      stylelint-config-standard-scss
+    cwd: "root"
     secured_env: true
