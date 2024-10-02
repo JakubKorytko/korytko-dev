@@ -11,6 +11,9 @@ services:
       - apparmor:docker-default
     networks:
       - my_network
+    environment:
+      - HEALTHCHECK_HOST=127.0.0.1
+      - HEALTHCHECK_PORT=3000
 
 networks:
   my_network:
