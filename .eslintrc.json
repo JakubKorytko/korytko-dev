@@ -3,7 +3,7 @@
   "plugins": ["@typescript-eslint"],
   "overrides": [
     {
-    "files": ["*.ts", "*.tsx"],
+      "files": ["*.ts", "*.tsx"],
       "extends": [
         "airbnb",
         "airbnb-typescript",
