@@ -1,0 +1,4 @@
+---
+# Skip due to permissions required by corepack
+skip-check:
+  - CKV_DOCKER_3

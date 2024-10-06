@@ -1,5 +1,4 @@
 ---
-APPLY_FIXES: ALL
 ENABLE:
   - ACTION
   - COPYPASTE
@@ -16,7 +15,12 @@ ENABLE:
   - ENV
   - TSX
   - JSX
+DISABLE_LINTERS:
+  - REPOSITORY_DEVSKIM
+  # Disabled because it is painfully slow when running locally
+  - REPOSITORY_GRYPE
 LINTER_RULES_PATH: ./linters
+REPOSITORY_TRUFFLEHOG_ARGUMENTS: --exclude-paths=linters/exclude.txt
 ADDITIONAL_EXCLUDED_DIRECTORIES:
   - .idea
 PRE_COMMANDS:

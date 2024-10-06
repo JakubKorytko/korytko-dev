@@ -7,3 +7,10 @@ packagejson
 jscpd
 htmlhint
 Jakub
+stylelintignore
+stylelint
+corepack
+GRYPE
+HEALTHCHECK
+DEVSKIM
+TRUFFLEHOG
