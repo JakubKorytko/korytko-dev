@@ -19,10 +19,20 @@ DISABLE_LINTERS:
   - REPOSITORY_DEVSKIM
   # Disabled because it is painfully slow when running locally
   - REPOSITORY_GRYPE
+  # No ruleset defined
+  - REPOSITORY_LS_LINT
+  - REPOSITORY_SEMGREP
+  - SPELL_PROSELINT
+  - SPELL_VALE
 LINTER_RULES_PATH: ./linters
 REPOSITORY_TRUFFLEHOG_ARGUMENTS: --exclude-paths=linters/exclude.txt
 ADDITIONAL_EXCLUDED_DIRECTORIES:
+  # Excluded because some linters do not respect gitignored directories and running mega-linter locally can be really slow and cause false positives
+  - node_modules
+  - .next
   - .idea
+  - .yarn
+  - megalinter-reports
 PRE_COMMANDS:
   - command: corepack enable
     cwd: "root"
