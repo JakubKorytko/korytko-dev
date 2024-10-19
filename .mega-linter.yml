@@ -24,8 +24,15 @@ DISABLE_LINTERS:
   - REPOSITORY_SEMGREP
   - SPELL_PROSELINT
   - SPELL_VALE
+  # AirBnb styleguide is used in this project
+  - TYPESCRIPT_STANDARD
+  - JAVASCRIPT_STANDARD
+  - JSON_ESLINT_PLUGIN_JSONC
+  - JAVASCRIPT_ES
 LINTER_RULES_PATH: ./linters
+REPOSITORY_SYFT_ARGUMENTS: --exclude '**/node_modules'
 REPOSITORY_TRUFFLEHOG_ARGUMENTS: --exclude-paths=linters/exclude.txt
+REPOSITORY_KICS_CONFIG_FILE: .kics.config.json
 ADDITIONAL_EXCLUDED_DIRECTORIES:
   # Excluded because some linters do not respect gitignored directories and running mega-linter locally can be really slow and cause false positives
   - node_modules
@@ -35,17 +42,15 @@ ADDITIONAL_EXCLUDED_DIRECTORIES:
   - megalinter-reports
 PRE_COMMANDS:
   - command: corepack enable
-    cwd: "root"
+    cwd: "workspace"
     secured_env: true
-  - command: >
-      yarn add --frozen-lockfile --non-interactive
-      eslint
-      eslint-config-airbnb
-      eslint-config-airbnb-typescript
-      eslint-config-prettier
-      eslint-config-next
-      stylelint
-      stylelint-config-prettier-scss
-      stylelint-config-standard-scss
-    cwd: "root"
+  - command: yarn set version 4.4.0
+    cwd: "workspace"
+    secured_env: true
+  - command: CI=true
+    cwd: "workspace"
+    secured_env: true
+    output_variables: [CI]
+  - command: yarn install --immutable
+    cwd: "workspace"
     secured_env: true

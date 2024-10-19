@@ -1,0 +1,7 @@
+{
+  "path": ".",
+  "type": "Dockerfile",
+  "exclude-gitignore": true,
+  "log-level": "DEBUG",
+  "verbose": true
+}

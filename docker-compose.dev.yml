@@ -2,6 +2,11 @@
 services:
   portfolio:
     container_name: portfolio
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:3000"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
     build:
       dockerfile: dev.Dockerfile
     volumes:
@@ -12,11 +17,16 @@ services:
       - 127.0.0.1:3000:3000
     security_opt:
       - apparmor:docker-default
+      - no-new-privileges:true
     networks:
       - my_network
     environment:
       - HEALTHCHECK_HOST=127.0.0.1
       - HEALTHCHECK_PORT=3000
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
 
 networks:
   my_network:
