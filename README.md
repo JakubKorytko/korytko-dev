@@ -30,22 +30,22 @@ with or without Docker.
 
 1. Clone the repository:
 
-    ```sh
-    git clone https://github.com/JakubKorytko/korytko-dev.git
-    cd korytko-dev
-    ```
+   ```sh
+   git clone https://github.com/JakubKorytko/korytko-dev.git
+   cd korytko-dev
+   ```
 
 1. Install dependencies:
 
-    ```sh
-    yarn install
-    ```
+   ```sh
+   yarn install
+   ```
 
 1. Start the development server:
 
-    ```sh
-    yarn dev
-    ```
+   ```sh
+   yarn dev
+   ```
 
 1. Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
 
@@ -53,22 +53,22 @@ with or without Docker.
 
 1. Clone the repository:
 
-    ```sh
-    git clone https://github.com/JakubKorytko/korytko-dev.git
-    cd korytko-dev
-    ```
+   ```sh
+   git clone https://github.com/JakubKorytko/korytko-dev.git
+   cd korytko-dev
+   ```
 
 1. Build the project:
 
-    ```sh
-    yarn build
-    ```
+   ```sh
+   yarn build
+   ```
 
 1. Start the production server:
 
-    ```sh
-    yarn start
-    ```
+   ```sh
+   yarn start
+   ```
 
 1. Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
 
@@ -78,16 +78,16 @@ with or without Docker.
 
 1. Clone the repository:
 
-    ```sh
-    git clone https://github.com/JakubKorytko/korytko-dev.git
-    cd korytko-dev
-    ```
+   ```sh
+   git clone https://github.com/JakubKorytko/korytko-dev.git
+   cd korytko-dev
+   ```
 
 1. Build and start the development containers using Docker Compose:
 
-    ```sh
-    docker compose -f docker-compose.dev.yml up --build
-    ```
+   ```sh
+   docker compose -f docker-compose.dev.yml up --build
+   ```
 
 1. Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
 
@@ -95,16 +95,16 @@ with or without Docker.
 
 1. Clone the repository:
 
-    ```sh
-    git clone https://github.com/JakubKorytko/korytko-dev.git
-    cd korytko-dev
-    ```
+   ```sh
+   git clone https://github.com/JakubKorytko/korytko-dev.git
+   cd korytko-dev
+   ```
 
 1. Build and start the production containers using Docker Compose:
 
-    ```sh
-    docker compose -f docker-compose.prod.yml up --build
-    ```
+   ```sh
+   docker compose -f docker-compose.prod.yml up --build
+   ```
 
 1. Open your browser and navigate to [http://localhost:3000](http://localhost:3000).
 

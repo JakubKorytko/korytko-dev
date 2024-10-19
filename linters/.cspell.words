@@ -16,3 +16,8 @@ DEVSKIM
 TRUFFLEHOG
 ruleset
 SEMGREP
+KICS
+vercel
+SYFT
+lycheeignore
+styleguide

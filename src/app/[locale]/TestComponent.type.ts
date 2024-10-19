@@ -1,10 +1,14 @@
-import React from 'react'
+import React from 'react';
 
 export interface TestComponentMessages {
-  title: string
-  content: string
+  title: string;
+  content: string;
 }
 
-interface TestComponentProps { messages: TestComponentMessages }
+interface TestComponentProps {
+  messages: TestComponentMessages;
+}
 
-export type TestComponentInterface = (props: TestComponentProps) => React.ReactElement | null
+export type TestComponentInterface = (
+  props: TestComponentProps,
+) => React.ReactElement | null;

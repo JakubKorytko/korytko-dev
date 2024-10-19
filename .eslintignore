@@ -1,0 +1,7 @@
+node_modules/**
+next/**
+.idea/**
+megalinter-reports/**
+cypress.config.ts
+cypress/support/component.ts
+!.storybook
