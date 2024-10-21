@@ -10,13 +10,14 @@ RUN \
   else echo "Warning: Lockfile not found. It is recommended to commit lockfiles to version control." && yarn install; \
   fi
 
-COPY next.config.mjs tsconfig.json i18n.ts  ./
-COPY .eslintrc.json .stylelintignore .stylelintrc.json ./
-COPY postcss.config.js tailwind.config.ts ./
-
+COPY linters ./linters
 COPY intl_messages ./intl_messages
 COPY cypress ./cypress
 COPY .storybook ./.storybook
+
+COPY next.config.mjs tsconfig.json i18n.ts .eslintrc.json \
+     .trivyignore .eslintignore .lycheeignore \
+     postcss.config.js tailwind.config.ts ./
 
 ENV NEXT_TELEMETRY_DISABLED 1
 
