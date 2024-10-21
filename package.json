@@ -8,7 +8,7 @@
     "dev": "next dev",
     "lint": "yarn lint:next && yarn lint:markdown && yarn lint:packagejson && yarn lint:styles && yarn lint:js && yarn lint:eslint",
     "lint:copypaste": "jscpd --config \"./linters/.jscpd.json\" --pattern src/**/*",
-    "lint:eslint": "eslint -c .eslintrc.json **/*.ts **/*.tsx",
+    "lint:eslint": "eslint -c .eslintrc.json \"**/*.ts\" \"**/*.tsx\"",
     "lint:js": "prettier \"**/*.js\" \"**/*.json\" --check",
     "lint:markdown": "markdownlint-cli2 --config \"linters/.markdownlint-cli2.yaml\"",
     "lint:next": "next lint",
