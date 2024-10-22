@@ -1,3 +1,4 @@
+import '@/styles/main.scss';
 import { useTranslations } from 'next-intl';
 import { ReadLayout, ReadSkills } from '@/utils/ReadData';
 import TestComponent from '@/app/[locale]/TestComponent';
@@ -12,13 +13,13 @@ export default function Index() {
   };
 
   return (
-    <>
+    <div>
       <TestComponent messages={messages} />
       <br />
       <p>Layout</p>
       <code>{JSON.stringify(ReadLayout())}</code>
       <p>Skills</p>
       <code>{JSON.stringify(ReadSkills())}</code>
-    </>
+    </div>
   );
 }
