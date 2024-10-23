@@ -24,7 +24,7 @@ function Clock() {
 
   return (
     <div className="w-full h-full flex items-end md:items-center flex-col md:flex-row justify-around md:justify-end">
-      <div className="mr-1 md:mr-0">
+      <div className="mr-1 md:mr-2">
         {formattedTime}
       </div>
       <div className="md:mx-2 mr-1 md:mr-1.5">

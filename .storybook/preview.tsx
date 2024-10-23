@@ -1,6 +1,9 @@
 import '../src/app/globals.css';
 
 import type { Preview } from '@storybook/react';
+import { Noto_Sans } from 'next/font/google';
+
+const notoSans = Noto_Sans({ subsets: ['latin'], weight: '700' });
 
 const preview: Preview = {
   parameters: {
@@ -11,8 +14,13 @@ const preview: Preview = {
       },
     },
   },
-
-  tags: ['autodocs'],
+  decorators: [
+    (Story) => (
+      <main className={notoSans.className}>
+        <Story />
+      </main>
+    ),
+  ],
 };
 
 export default preview;

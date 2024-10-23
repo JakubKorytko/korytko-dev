@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Noto_Sans } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const notoSans = Noto_Sans({ subsets: ['latin'], weight: '700' });
 
 export const metadata: Metadata = {
   title: 'Jakub Korytko',
@@ -22,7 +22,7 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <NextIntlClientProvider messages={messages}>
-          <main className={inter.className}>
+          <main className={`${notoSans.className} desktop-background`}>
             {children}
           </main>
         </NextIntlClientProvider>
