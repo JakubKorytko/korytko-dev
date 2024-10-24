@@ -1,25 +1,14 @@
 import '@/styles/main.scss';
-import { useTranslations } from 'next-intl';
-import { ReadLayout, ReadSkills } from '@/utils/ReadData';
-import TestComponent from '@/app/[locale]/TestComponent';
-import { TestComponentMessages } from '@/app/[locale]/TestComponent.type';
+import TaskBar from '@/app/[locale]/TaskBar';
+import ConsoleComponent from '@/app/[locale]/ConsoleComponent';
 
 export default function Index() {
-  const t = useTranslations('Index');
-
-  const messages: TestComponentMessages = {
-    title: t('title'),
-    content: t('content'),
-  };
-
   return (
-    <div>
-      <TestComponent messages={messages} />
-      <br />
-      <p>Layout</p>
-      <code>{JSON.stringify(ReadLayout())}</code>
-      <p>Skills</p>
-      <code>{JSON.stringify(ReadSkills())}</code>
+    <div className="w-full h-full flex flex-col">
+      <TaskBar />
+      <div className="grow relative flex justify-center items-center">
+        <ConsoleComponent />
+      </div>
     </div>
   );
 }

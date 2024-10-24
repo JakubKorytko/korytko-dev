@@ -1,0 +1,40 @@
+.console-component {
+  width: 90%;
+  height: 95%;
+  background-color: rgb(35 35 35 / 70%);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.console-header {
+  height: 5rem;
+  display: grid;
+  grid-template:
+  ". name buttons" [row-second]
+  "links links links" [row-end]
+  / [first] minmax(5rem, 1fr) [second] 6fr [third] minmax(5rem, 1fr) [end];
+  background: rgb(75 81 75);
+  background: linear-gradient(180deg, rgb(75 81 75 / 100%) 0%, rgb(72 71 67 / 100%) 46%, rgb(62 61 57 / 100%) 100%);
+}
+
+.console-header-name {
+  grid-area: name;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.console-header-buttons {
+  grid-area: buttons;
+}
+
+.console-header-links {
+  grid-area: links;
+  display:flex;
+  align-items: end;
+}
+
+.console-header a {
+  font-weight: normal;
+}

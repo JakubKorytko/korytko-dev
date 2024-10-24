@@ -3,7 +3,7 @@ import '../src/app/globals.css';
 import type { Preview } from '@storybook/react';
 import { Noto_Sans } from 'next/font/google';
 
-const notoSans = Noto_Sans({ subsets: ['latin'], weight: '700' });
+const notoSans = Noto_Sans({ subsets: ['latin'] });
 
 const preview: Preview = {
   parameters: {

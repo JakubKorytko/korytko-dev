@@ -10,7 +10,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Test: Story = {
+export const TaskBarStory: Story = {
   args: {
   },
 };
