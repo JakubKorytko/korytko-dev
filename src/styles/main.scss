@@ -6,22 +6,3 @@
   background-size: cover;
   background-position: center center;
 }
-
-.search-bar {
-  background-color: #B9B9B9;
-  background-image: url("/icons/magnifier.svg");
-  background-repeat: no-repeat;
-  padding: 0.05rem 0.5rem 0.05rem 2.3rem;
-  background-size: 1.3rem;
-  background-position: 0.35rem center;
-  color: black;
-}
-
-.search-bar:focus {
-  outline: none;
-}
-
-.search-bar::placeholder {
-  color: #434343;
-  opacity: 1;
-}

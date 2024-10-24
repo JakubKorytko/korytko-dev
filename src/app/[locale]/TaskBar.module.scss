@@ -1,0 +1,44 @@
+.search-bar {
+  background-color: #B9B9B9;
+  background-image: url("/icons/magnifier.svg");
+  background-repeat: no-repeat;
+  padding: 0.05rem 0.5rem 0.05rem 2.3rem;
+  background-size: 1.3rem;
+  background-position: 0.4rem center;
+  color: black;
+}
+
+.search-bar:hover {
+  background-color: #CDCDCD;
+}
+
+.search-bar:focus,
+.search-bar:active {
+  background-color: white;
+  outline: none;
+}
+
+.search-bar::placeholder {
+  color: #434343;
+  opacity: 1;
+}
+
+.turn-off-button {
+  min-width: 24px;
+}
+
+.turn-off-button:hover,
+.turn-off-button:focus {
+  filter: brightness(0) saturate(100%) invert(71%) sepia(7%) saturate(2030%) hue-rotate(312deg) brightness(110%) contrast(103%);
+  cursor: pointer;
+  outline: none;
+}
+
+.turn-off-button:active {
+  filter: brightness(0) saturate(100%) invert(76%) sepia(84%) saturate(4755%) hue-rotate(321deg) brightness(93%) contrast(124%);
+  cursor: pointer;
+}
+
+.task-bar {
+  overflow: hidden;
+}
