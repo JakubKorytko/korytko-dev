@@ -13,7 +13,8 @@ $header-bg: linear-gradient(180deg, rgb(75 81 75 / 100%) 0%, rgb(72 71 67 / 100%
 }
 
 .console-header {
-  height: 5rem;
+  min-height: 5rem;
+  max-height: 5rem;
   display: grid;
   overflow: hidden;
   grid: ". name buttons" 60%
@@ -110,7 +111,8 @@ $header-bg: linear-gradient(180deg, rgb(75 81 75 / 100%) 0%, rgb(72 71 67 / 100%
 @media (width < 768px) {
   .console-header {
     padding: 0.5rem;
-    height: 3.5rem;
+    min-height: 3.5rem;
+    max-height: 3.5rem;
     grid: "hamburger name buttons" 100%
     / minmax(5rem, 1.5fr) 3fr minmax(5rem, 1.5fr);
   }
@@ -135,6 +137,8 @@ $header-bg: linear-gradient(180deg, rgb(75 81 75 / 100%) 0%, rgb(72 71 67 / 100%
     border-radius: 0.5rem;
     overflow: hidden;
     flex-direction: column;
+    backdrop-filter: blur(3px);
+    z-index: 1;
   }
 
   .console-header-links .header-button {
@@ -153,4 +157,10 @@ $header-bg: linear-gradient(180deg, rgb(75 81 75 / 100%) 0%, rgb(72 71 67 / 100%
   .console-header-links li a {
     padding: 0.5rem 4.5rem 0.5rem 1rem;
   }
+}
+
+.console-content {
+  overflow: hidden scroll;
+  padding: 0.7rem;
+  backdrop-filter: blur(3px);
 }

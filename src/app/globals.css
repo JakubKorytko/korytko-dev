@@ -21,3 +21,19 @@ html, body, main {
 .filter-white {
   filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(283deg) brightness(108%) contrast(101%);
 }
+
+*::-webkit-scrollbar {
+  width: 15px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #7F0;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #449a00;
+}
+
+*::-webkit-scrollbar-track {
+  background: linear-gradient(to right, rgb(255 255 255 / 20%), rgb(255 255 255 / 20%)) center/2px 98% no-repeat;
+}
