@@ -27,7 +27,8 @@
     "react/jsx-filename-extension": [
       2,
       { "extensions": [".js", ".jsx", ".ts", ".tsx"] }
-    ]
+    ],
+    "react/require-default-props": "off"
   },
   "parserOptions": {
     "project": "./tsconfig.json",

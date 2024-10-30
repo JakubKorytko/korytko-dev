@@ -1,0 +1,33 @@
+.react-resizable-handle {
+  position: absolute;
+}
+
+.react-resizable-handle-n, .react-resizable-handle-s {
+  width: 100%;
+  height: 10px;
+}
+
+.react-resizable-handle-e, .react-resizable-handle-w {
+  width: 10px;
+  height: 100%;
+}
+
+.react-resizable-handle-n {
+  cursor: n-resize;
+  top: 0;
+}
+
+.react-resizable-handle-s {
+  cursor: s-resize;
+  bottom: 0;
+}
+
+.react-resizable-handle-w {
+  cursor: w-resize;
+  left: 0;
+}
+
+.react-resizable-handle-e {
+  cursor: e-resize;
+  right: 0;
+}

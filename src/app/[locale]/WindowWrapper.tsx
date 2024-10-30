@@ -1,80 +1,141 @@
+import './WindowWrapper.scss';
 import React, { SyntheticEvent, useEffect } from 'react';
 import Draggable from 'react-draggable';
 import { Resizable, ResizeCallbackData } from 'react-resizable';
-import styles from '@/app/[locale]/ConsoleComponent.module.scss';
 
-function WindowWrapper(props: {
+interface WindowWrapperProps {
   children: React.ReactNode,
   width: number,
   height: number,
+  initialWidth: string,
+  initialHeight: string,
   resizeCallback: ({ height, width }: { height: number, width: number }) => void,
-}) {
-  const nodeRef = React.useRef(null as null | HTMLDialogElement);
+  className?: string,
+  minConstraints?: [number, number],
+  handle?: string
+}
+
+function WindowWrapper(props: WindowWrapperProps) {
+  const [storedPercentageSize, setStoredPercentageSize] = React.useState<
+  { width: number, height: number }>({
+    width: 1,
+    height: 1,
+  });
+  const nodeRef = React.useRef<HTMLDialogElement | null>(null);
   const {
-    children, width, height, resizeCallback,
+    children, className = '',
+    width, height, initialWidth, initialHeight, minConstraints = [15, 15],
+    resizeCallback, handle: handler = '',
   } = props;
 
-  const isInBorders = (element: HTMLDialogElement, direction: 'x' | 'y') => {
-    if (!element.parentElement) return [true, true];
-    const parentData = element.parentElement.getBoundingClientRect();
-    const elementData = element.getBoundingClientRect();
+  const isOutOfBounds = (element: HTMLDialogElement, direction: 'x' | 'y') => {
+    const parent = element.parentElement?.getBoundingClientRect();
+    const elem = element.getBoundingClientRect();
 
-    const x = elementData.x + elementData.width >= parentData.width + parentData.x;
-    const y = elementData.y + elementData.height >= parentData.height + parentData.y;
+    if (!parent) return [true, true];
 
-    const leftB = elementData.left <= parentData.left;
-    const topB = elementData.top <= parentData.top;
-    const rightB = elementData.right >= parentData.right;
-    const bottomB = elementData.bottom >= parentData.bottom;
+    const bounds = {
+      x: elem.left <= parent.left || elem.right >= parent.right,
+      y: elem.top <= parent.top || elem.bottom >= parent.bottom,
+    };
 
-    const horizontal = x || leftB || rightB;
-    const vertical = y || topB || bottomB;
+    return direction === 'x' ? bounds.x : bounds.y;
+  };
 
-    if (direction === 'x') return horizontal;
-    return vertical;
+  const calculatePercentageSize = (
+    element: HTMLDialogElement,
+    newWidth: number,
+    newHeight: number,
+  ) => {
+    const parent = element.parentElement?.getBoundingClientRect();
+
+    if (!parent) return { width: 1, height: 1 };
+
+    return {
+      width: newWidth / parent.width,
+      height: newHeight / parent.height,
+    };
   };
 
   useEffect(() => {
-    const localHeight = nodeRef.current ? nodeRef.current.clientHeight : 0;
-    const localWidth = nodeRef.current ? nodeRef.current.clientWidth : 0;
-    resizeCallback({ width: localWidth, height: localHeight });
+    if (nodeRef.current) {
+      resizeCallback({
+        width: nodeRef.current.clientWidth,
+        height: nodeRef.current.clientHeight,
+      });
+    }
+  }, [resizeCallback]);
+
+  useEffect(() => {
+    const calculateElementSize = (element: HTMLDialogElement) => {
+      const parent = element.parentElement?.getBoundingClientRect();
+
+      if (!parent) return { width: 0, height: 0 };
+
+      return {
+        width: Math.max(storedPercentageSize.width * parent.width, minConstraints[0]),
+        height: Math.max(storedPercentageSize.height * parent.height, minConstraints[1]),
+      };
+    };
+
+    const listener = () => {
+      if (!nodeRef.current) return;
+
+      resizeCallback(calculateElementSize(nodeRef.current));
+    };
+
+    window.addEventListener('resize', listener);
+    return () => {
+      window.removeEventListener('resize', listener);
+    };
+  }, [minConstraints, resizeCallback, storedPercentageSize.height, storedPercentageSize.width]);
+
+  useEffect(() => {
+    if (nodeRef.current) {
+      setStoredPercentageSize(
+        calculatePercentageSize(
+          nodeRef.current,
+          nodeRef.current.clientWidth,
+          nodeRef.current.clientHeight,
+        ),
+      );
+    }
   }, []);
 
   const onResize = (event: SyntheticEvent, { size, handle }: ResizeCallbackData) => {
     if (!nodeRef.current) return;
-    if (['e', 'w'].includes(handle) && size.width > width) {
-      if (isInBorders(nodeRef.current, 'x')) {
-        return;
-      }
-    }
 
-    if (['s', 'n'].includes(handle) && size.height > height) {
-      if (isInBorders(nodeRef.current, 'y')) {
-        return;
-      }
-    }
+    const isWidthHandle = ['e', 'w'].includes(handle);
+    const isHeightHandle = ['s', 'n'].includes(handle);
 
+    if (isWidthHandle && size.width > width && isOutOfBounds(nodeRef.current, 'x')) return;
+
+    if (isHeightHandle && size.height > height && isOutOfBounds(nodeRef.current, 'y')) return;
+
+    setStoredPercentageSize(calculatePercentageSize(nodeRef.current, size.width, size.height));
     resizeCallback({ width: size.width, height: size.height });
   };
 
-  const nodeRefWidth = width === 0 ? '90%' : `${width}px`;
-  const nodeRefHeight = height === 0 ? '95%' : `${height}px`;
+  const nodeRefStyle = {
+    width: width === 0 ? initialWidth : `${width}px`,
+    height: height === 0 ? initialHeight : `${height}px`,
+  };
 
   return (
-    <Draggable nodeRef={nodeRef} bounds="parent" handle={`.${styles['console-header-handler']}`}>
+    <Draggable nodeRef={nodeRef} bounds="parent" handle={handler}>
       <Resizable
         axis="both"
         resizeHandles={['n', 'w', 'e', 's']}
         height={height}
-        minConstraints={[385, 85]}
+        minConstraints={minConstraints}
         width={width}
         onResize={onResize}
       >
         <dialog
           open
           ref={nodeRef}
-          style={{ width: nodeRefWidth, height: nodeRefHeight }}
-          className={`${styles['console-component']} flex flex-col`}
+          style={nodeRefStyle}
+          className={className}
         >
           {children}
         </dialog>

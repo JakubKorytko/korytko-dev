@@ -1,6 +1,5 @@
 'use client';
 
-import 'react-resizable/css/styles.css';
 import React, { useState } from 'react';
 import Image from 'next/image';
 import styles from './ConsoleComponent.module.scss';
@@ -28,9 +27,14 @@ function ConsoleComponent() {
 
   return (
     <WindowWrapper
+      initialHeight="95%"
+      initialWidth="90%"
       height={consoleSize.height}
       width={consoleSize.width}
       resizeCallback={setConsoleSize}
+      className={`${styles['console-component']} flex flex-col`}
+      minConstraints={[385, 85]}
+      handle={`.${styles['console-header-handler']}`}
     >
       <header className={styles['console-header']}>
         <div className={`${styles['console-header-handler']} absolute w-full h-full z-0 left-0 top-0`} />
