@@ -6,7 +6,6 @@ import Image from 'next/image';
 import styles from './ConsoleComponent.module.scss';
 import closeIcon from '../../../public/icons/close.svg';
 import hamburgerIcon from '../../../public/icons/hamburger.svg';
-import useScreenSize from '@/custom-hooks/useScreenSize';
 
 function Conditional(
   { showWhen, children }:
@@ -18,13 +17,13 @@ function Conditional(
   return null;
 }
 
-function ConsoleComponentHeaderLinks(props: { sections: Record<string, string> }) {
-  const screenSize = useScreenSize();
+function ConsoleComponentHeaderLinks(props: {
+  consoleSize: { width: number, height: number },
+  sections: Record<string, string> }) {
+  const { sections, consoleSize } = props;
   const [menuVisibility, setMenuVisibility] = useState(false);
-
-  const { sections } = props;
-  const isMobile = screenSize.width > 0 && screenSize.width < 768;
-  const displayLinks = screenSize.width >= 768 || (screenSize.width > 0 && menuVisibility);
+  const isMobile = consoleSize.width > 0 && consoleSize.width < 700;
+  const displayLinks = consoleSize.width >= 700 || (consoleSize.width > 0 && menuVisibility);
 
   const toggleMenu = () => {
     setMenuVisibility(!menuVisibility);
@@ -32,7 +31,7 @@ function ConsoleComponentHeaderLinks(props: { sections: Record<string, string> }
 
   const links = Object.keys(sections).map(
     (key) => (
-      <li key={key} className="md:float-left">
+      <li key={key} className={!isMobile ? 'float-left' : ''}>
         <Link href={sections[key]} className="block px-2">
           {key}
         </Link>
