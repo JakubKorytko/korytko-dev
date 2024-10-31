@@ -1,26 +1,26 @@
 import './WindowWrapper.scss';
-import React, { SyntheticEvent, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Draggable from 'react-draggable';
-import { Resizable, ResizeCallbackData } from 'react-resizable';
-
-interface WindowWrapperProps {
-  children: React.ReactNode,
-  width: number,
-  height: number,
-  initialWidth: string,
-  initialHeight: string,
-  resizeCallback: ({ height, width }: { height: number, width: number }) => void,
-  className?: string,
-  minConstraints?: [number, number],
-  handle?: string
-}
+import { Resizable } from 'react-resizable';
+import {
+  OnResize,
+  Dimensions,
+  WindowWrapperProps, NodeRefStyle,
+} from '@/app/[locale]/WindowWrapper.type';
+import {
+  calculateElementSize,
+  calculatePercentageSize,
+  canResize,
+  areDimensionsEqual,
+} from '@/app/[locale]/WindowWrapper.helpers';
 
 function WindowWrapper(props: WindowWrapperProps) {
-  const [storedPercentageSize, setStoredPercentageSize] = React.useState<
-  { width: number, height: number }>({
+  const [storedPercentageSize, setStoredPercentageSize] = React.useState<Dimensions>({
     width: 1,
     height: 1,
   });
+  const [loading, setLoading] = React.useState(true);
+
   const nodeRef = React.useRef<HTMLDialogElement | null>(null);
   const {
     children, className = '',
@@ -28,98 +28,69 @@ function WindowWrapper(props: WindowWrapperProps) {
     resizeCallback, handle: handler = '',
   } = props;
 
-  const isOutOfBounds = (element: HTMLDialogElement, direction: 'x' | 'y') => {
-    const parent = element.parentElement?.getBoundingClientRect();
-    const elem = element.getBoundingClientRect();
+  const propagatePercentageCalculatedSize = () => {
+    if (!nodeRef.current) return;
+    const newElementSize = calculateElementSize(
+      nodeRef.current,
+      storedPercentageSize,
+      minConstraints,
+    );
 
-    if (!parent) return [true, true];
-
-    const bounds = {
-      x: elem.left <= parent.left || elem.right >= parent.right,
-      y: elem.top <= parent.top || elem.bottom >= parent.bottom,
-    };
-
-    return direction === 'x' ? bounds.x : bounds.y;
+    if (!areDimensionsEqual({ width, height }, newElementSize)) {
+      resizeCallback(newElementSize);
+    }
   };
 
-  const calculatePercentageSize = (
-    element: HTMLDialogElement,
-    newWidth: number,
-    newHeight: number,
-  ) => {
-    const parent = element.parentElement?.getBoundingClientRect();
-
-    if (!parent) return { width: 1, height: 1 };
-
-    return {
-      width: newWidth / parent.width,
-      height: newHeight / parent.height,
-    };
-  };
-
-  useEffect(() => {
-    if (nodeRef.current) {
-      resizeCallback({
-        width: nodeRef.current.clientWidth,
-        height: nodeRef.current.clientHeight,
-      });
-    }
-  }, [resizeCallback]);
-
-  useEffect(() => {
-    const calculateElementSize = (element: HTMLDialogElement) => {
-      const parent = element.parentElement?.getBoundingClientRect();
-
-      if (!parent) return { width: 0, height: 0 };
-
-      return {
-        width: Math.max(storedPercentageSize.width * parent.width, minConstraints[0]),
-        height: Math.max(storedPercentageSize.height * parent.height, minConstraints[1]),
-      };
-    };
-
-    const listener = () => {
-      if (!nodeRef.current) return;
-
-      resizeCallback(calculateElementSize(nodeRef.current));
-    };
-
-    window.addEventListener('resize', listener);
-    return () => {
-      window.removeEventListener('resize', listener);
-    };
-  }, [minConstraints, resizeCallback, storedPercentageSize.height, storedPercentageSize.width]);
-
-  useEffect(() => {
-    if (nodeRef.current) {
-      setStoredPercentageSize(
-        calculatePercentageSize(
-          nodeRef.current,
-          nodeRef.current.clientWidth,
-          nodeRef.current.clientHeight,
-        ),
-      );
-    }
-  }, []);
-
-  const onResize = (event: SyntheticEvent, { size, handle }: ResizeCallbackData) => {
+  const propagateCurrentSize = () => {
     if (!nodeRef.current) return;
 
-    const isWidthHandle = ['e', 'w'].includes(handle);
-    const isHeightHandle = ['s', 'n'].includes(handle);
+    const refDim = {
+      width: nodeRef.current.clientWidth,
+      height: nodeRef.current.clientHeight,
+    };
 
-    if (isWidthHandle && size.width > width && isOutOfBounds(nodeRef.current, 'x')) return;
-
-    if (isHeightHandle && size.height > height && isOutOfBounds(nodeRef.current, 'y')) return;
-
-    setStoredPercentageSize(calculatePercentageSize(nodeRef.current, size.width, size.height));
-    resizeCallback({ width: size.width, height: size.height });
+    if (!areDimensionsEqual({ width, height }, refDim)) resizeCallback(refDim);
   };
 
-  const nodeRefStyle = {
+  const updatePercentageSize = () => {
+    if (!nodeRef.current) return;
+
+    const newPercentageSize = calculatePercentageSize(
+      nodeRef.current,
+      nodeRef.current.clientWidth,
+      nodeRef.current.clientHeight,
+    );
+
+    if (!areDimensionsEqual(storedPercentageSize, newPercentageSize)) {
+      setStoredPercentageSize(newPercentageSize);
+    }
+  };
+
+  const resizeListener = () => {
+    window.addEventListener('resize', propagatePercentageCalculatedSize);
+    return () => window.removeEventListener('resize', propagatePercentageCalculatedSize);
+  };
+
+  const onResize: OnResize = (event, { node, size, handle }) => {
+    const dialog = node.parentElement;
+    if (!dialog) return;
+
+    if (canResize(handle, dialog, { width, height }, size)) {
+      setStoredPercentageSize(calculatePercentageSize(dialog, size.width, size.height));
+      resizeCallback({ width: size.width, height: size.height });
+    }
+  };
+
+  const nodeRefStyle: NodeRefStyle = {
     width: width === 0 ? initialWidth : `${width}px`,
     height: height === 0 ? initialHeight : `${height}px`,
+    visibility: loading ? 'hidden' : 'visible',
   };
+
+  useEffect(resizeListener, [resizeListener, resizeCallback, storedPercentageSize, minConstraints]);
+  useEffect(propagateCurrentSize, [width, height, resizeCallback]);
+  useEffect(updatePercentageSize, [storedPercentageSize]);
+  useEffect(() => { setLoading(false); }, []);
 
   return (
     <Draggable nodeRef={nodeRef} bounds="parent" handle={handler}>
