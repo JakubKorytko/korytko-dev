@@ -97,16 +97,24 @@ $header-bg: linear-gradient(180deg, rgb(75 81 75 / 100%) 0%, rgb(72 71 67 / 100%
   filter: $filter-c77777;
 }
 
-.header-button:focus img.filter-BEBEBE,
 .header-button:hover img.filter-BEBEBE {
   filter: $filter-e4e3e3;
-  outline: none;
 }
 
-.header-button:focus img.filter-C77777,
 .header-button:hover img.filter-C77777 {
   filter: $filter-c74848;
-  outline: none;
+}
+
+.header-button:focus-visible {
+  outline: 0.15rem white dashed;
+}
+
+.header-button:focus-visible img.filter-BEBEBE {
+  filter: $filter-e4e3e3;
+}
+
+.header-button:focus-visible img.filter-C77777 {
+  filter: $filter-c74848;
 }
 
 .console-header-buttons .header-button:active::before {
