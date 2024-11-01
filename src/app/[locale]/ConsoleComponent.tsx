@@ -25,6 +25,9 @@ function ConsoleComponent() {
     height: 0,
   });
 
+  const [fullscreen, setFullscreen] = useState(false);
+  const toggleFullscreen = () => setFullscreen(!fullscreen);
+
   return (
     <WindowWrapper
       initialHeight="95%"
@@ -32,6 +35,7 @@ function ConsoleComponent() {
       height={consoleSize.height}
       width={consoleSize.width}
       resizeCallback={setConsoleSize}
+      fullscreen={fullscreen}
       className={`${styles['console-component']} flex flex-col`}
       minConstraints={[385, 85]}
       handle={`.${styles['console-header-handler']}`}
@@ -51,7 +55,7 @@ function ConsoleComponent() {
               className={`h-full w-full ${styles['filter-BEBEBE']}`}
             />
           </button>
-          <button type="button" className={`${styles['header-button']}`}>
+          <button type="button" className={`${styles['header-button']}`} onClick={toggleFullscreen}>
             <Image
               src={maximizeIcon}
               alt="Maximize console button"

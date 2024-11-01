@@ -6,7 +6,7 @@ import styles from './TaskBar.module.scss';
 
 function TaskBar() {
   return (
-    <nav className={`${styles['task-bar']} text-white bg-black bg-opacity-70 task-bar flex flex-row justify-between w-full h-10 md:h-9`}>
+    <nav className={`${styles['task-bar']} text-white bg-black bg-opacity-70 task-bar flex flex-row justify-between w-full h-10 md:h-9 min-h-10 md:min-h-9`}>
       <div className="xl:basis-2/12 md:basis-4/12 sm:basis-5/12 basis-6/12 lg:basis-3/12 flex justify-start flex-row items-center">
         <button type="button" className={`${styles['turn-off-button']} h-4/6 w-fit mx-2 filter-white turn-off-button`}>
           <Image

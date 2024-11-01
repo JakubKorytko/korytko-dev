@@ -12,6 +12,7 @@ export interface WindowWrapperProps {
   resizeCallback: ({ height, width }: Dimensions) => void,
   className?: string,
   minConstraints?: [number, number],
+  fullscreen?: boolean,
   handle?: string
 }
 
@@ -41,5 +42,6 @@ export type CalculatePercentageSize = (
 export type NodeRefStyle = {
   width: string,
   height: string,
-  visibility: 'hidden' | 'visible'
+  visibility: 'hidden' | 'visible',
+  borderRadius: string | undefined
 };

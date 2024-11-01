@@ -11,7 +11,7 @@ import {
   calculateElementSize,
   calculatePercentageSize,
   canResize,
-  areDimensionsEqual,
+  areDimensionsEqual, isOutOfAnyBounds, adjustTranslateWithinBounds,
 } from '@/app/[locale]/WindowWrapper.helpers';
 
 function WindowWrapper(props: WindowWrapperProps) {
@@ -20,12 +20,13 @@ function WindowWrapper(props: WindowWrapperProps) {
     height: 1,
   });
   const [loading, setLoading] = React.useState(true);
+  const [fullscreenSwitched, setFullscreenSwitched] = React.useState(false);
 
   const nodeRef = React.useRef<HTMLDialogElement | null>(null);
   const {
     children, className = '',
     width, height, initialWidth, initialHeight, minConstraints = [15, 15],
-    resizeCallback, handle: handler = '',
+    resizeCallback, handle: handler = '', fullscreen = false,
   } = props;
 
   const propagatePercentageCalculatedSize = () => {
@@ -44,6 +45,10 @@ function WindowWrapper(props: WindowWrapperProps) {
   const propagateCurrentSize = () => {
     if (!nodeRef.current) return;
 
+    if (isOutOfAnyBounds(nodeRef.current)) {
+      nodeRef.current.style.transform = adjustTranslateWithinBounds(nodeRef.current);
+    }
+
     const refDim = {
       width: nodeRef.current.clientWidth,
       height: nodeRef.current.clientHeight,
@@ -53,7 +58,7 @@ function WindowWrapper(props: WindowWrapperProps) {
   };
 
   const updatePercentageSize = () => {
-    if (!nodeRef.current) return;
+    if (!nodeRef.current || fullscreen) return;
 
     const newPercentageSize = calculatePercentageSize(
       nodeRef.current,
@@ -71,9 +76,22 @@ function WindowWrapper(props: WindowWrapperProps) {
     return () => window.removeEventListener('resize', propagatePercentageCalculatedSize);
   };
 
+  const nodeRefSize = () => {
+    if (fullscreen) {
+      return {
+        width: '100%',
+        height: '100%',
+      };
+    }
+    return {
+      width: width === 0 ? initialWidth : `${width}px`,
+      height: height === 0 ? initialHeight : `${height}px`,
+    };
+  };
+
   const onResize: OnResize = (event, { node, size, handle }) => {
     const dialog = node.parentElement;
-    if (!dialog) return;
+    if (!dialog || fullscreen) return;
 
     if (canResize(handle, dialog, { width, height }, size)) {
       setStoredPercentageSize(calculatePercentageSize(dialog, size.width, size.height));
@@ -81,15 +99,26 @@ function WindowWrapper(props: WindowWrapperProps) {
     }
   };
 
+  if (fullscreen && !fullscreenSwitched && nodeRef.current) {
+    setStoredPercentageSize(calculatePercentageSize(nodeRef.current, width, height));
+    resizeCallback(calculateElementSize(nodeRef.current, { width: 1, height: 1 }, minConstraints));
+    setFullscreenSwitched(true);
+  }
+
+  if (!fullscreen && fullscreenSwitched && nodeRef.current) {
+    resizeCallback(calculateElementSize(nodeRef.current, storedPercentageSize, minConstraints));
+    setFullscreenSwitched(false);
+  }
+
   const nodeRefStyle: NodeRefStyle = {
-    width: width === 0 ? initialWidth : `${width}px`,
-    height: height === 0 ? initialHeight : `${height}px`,
+    ...nodeRefSize(),
     visibility: loading ? 'hidden' : 'visible',
+    borderRadius: fullscreen ? '0' : undefined,
   };
 
   useEffect(resizeListener, [resizeListener, resizeCallback, storedPercentageSize, minConstraints]);
   useEffect(propagateCurrentSize, [width, height, resizeCallback]);
-  useEffect(updatePercentageSize, [storedPercentageSize]);
+  useEffect(updatePercentageSize, [storedPercentageSize, fullscreen]);
   useEffect(() => { setLoading(false); }, []);
 
   return (
