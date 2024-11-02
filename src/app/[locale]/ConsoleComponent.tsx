@@ -9,13 +9,15 @@ import maximizeIcon from '../../../public/icons/maximize.svg';
 import closeIcon from '../../../public/icons/close.svg';
 import WindowWrapper from '@/app/[locale]/WindowWrapper';
 
-function ConsoleComponent() {
+function ConsoleComponent(props: { closeApp: () => void }) {
   const [consoleSize, setConsoleSize] = useState({
     width: 0,
     height: 0,
   });
   const [fullscreen, setFullscreen] = useState(false);
   const [menuVisibility, setMenuVisibility] = useState(false);
+
+  const { closeApp } = props;
 
   const sections: Record<string, string> = {
     'About Me': '#',
@@ -70,7 +72,7 @@ function ConsoleComponent() {
               className={`h-full w-full ${styles['filter-BEBEBE']}`}
             />
           </button>
-          <button type="button" className={`${styles['header-button']}`}>
+          <button type="button" className={`${styles['header-button']}`} onClick={closeApp}>
             <Image
               src={closeIcon}
               alt="Close console button"
