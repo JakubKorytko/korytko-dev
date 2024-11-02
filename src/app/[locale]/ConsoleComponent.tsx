@@ -10,6 +10,13 @@ import closeIcon from '../../../public/icons/close.svg';
 import WindowWrapper from '@/app/[locale]/WindowWrapper';
 
 function ConsoleComponent() {
+  const [consoleSize, setConsoleSize] = useState({
+    width: 0,
+    height: 0,
+  });
+  const [fullscreen, setFullscreen] = useState(false);
+  const [menuVisibility, setMenuVisibility] = useState(false);
+
   const sections: Record<string, string> = {
     'About Me': '#',
     Projects: '#',
@@ -20,13 +27,10 @@ function ConsoleComponent() {
     Certificates: '#',
   };
 
-  const [consoleSize, setConsoleSize] = useState({
-    width: 0,
-    height: 0,
-  });
-
-  const [fullscreen, setFullscreen] = useState(false);
   const toggleFullscreen = () => setFullscreen(!fullscreen);
+  const toggleMenu = () => {
+    setMenuVisibility(!menuVisibility);
+  };
 
   return (
     <WindowWrapper
@@ -41,6 +45,10 @@ function ConsoleComponent() {
       handle={`.${styles['console-header-handler']}`}
     >
       <header className={styles['console-header']}>
+        <ConsoleComponentHeaderLinks.Hamburger
+          showWhen={consoleSize.width > 0 && consoleSize.width < 700}
+          onClick={toggleMenu}
+        />
         <div className={`${styles['console-header-handler']} absolute w-full h-full z-0 left-0 top-0`} />
         <div className={styles['console-header-name']}>
           <h4 className="z-10">
@@ -70,7 +78,11 @@ function ConsoleComponent() {
             />
           </button>
         </div>
-        <ConsoleComponentHeaderLinks sections={sections} consoleSize={consoleSize} />
+        <ConsoleComponentHeaderLinks
+          sections={sections}
+          consoleSize={consoleSize}
+          menuVisibility={menuVisibility}
+        />
       </header>
       <div className={`${styles['console-content']} flex-grow`} />
     </WindowWrapper>
