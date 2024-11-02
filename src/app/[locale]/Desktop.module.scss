@@ -1,0 +1,7 @@
+.desktop-content {
+  display: grid;
+  grid: repeat(auto-fill, 7rem) / repeat(auto-fill, 7rem);
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
