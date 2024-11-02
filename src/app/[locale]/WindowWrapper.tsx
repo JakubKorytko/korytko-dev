@@ -21,6 +21,7 @@ function WindowWrapper(props: WindowWrapperProps) {
   });
   const [loading, setLoading] = React.useState(true);
   const [fullscreenSwitched, setFullscreenSwitched] = React.useState(false);
+  const [storedTranslate, setStoredTranslate] = React.useState('');
 
   const nodeRef = React.useRef<HTMLDialogElement | null>(null);
   const {
@@ -100,6 +101,7 @@ function WindowWrapper(props: WindowWrapperProps) {
   };
 
   if (fullscreen && !fullscreenSwitched && nodeRef.current) {
+    setStoredTranslate(nodeRef.current.style.transform);
     setStoredPercentageSize(calculatePercentageSize(nodeRef.current, width, height));
     resizeCallback(calculateElementSize(nodeRef.current, { width: 1, height: 1 }, minConstraints));
     setFullscreenSwitched(true);
@@ -107,6 +109,7 @@ function WindowWrapper(props: WindowWrapperProps) {
 
   if (!fullscreen && fullscreenSwitched && nodeRef.current) {
     resizeCallback(calculateElementSize(nodeRef.current, storedPercentageSize, minConstraints));
+    nodeRef.current.style.transform = storedTranslate;
     setFullscreenSwitched(false);
   }
 
@@ -135,7 +138,7 @@ function WindowWrapper(props: WindowWrapperProps) {
           open
           ref={nodeRef}
           style={nodeRefStyle}
-          className={className}
+          className={`${className} ${!loading ? 'animate-appear' : null}`}
         >
           {children}
         </dialog>

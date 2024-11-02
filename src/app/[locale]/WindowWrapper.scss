@@ -31,3 +31,17 @@
   cursor: e-resize;
   right: 0;
 }
+
+.animate-appear {
+  animation: 0.2s appear;
+}
+
+@keyframes appear {
+  from {
+    transform: scale(0) translateY(150vh);
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+  }
+}
