@@ -34,29 +34,6 @@ export interface NodeAndParentData {
   parent: NodeData
 }
 
-export interface WindowWrapperState {
-  screenSize: {
-    width: number,
-    height: number
-  },
-  loading: boolean,
-  animating: boolean,
-  size: {
-    width: number,
-    height: number,
-    minWidth: number,
-    minHeight: number,
-  },
-  storedData: {
-    translate: string,
-    percentageSize: {
-      width: number,
-      height: number,
-    },
-  },
-  fullscreen: boolean,
-}
-
 export type IsOutOfBounds = (nodeRect: NodeAndParentData, direction: 'x' | 'y') => boolean;
 
 export type CanResize = (

@@ -4,8 +4,9 @@ import {
   CanResize,
   IsOutOfBounds,
   Dimensions, NodeRefStyle,
-  WindowWrapperState, NodeAndParentData, NodeData,
+  NodeAndParentData, NodeData,
 } from '@/app/[locale]/WindowWrapper.type';
+import { WindowWrapperState } from '@/app/[locale]/WindowWrapper.state.type';
 
 export const isOutOfAnyBounds = (nodeRect: NodeAndParentData) => {
   const parent = nodeRect.parent.position;
