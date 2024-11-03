@@ -1,9 +1,10 @@
-import type {
+import {
   CalculateElementSize,
   CalculatePercentageSize,
   CanResize,
   IsOutOfBounds,
-  Dimensions,
+  Dimensions, NodeRefStyle,
+  WindowWrapperState,
 } from '@/app/[locale]/WindowWrapper.type';
 
 export const isOutOfAnyBounds = (element: HTMLElement) => {
@@ -48,9 +49,7 @@ export const canResize: CanResize = (
 
   if (isWidthHandle && newSize.width > size.width && isOutOfBounds(element, 'x')) return false;
 
-  if (isHeightHandle && newSize.height > size.height && isOutOfBounds(element, 'y')) return false;
-
-  return true;
+  return !(isHeightHandle && newSize.height > size.height && isOutOfBounds(element, 'y'));
 };
 
 export const calculateElementSize: CalculateElementSize = (
@@ -130,4 +129,26 @@ export const adjustTranslateWithinBounds = (element: HTMLElement) => {
   const y = adjustTranslateWithinY(element, parent, currentY);
 
   return `translate(${x}px,${y}px)`;
+};
+
+export const nodeRefStyle = (
+  state: WindowWrapperState,
+  initialSize: { width: string, height: string },
+): NodeRefStyle => {
+  const style: Pick<NodeRefStyle, 'visibility' | 'borderRadius'> = {
+    visibility: state.loading ? 'hidden' : 'visible',
+    borderRadius: state.fullscreen ? '0' : undefined,
+  };
+  if (state.fullscreen) {
+    return {
+      width: '100%',
+      height: '100%',
+      ...style,
+    };
+  }
+  return {
+    width: state.size.width === 0 ? initialSize.width : `${state.size.width}px`,
+    height: state.size.height === 0 ? initialSize.height : `${state.size.height}px`,
+    ...style,
+  };
 };

@@ -16,6 +16,24 @@ export interface WindowWrapperProps {
   handle?: string
 }
 
+export interface WindowWrapperState {
+  loading: boolean,
+  size: {
+    width: number,
+    height: number,
+    minWidth: number,
+    minHeight: number,
+  },
+  storedData: {
+    translate: string,
+    percentageSize: {
+      width: number,
+      height: number,
+    },
+  },
+  fullscreen: boolean,
+}
+
 export type IsOutOfBounds = (element: HTMLElement, direction: 'x' | 'y') => boolean;
 
 export type CanResize = (

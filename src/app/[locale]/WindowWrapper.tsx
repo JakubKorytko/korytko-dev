@@ -1,144 +1,126 @@
 import './WindowWrapper.scss';
-import React, { useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import Draggable from 'react-draggable';
 import { Resizable } from 'react-resizable';
 import {
   OnResize,
-  Dimensions,
-  WindowWrapperProps, NodeRefStyle,
+  WindowWrapperProps,
 } from '@/app/[locale]/WindowWrapper.type';
 import {
-  calculateElementSize,
   calculatePercentageSize,
   canResize,
-  areDimensionsEqual, isOutOfAnyBounds, adjustTranslateWithinBounds,
+  nodeRefStyle,
 } from '@/app/[locale]/WindowWrapper.helpers';
+import { reducer, initialState } from './WindowWrapper.state';
 
 function WindowWrapper(props: WindowWrapperProps) {
-  const [storedPercentageSize, setStoredPercentageSize] = React.useState<Dimensions>({
-    width: 1,
-    height: 1,
-  });
-  const [loading, setLoading] = React.useState(true);
-  const [fullscreenSwitched, setFullscreenSwitched] = React.useState(false);
-  const [storedTranslate, setStoredTranslate] = React.useState('');
-
+  const [state, dispatch] = useReducer(reducer, initialState);
   const nodeRef = React.useRef<HTMLDialogElement | null>(null);
+
   const {
     children, className = '',
-    width, height, initialWidth, initialHeight, minConstraints = [15, 15],
-    resizeCallback, handle: handler = '', fullscreen = false,
+    initialWidth, initialHeight, minConstraints = [15, 15],
+    handle: handler = '', fullscreen = false,
   } = props;
 
-  const propagatePercentageCalculatedSize = () => {
-    if (!nodeRef.current) return;
-    const newElementSize = calculateElementSize(
-      nodeRef.current,
-      storedPercentageSize,
-      minConstraints,
-    );
-
-    if (!areDimensionsEqual({ width, height }, newElementSize)) {
-      resizeCallback(newElementSize);
-    }
-  };
-
-  const propagateCurrentSize = () => {
-    if (!nodeRef.current) return;
-
-    if (isOutOfAnyBounds(nodeRef.current)) {
-      nodeRef.current.style.transform = adjustTranslateWithinBounds(nodeRef.current);
-    }
-
-    const refDim = {
-      width: nodeRef.current.clientWidth,
-      height: nodeRef.current.clientHeight,
+  const resizeListener = () => {
+    const convertPercentages = () => {
+      dispatch({
+        type: 'CONVERT_PERCENTAGE_SIZE',
+        payload: { node: nodeRef.current },
+      });
+      dispatch({
+        type: 'FIX_TRANSLATE',
+        payload: { node: nodeRef.current },
+      });
     };
+    window.addEventListener('resize', convertPercentages);
 
-    if (!areDimensionsEqual({ width, height }, refDim)) resizeCallback(refDim);
+    return () => window.removeEventListener('resize', convertPercentages);
   };
 
-  const updatePercentageSize = () => {
-    if (!nodeRef.current || fullscreen) return;
+  const onResize: OnResize = (event, { node, size, handle }) => {
+    const dialog = node.parentElement;
+    if (!dialog || state.fullscreen) return;
 
+    if (canResize(handle, dialog, { width: state.size.width, height: state.size.height }, size)) {
+      dispatch({
+        type: 'SET_STORED_PERCENTAGES',
+        payload: calculatePercentageSize(dialog, size.width, size.height),
+      });
+      dispatch({
+        type: 'SET_SIZE',
+        payload: { width: size.width, height: size.height, node: nodeRef.current },
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!nodeRef.current) return;
+    if (fullscreen && !state.fullscreen) {
+      dispatch({
+        type: 'TURN_ON_FULLSCREEN',
+        payload: { node: nodeRef.current },
+      });
+    } else if (!fullscreen && state.fullscreen) {
+      dispatch({
+        type: 'TURN_OFF_FULLSCREEN',
+        payload: { node: nodeRef.current },
+      });
+      nodeRef.current.style.transform = state.storedData.translate;
+    }
+  }, [fullscreen, state.fullscreen, state.storedData.translate]);
+
+  useEffect(() => {
+    if (!nodeRef.current) return;
+    dispatch({
+      type: 'SET_SIZE',
+      payload: {
+        node: nodeRef.current,
+        minWidth: minConstraints[0],
+        minHeight: minConstraints[1],
+      },
+    });
+  }, [minConstraints]);
+
+  useEffect(() => {
+    resizeListener();
+    dispatch({
+      type: 'SET_LOADING',
+      payload: false,
+    });
+
+    if (!nodeRef.current) return;
     const newPercentageSize = calculatePercentageSize(
       nodeRef.current,
       nodeRef.current.clientWidth,
       nodeRef.current.clientHeight,
     );
-
-    if (!areDimensionsEqual(storedPercentageSize, newPercentageSize)) {
-      setStoredPercentageSize(newPercentageSize);
-    }
-  };
-
-  const resizeListener = () => {
-    window.addEventListener('resize', propagatePercentageCalculatedSize);
-    return () => window.removeEventListener('resize', propagatePercentageCalculatedSize);
-  };
-
-  const nodeRefSize = () => {
-    if (fullscreen) {
-      return {
-        width: '100%',
-        height: '100%',
-      };
-    }
-    return {
-      width: width === 0 ? initialWidth : `${width}px`,
-      height: height === 0 ? initialHeight : `${height}px`,
-    };
-  };
-
-  const onResize: OnResize = (event, { node, size, handle }) => {
-    const dialog = node.parentElement;
-    if (!dialog || fullscreen) return;
-
-    if (canResize(handle, dialog, { width, height }, size)) {
-      setStoredPercentageSize(calculatePercentageSize(dialog, size.width, size.height));
-      resizeCallback({ width: size.width, height: size.height });
-    }
-  };
-
-  if (fullscreen && !fullscreenSwitched && nodeRef.current) {
-    setStoredTranslate(nodeRef.current.style.transform);
-    setStoredPercentageSize(calculatePercentageSize(nodeRef.current, width, height));
-    resizeCallback(calculateElementSize(nodeRef.current, { width: 1, height: 1 }, minConstraints));
-    setFullscreenSwitched(true);
-  }
-
-  if (!fullscreen && fullscreenSwitched && nodeRef.current) {
-    resizeCallback(calculateElementSize(nodeRef.current, storedPercentageSize, minConstraints));
-    nodeRef.current.style.transform = storedTranslate;
-    setFullscreenSwitched(false);
-  }
-
-  const nodeRefStyle: NodeRefStyle = {
-    ...nodeRefSize(),
-    visibility: loading ? 'hidden' : 'visible',
-    borderRadius: fullscreen ? '0' : undefined,
-  };
-
-  useEffect(resizeListener, [resizeListener, resizeCallback, storedPercentageSize, minConstraints]);
-  useEffect(propagateCurrentSize, [width, height, resizeCallback]);
-  useEffect(updatePercentageSize, [storedPercentageSize, fullscreen]);
-  useEffect(() => { setLoading(false); }, []);
+    dispatch({
+      type: 'SET_STORED_PERCENTAGES',
+      payload: newPercentageSize,
+    });
+    dispatch({
+      type: 'SET_NODE_SIZE',
+      payload: { node: nodeRef.current },
+    });
+  }, []);
 
   return (
     <Draggable nodeRef={nodeRef} bounds="parent" handle={handler}>
       <Resizable
         axis="both"
         resizeHandles={['n', 'w', 'e', 's']}
-        height={height}
-        minConstraints={minConstraints}
-        width={width}
+        height={state.size.height}
+        minConstraints={[state.size.minWidth, state.size.minHeight]}
+        width={state.size.width}
         onResize={onResize}
       >
         <dialog
           open
           ref={nodeRef}
-          style={nodeRefStyle}
-          className={`${className} ${!loading ? 'animate-appear' : null}`}
+          style={nodeRefStyle(state, { width: initialWidth, height: initialHeight })}
+          className={`${className} ${!state.loading ? 'animate-appear' : null}`}
         >
           {children}
         </dialog>
