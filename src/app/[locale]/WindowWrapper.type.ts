@@ -16,6 +16,24 @@ export interface WindowWrapperProps {
   handle?: string
 }
 
+export interface NodeData {
+  size: {
+    width: number;
+    height: number;
+  },
+  position: {
+    top: number,
+    left: number,
+    right: number,
+    bottom: number
+  }
+}
+
+export interface NodeAndParentData {
+  element: NodeData,
+  parent: NodeData
+}
+
 export interface WindowWrapperState {
   loading: boolean,
   size: {
@@ -34,17 +52,17 @@ export interface WindowWrapperState {
   fullscreen: boolean,
 }
 
-export type IsOutOfBounds = (element: HTMLElement, direction: 'x' | 'y') => boolean;
+export type IsOutOfBounds = (nodeRect: NodeAndParentData, direction: 'x' | 'y') => boolean;
 
 export type CanResize = (
   handle: ResizeHandle,
-  element: HTMLElement,
+  nodeRect: NodeAndParentData,
   size: Dimensions,
   newSize: Dimensions,
 ) => boolean;
 
 export type CalculateElementSize = (
-  element: HTMLElement,
+  nodeRect: NodeAndParentData,
   percentageSize: Dimensions,
   limits: [number, number],
 ) => Dimensions;
@@ -52,7 +70,7 @@ export type CalculateElementSize = (
 export type OnResize = (event: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => void;
 
 export type CalculatePercentageSize = (
-  element: HTMLElement,
+  nodeRect: NodeAndParentData,
   newWidth: number,
   newHeight: number,
 ) => Dimensions;

@@ -8,7 +8,7 @@ import {
 } from '@/app/[locale]/WindowWrapper.type';
 import {
   calculatePercentageSize,
-  canResize,
+  canResize, getNodeAndParentSize, getTranslateXY,
   nodeRefStyle,
 } from '@/app/[locale]/WindowWrapper.helpers';
 import { reducer, initialState } from './WindowWrapper.state';
@@ -25,13 +25,16 @@ function WindowWrapper(props: WindowWrapperProps) {
 
   const resizeListener = () => {
     const convertPercentages = () => {
+      if (!nodeRef.current) return;
+      const nodeRect = getNodeAndParentSize(nodeRef.current);
+      const translate = getTranslateXY(nodeRef.current);
       dispatch({
         type: 'CONVERT_PERCENTAGE_SIZE',
-        payload: { node: nodeRef.current },
+        payload: { nodeRect },
       });
       dispatch({
         type: 'FIX_TRANSLATE',
-        payload: { node: nodeRef.current },
+        payload: { nodeRect, translate },
       });
     };
     window.addEventListener('resize', convertPercentages);
@@ -43,29 +46,34 @@ function WindowWrapper(props: WindowWrapperProps) {
     const dialog = node.parentElement;
     if (!dialog || state.fullscreen) return;
 
-    if (canResize(handle, dialog, { width: state.size.width, height: state.size.height }, size)) {
+    const nodeRect = getNodeAndParentSize(dialog);
+
+    if (canResize(handle, nodeRect, { width: state.size.width, height: state.size.height }, size)) {
       dispatch({
         type: 'SET_STORED_PERCENTAGES',
-        payload: calculatePercentageSize(dialog, size.width, size.height),
+        payload: calculatePercentageSize(nodeRect, size.width, size.height),
       });
       dispatch({
         type: 'SET_SIZE',
-        payload: { width: size.width, height: size.height, node: nodeRef.current },
+        payload: { width: size.width, height: size.height, nodeRect },
       });
     }
   };
 
   useEffect(() => {
     if (!nodeRef.current) return;
+    const nodeRect = getNodeAndParentSize(nodeRef.current);
+    const translateStyle = nodeRef.current.style.transform;
+
     if (fullscreen && !state.fullscreen) {
       dispatch({
         type: 'TURN_ON_FULLSCREEN',
-        payload: { node: nodeRef.current },
+        payload: { nodeRect, translateStyle },
       });
     } else if (!fullscreen && state.fullscreen) {
       dispatch({
         type: 'TURN_OFF_FULLSCREEN',
-        payload: { node: nodeRef.current },
+        payload: { nodeRect },
       });
       nodeRef.current.style.transform = state.storedData.translate;
     }
@@ -73,10 +81,11 @@ function WindowWrapper(props: WindowWrapperProps) {
 
   useEffect(() => {
     if (!nodeRef.current) return;
+    const nodeRect = getNodeAndParentSize(nodeRef.current);
     dispatch({
       type: 'SET_SIZE',
       payload: {
-        node: nodeRef.current,
+        nodeRect,
         minWidth: minConstraints[0],
         minHeight: minConstraints[1],
       },
@@ -91,8 +100,9 @@ function WindowWrapper(props: WindowWrapperProps) {
     });
 
     if (!nodeRef.current) return;
+    const nodeRect = getNodeAndParentSize(nodeRef.current);
     const newPercentageSize = calculatePercentageSize(
-      nodeRef.current,
+      nodeRect,
       nodeRef.current.clientWidth,
       nodeRef.current.clientHeight,
     );
@@ -102,7 +112,7 @@ function WindowWrapper(props: WindowWrapperProps) {
     });
     dispatch({
       type: 'SET_NODE_SIZE',
-      payload: { node: nodeRef.current },
+      payload: { nodeRect },
     });
   }, []);
 
