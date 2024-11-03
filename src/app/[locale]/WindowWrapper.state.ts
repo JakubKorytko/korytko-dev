@@ -9,9 +9,10 @@ import {
 type TurnOnFullScreen = { type: 'TURN_ON_FULLSCREEN'; payload: { nodeRect: NodeAndParentData, translateStyle: string } };
 type TurnOffFullscreen = { type: 'TURN_OFF_FULLSCREEN'; payload: { nodeRect: NodeAndParentData } };
 type SetNodeSize = { type: 'SET_NODE_SIZE'; payload: { nodeRect: NodeAndParentData } };
-type ConvertPercentageSize = { type: 'CONVERT_PERCENTAGE_SIZE'; payload: { nodeRect: NodeAndParentData } };
+type ConvertPercentageSize = { type: 'CONVERT_PERCENTAGE_SIZE'; payload: { nodeRect: NodeAndParentData, screenSize: { width: number, height: number } } };
 type SetSize = { type: 'SET_SIZE'; payload: { nodeRect: NodeAndParentData, width?: number, height?: number, minWidth?: number, minHeight?: number } };
 type FixTranslate = { type: 'FIX_TRANSLATE', payload: { nodeRect: NodeAndParentData, translate: { x: number, y: number } } };
+type SetAnimating = { type: 'SET_ANIMATING', payload: boolean };
 
 type Action =
     | TurnOnFullScreen
@@ -19,14 +20,19 @@ type Action =
     | SetNodeSize
     | SetSize
     | FixTranslate
+    | SetAnimating
     | { type: 'SET_STORED_PERCENTAGES'; payload: Dimensions }
     | ConvertPercentageSize
     | { type: 'SET_TRANSLATE'; payload: string }
     | { type: 'SET_LOADING'; payload: boolean };
 
-// Initial state for the reducer
 export const initialState: WindowWrapperState = {
+  screenSize: {
+    width: 0,
+    height: 0,
+  },
   loading: true,
+  animating: false,
   size: {
     width: 0,
     height: 0,
@@ -101,7 +107,11 @@ const convertPercentageSize = (state: WindowWrapperState, action: ConvertPercent
     [state.size.minWidth, state.size.minHeight],
   );
 
-  return { ...state, size: { ...state.size, ...newSize } };
+  return {
+    ...state,
+    size: { ...state.size, ...newSize },
+    screenSize: { ...action.payload.screenSize },
+  };
 };
 
 const setSize = (state: WindowWrapperState, action: SetSize) => {
@@ -118,7 +128,7 @@ const setSize = (state: WindowWrapperState, action: SetSize) => {
 };
 
 const fixTranslate = (state: WindowWrapperState, action: FixTranslate) => {
-  if (isOutOfAnyBounds(action.payload.nodeRect)) {
+  if (isOutOfAnyBounds(action.payload.nodeRect) && !state.animating) {
     return {
       ...state,
       storedData: {
@@ -152,6 +162,8 @@ export function reducer(state: WindowWrapperState, action: Action) {
       return { ...state, storedTranslate: action.payload };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
+    case 'SET_ANIMATING':
+      return { ...state, animating: action.payload };
     default:
       return state;
   }

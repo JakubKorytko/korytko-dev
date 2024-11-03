@@ -35,7 +35,12 @@ export interface NodeAndParentData {
 }
 
 export interface WindowWrapperState {
+  screenSize: {
+    width: number,
+    height: number
+  },
   loading: boolean,
+  animating: boolean,
   size: {
     width: number,
     height: number,

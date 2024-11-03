@@ -27,14 +27,9 @@ function WindowWrapper(props: WindowWrapperProps) {
     const convertPercentages = () => {
       if (!nodeRef.current) return;
       const nodeRect = getNodeAndParentSize(nodeRef.current);
-      const translate = getTranslateXY(nodeRef.current);
       dispatch({
         type: 'CONVERT_PERCENTAGE_SIZE',
-        payload: { nodeRect },
-      });
-      dispatch({
-        type: 'FIX_TRANSLATE',
-        payload: { nodeRect, translate },
+        payload: { nodeRect, screenSize: { width: window.innerWidth, height: window.innerHeight } },
       });
     };
     window.addEventListener('resize', convertPercentages);
@@ -80,6 +75,25 @@ function WindowWrapper(props: WindowWrapperProps) {
   }, [fullscreen, state.fullscreen, state.storedData.translate]);
 
   useEffect(() => {
+    if (!nodeRef.current || state.fullscreen) return;
+    const nodeRect = getNodeAndParentSize(nodeRef.current);
+    const translate = getTranslateXY(nodeRef.current);
+    dispatch({
+      type: 'FIX_TRANSLATE',
+      payload: { nodeRect, translate },
+    });
+  }, [state.fullscreen, state.screenSize.width, state.screenSize.height]);
+
+  useEffect(() => {
+    if (!nodeRef.current) return;
+    if (!state.fullscreen) {
+      nodeRef.current.style.transform = state.storedData.translate;
+    } else if (state.fullscreen) {
+      nodeRef.current.style.transform = 'translate(0px, 0px)';
+    }
+  }, [state.fullscreen, state.storedData.translate]);
+
+  useEffect(() => {
     if (!nodeRef.current) return;
     const nodeRect = getNodeAndParentSize(nodeRef.current);
     dispatch({
@@ -92,14 +106,27 @@ function WindowWrapper(props: WindowWrapperProps) {
     });
   }, [minConstraints]);
 
+  useEffect(resizeListener, []);
+
   useEffect(() => {
-    resizeListener();
     dispatch({
       type: 'SET_LOADING',
       payload: false,
     });
 
     if (!nodeRef.current) return;
+    nodeRef.current.addEventListener('animationstart', () => {
+      dispatch({
+        type: 'SET_ANIMATING',
+        payload: true,
+      });
+    }, false);
+    nodeRef.current.addEventListener('animationend', () => {
+      dispatch({
+        type: 'SET_ANIMATING',
+        payload: false,
+      });
+    }, false);
     const nodeRect = getNodeAndParentSize(nodeRef.current);
     const newPercentageSize = calculatePercentageSize(
       nodeRect,
