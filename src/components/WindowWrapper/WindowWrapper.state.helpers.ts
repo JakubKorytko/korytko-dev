@@ -5,13 +5,13 @@ import {
   TurnOffFullscreen,
   TurnOnFullscreen,
   WindowWrapperState,
-} from '@/app/[locale]/WindowWrapper.state.type';
+} from '@/components/WindowWrapper/WindowWrapper.state.type';
 import {
   adjustTranslateWithinBounds,
   calculateElementSize,
   calculatePercentageSize,
   isOutOfAnyBounds,
-} from '@/app/[locale]/WindowWrapper.helpers';
+} from '@/components/WindowWrapper/WindowWrapper.helpers';
 
 export const turnOnFullscreen = (state: WindowWrapperState, action: TurnOnFullscreen) => {
   const storedData = { ...state.storedData };

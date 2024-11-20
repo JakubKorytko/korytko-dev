@@ -1,13 +1,39 @@
-@use "variables";
+@use 'variables';
 
-.desktop-background {
-  background-image: url("/background.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center center;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
+  box-sizing: border-box;
   color: white;
   font-weight: 700;
+}
+
+html, body, main {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+*::-webkit-scrollbar {
+  width: 15px;
+
+  &-thumb {
+    background: #7F0;
+
+    :hover {
+      background: #449a00;
+    }
+  }
+
+  &-track {
+    background: linear-gradient(to right, rgb(255 255 255 / 20%), rgb(255 255 255 / 20%)) center/2px 98% no-repeat;
+  }
 }

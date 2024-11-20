@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import ConsoleComponent from '@/app/[locale]/ConsoleComponent';
+import ConsoleComponent from '@/app/[locale]/ConsoleComponent/ConsoleComponent';
 
 const meta = {
   title: 'ConsoleComponent',
@@ -11,5 +11,6 @@ type Story = StoryObj<typeof meta>;
 
 export const ConsoleComponentStory: Story = {
   args: {
+    closeApp: () => {},
   },
 };

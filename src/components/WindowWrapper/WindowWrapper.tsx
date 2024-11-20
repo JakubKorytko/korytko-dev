@@ -5,14 +5,14 @@ import { Resizable } from 'react-resizable';
 import {
   OnResize,
   WindowWrapperProps,
-} from '@/app/[locale]/WindowWrapper.type';
+} from '@/components/WindowWrapper/WindowWrapper.type';
 import {
   calculatePercentageSize,
   canResize, getNodeAndParentSize, getTranslateXY,
   nodeRefStyle,
-} from '@/app/[locale]/WindowWrapper.helpers';
+} from '@/components/WindowWrapper/WindowWrapper.helpers';
 import { reducer, initialState } from './WindowWrapper.state';
-import { WindowWrapperActions } from '@/app/[locale]/WindowWrapper.state.type';
+import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
 
 function WindowWrapper(props: WindowWrapperProps) {
   const [state, dispatch] = useReducer(reducer, initialState);

@@ -3,10 +3,10 @@
 import '@/styles/main.scss';
 import { useState } from 'react';
 import styles from './Desktop.module.scss';
-import TaskBar from '@/app/[locale]/TaskBar';
-import ConsoleComponent from '@/app/[locale]/ConsoleComponent';
-import ProgramIcon from '@/app/[locale]/ProgramIcon';
-import TerminalSVG from '../../../public/icons/terminal.svg';
+import TaskBar from '@/app/[locale]/TaskBar/TaskBar';
+import ConsoleComponent from '@/app/[locale]/ConsoleComponent/ConsoleComponent';
+import ProgramIcon from '@/app/[locale]/Desktop/ProgramIcon';
+import TerminalSVG from '../../../../public/icons/terminal.svg';
 
 enum Apps {
   Kodos,
@@ -65,7 +65,7 @@ export default function DesktopComponent() {
   const activeWindows = openedApps.map((app: Apps) => appsData[app].component);
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className={`w-full h-full flex flex-col ${styles['desktop-background']}`}>
       <TaskBar />
       <div className="grow relative overflow-hidden">
         <div className="flex justify-center items-center absolute w-full h-full left-0 top-0">

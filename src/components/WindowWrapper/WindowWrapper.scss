@@ -1,0 +1,49 @@
+.react-resizable {
+  &-handle {
+    position: absolute;
+
+    &-n, &-s {
+      width: 100%;
+      height: 10px;
+    }
+
+    &-e, &-w {
+      width: 10px;
+      height: 100%;
+    }
+
+    &-n {
+      cursor: n-resize;
+      top: 0;
+    }
+
+    &-s {
+      cursor: s-resize;
+      bottom: 0;
+    }
+
+    &-w {
+      cursor: w-resize;
+      left: 0;
+    }
+
+    &-e {
+      cursor: e-resize;
+      right: 0;
+    }
+  }
+}
+
+.animate-appear {
+  animation: 0.2s appear;
+
+  @keyframes appear {
+    from {
+      transform: scale(0) translateY(150vh);
+    }
+
+    to {
+      transform: scale(1) translateY(0);
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { Dimensions, NodeAndParentData } from '@/app/[locale]/WindowWrapper.type';
+import { Dimensions, NodeAndParentData } from '@/components/WindowWrapper/WindowWrapper.type';
 
 export enum WindowWrapperActions {
   TURN_ON_FULLSCREEN,

@@ -1,4 +1,4 @@
-import '../src/app/globals.css';
+import '../styles/main.scss';
 
 import type { Preview } from '@storybook/react';
 import { Noto_Sans } from 'next/font/google';

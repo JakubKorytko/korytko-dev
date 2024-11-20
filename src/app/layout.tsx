@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Noto_Sans } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
-import './globals.css';
+import '../styles/main.scss';
 
 const notoSans = Noto_Sans({ subsets: ['latin'] });
 
@@ -22,7 +22,7 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <NextIntlClientProvider messages={messages}>
-          <main className={`${notoSans.className} desktop-background`}>
+          <main className={`${notoSans.className}`}>
             {children}
           </main>
         </NextIntlClientProvider>

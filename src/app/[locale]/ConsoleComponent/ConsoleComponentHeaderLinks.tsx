@@ -4,8 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './ConsoleComponent.module.scss';
-import closeIcon from '../../../public/icons/close.svg';
-import hamburgerIcon from '../../../public/icons/hamburger.svg';
+import closeIcon from '../../../../public/icons/close.svg';
+import hamburgerIcon from '../../../../public/icons/hamburger.svg';
 
 function Conditional(
   { showWhen, children }:
@@ -23,7 +23,7 @@ function Hamburger(props: { onClick: () => void, showWhen: boolean }) {
   return (
     <Conditional showWhen={showWhen}>
       <div className={styles['hamburger-wrapper']}>
-        <button type="button" className={styles['header-button']} onClick={toggleMenu}>
+        <button type="button" className={styles['console-header-button']} onClick={toggleMenu}>
           <Image
             className={`h-full w-full ${styles['filter-BEBEBE']}`}
             src={hamburgerIcon}
@@ -64,7 +64,7 @@ function ConsoleComponentHeaderLinks(props: {
               <h4 className="p-2">Options</h4>
             </div>
             <div className="basis-3/12 justify-center items-center flex">
-              <button type="button" className={`${styles['header-button']}`}>
+              <button type="button" className={`${styles['console-header-button']}`}>
                 <Image
                   src={closeIcon}
                   alt="Close console button"

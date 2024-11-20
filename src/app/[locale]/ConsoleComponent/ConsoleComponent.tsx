@@ -3,11 +3,11 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import styles from './ConsoleComponent.module.scss';
-import ConsoleComponentHeaderLinks from '@/app/[locale]/ConsoleComponentHeaderLinks';
-import minimizeIcon from '../../../public/icons/minimize.svg';
-import maximizeIcon from '../../../public/icons/maximize.svg';
-import closeIcon from '../../../public/icons/close.svg';
-import WindowWrapper from '@/app/[locale]/WindowWrapper';
+import ConsoleComponentHeaderLinks from '@/app/[locale]/ConsoleComponent/ConsoleComponentHeaderLinks';
+import minimizeIcon from '../../../../public/icons/minimize.svg';
+import maximizeIcon from '../../../../public/icons/maximize.svg';
+import closeIcon from '../../../../public/icons/close.svg';
+import WindowWrapper from '@/components/WindowWrapper/WindowWrapper';
 
 function ConsoleComponent(props: { closeApp: () => void }) {
   const [consoleSize, setConsoleSize] = useState({
@@ -58,21 +58,21 @@ function ConsoleComponent(props: { closeApp: () => void }) {
           </h4>
         </div>
         <div className={styles['console-header-buttons']}>
-          <button type="button" className={`${styles['header-button']}`}>
+          <button type="button" className={`${styles['console-header-button']}`}>
             <Image
               src={minimizeIcon}
               alt="Minimize console button"
               className={`h-full w-full ${styles['filter-BEBEBE']}`}
             />
           </button>
-          <button type="button" className={`${styles['header-button']}`} onClick={toggleFullscreen}>
+          <button type="button" className={`${styles['console-header-button']}`} onClick={toggleFullscreen}>
             <Image
               src={maximizeIcon}
               alt="Maximize console button"
               className={`h-full w-full ${styles['filter-BEBEBE']}`}
             />
           </button>
-          <button type="button" className={`${styles['header-button']}`} onClick={closeApp}>
+          <button type="button" className={`${styles['console-header-button']}`} onClick={closeApp}>
             <Image
               src={closeIcon}
               alt="Close console button"

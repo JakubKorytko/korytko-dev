@@ -1,4 +1,4 @@
-import { Action, WindowWrapperActions, WindowWrapperState } from '@/app/[locale]/WindowWrapper.state.type';
+import { Action, WindowWrapperActions, WindowWrapperState } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import {
   convertPercentageSize,
   fixTranslate,
@@ -6,7 +6,7 @@ import {
   setSize,
   turnOffFullscreen,
   turnOnFullscreen,
-} from '@/app/[locale]/WindowWrapper.state.helpers';
+} from '@/components/WindowWrapper/WindowWrapper.state.helpers';
 
 export const initialState: WindowWrapperState = {
   screenSize: {
