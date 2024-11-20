@@ -1,16 +1,13 @@
 import {
   ConvertPercentageSize,
-  FixTranslate,
   SetNodeSize, SetSize,
   TurnOffFullscreen,
   TurnOnFullscreen,
   WindowWrapperState,
 } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import {
-  adjustTranslateWithinBounds,
   calculateElementSize,
   calculatePercentageSize,
-  isOutOfAnyBounds,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
 
 export const turnOnFullscreen = (state: WindowWrapperState, action: TurnOnFullscreen) => {
@@ -74,7 +71,6 @@ export const convertPercentageSize = (state: WindowWrapperState, action: Convert
   return {
     ...state,
     size: { ...state.size, ...newSize },
-    screenSize: { ...action.payload.screenSize },
   };
 };
 
@@ -89,17 +85,4 @@ export const setSize = (state: WindowWrapperState, action: SetSize) => {
   return {
     ...state, size: { ...newSize },
   };
-};
-
-export const fixTranslate = (state: WindowWrapperState, action: FixTranslate) => {
-  if (isOutOfAnyBounds(action.payload.nodeRect) && !state.animating) {
-    return {
-      ...state,
-      storedData: {
-        ...state.storedData,
-        translate: adjustTranslateWithinBounds(action.payload.nodeRect, action.payload.translate),
-      },
-    };
-  }
-  return state;
 };

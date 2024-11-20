@@ -6,8 +6,6 @@ export enum WindowWrapperActions {
   SET_NODE_SIZE,
   CONVERT_PERCENTAGE_SIZE,
   SET_SIZE,
-  FIX_TRANSLATE,
-  SET_ANIMATING,
   SET_STORED_PERCENTAGES,
   SET_TRANSLATE,
   SET_LOADING,
@@ -29,9 +27,7 @@ export type SetNodeSize = {
 };
 export type ConvertPercentageSize = {
   type: WindowWrapperActions.CONVERT_PERCENTAGE_SIZE;
-  payload: { nodeRect: NodeAndParentData,
-    screenSize: { width: number, height: number }
-  }
+  payload: { nodeRect: NodeAndParentData }
 };
 export type SetSize = {
   type: WindowWrapperActions.SET_SIZE;
@@ -41,16 +37,6 @@ export type SetSize = {
     minWidth?: number,
     minHeight?: number
   }
-};
-export type FixTranslate = {
-  type: WindowWrapperActions.FIX_TRANSLATE,
-  payload: { nodeRect: NodeAndParentData,
-    translate: { x: number, y: number }
-  }
-};
-export type SetAnimating = {
-  type: WindowWrapperActions.SET_ANIMATING,
-  payload: boolean
 };
 export type SetStoredPercentages = {
   type: WindowWrapperActions.SET_STORED_PERCENTAGES;
@@ -66,12 +52,7 @@ export type SetLoading = {
 };
 
 export interface WindowWrapperState {
-  screenSize: {
-    width: number,
-    height: number
-  },
   loading: boolean,
-  animating: boolean,
   size: {
     width: number,
     height: number,
@@ -93,8 +74,6 @@ export type Action =
     | TurnOffFullscreen
     | SetNodeSize
     | SetSize
-    | FixTranslate
-    | SetAnimating
     | SetStoredPercentages
     | ConvertPercentageSize
     | SetTranslate

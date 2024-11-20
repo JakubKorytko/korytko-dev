@@ -2,9 +2,11 @@ import {
   CalculateElementSize,
   CalculatePercentageSize,
   CanResize,
+  Dimensions,
   IsOutOfBounds,
-  Dimensions, NodeRefStyle,
-  NodeAndParentData, NodeData,
+  NodeAndParentData,
+  NodeData,
+  NodeRefStyle,
 } from '@/components/WindowWrapper/WindowWrapper.type';
 import { WindowWrapperState } from '@/components/WindowWrapper/WindowWrapper.state.type';
 
@@ -14,8 +16,8 @@ export const isOutOfAnyBounds = (nodeRect: NodeAndParentData) => {
 
   return elem.left < parent.left
       || elem.right > parent.right
-      || elem.bottom < parent.bottom
-      || elem.top > parent.top;
+      || elem.bottom > parent.bottom
+      || elem.top < parent.top;
 };
 
 const isOutOfBounds: IsOutOfBounds = (nodeRect: NodeAndParentData, direction) => {

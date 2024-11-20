@@ -1,7 +1,6 @@
 import { Action, WindowWrapperActions, WindowWrapperState } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import {
   convertPercentageSize,
-  fixTranslate,
   setNodeSize,
   setSize,
   turnOffFullscreen,
@@ -9,12 +8,7 @@ import {
 } from '@/components/WindowWrapper/WindowWrapper.state.helpers';
 
 export const initialState: WindowWrapperState = {
-  screenSize: {
-    width: 0,
-    height: 0,
-  },
   loading: true,
-  animating: false,
   size: {
     width: 0,
     height: 0,
@@ -43,8 +37,6 @@ export function reducer(state: WindowWrapperState, action: Action) {
       return convertPercentageSize(state, action);
     case WindowWrapperActions.SET_SIZE:
       return setSize(state, action);
-    case WindowWrapperActions.FIX_TRANSLATE:
-      return fixTranslate(state, action);
     case WindowWrapperActions.SET_STORED_PERCENTAGES:
       if (state.fullscreen) return state;
       return { ...state, storedData: { ...state.storedData, percentageSize: action.payload } };
@@ -52,8 +44,6 @@ export function reducer(state: WindowWrapperState, action: Action) {
       return { ...state, storedTranslate: action.payload };
     case WindowWrapperActions.SET_LOADING:
       return { ...state, loading: action.payload };
-    case WindowWrapperActions.SET_ANIMATING:
-      return { ...state, animating: action.payload };
     default:
       return state;
   }

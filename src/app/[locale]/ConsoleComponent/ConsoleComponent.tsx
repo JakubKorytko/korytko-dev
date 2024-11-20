@@ -42,10 +42,9 @@ function ConsoleComponent(props: { closeApp: () => void }) {
 
   return shouldRenderWindow && (
   <WindowWrapper
+    onResize={setConsoleSize}
     initialHeight="95%"
     initialWidth="90%"
-    height={consoleSize.height}
-    width={consoleSize.width}
     resizeCallback={setConsoleSize}
     fullscreen={fullscreen}
     className={`${styles['console-component']} flex flex-col`}

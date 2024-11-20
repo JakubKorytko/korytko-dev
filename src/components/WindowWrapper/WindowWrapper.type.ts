@@ -4,9 +4,8 @@ import { ResizeCallbackData, ResizeHandle } from 'react-resizable';
 export type Dimensions = { width: number; height: number };
 
 export interface WindowWrapperProps {
+  onResize: (size: Dimensions) => void;
   children: React.ReactNode,
-  width: number,
-  height: number,
   initialWidth: string,
   initialHeight: string,
   resizeCallback: ({ height, width }: Dimensions) => void,
