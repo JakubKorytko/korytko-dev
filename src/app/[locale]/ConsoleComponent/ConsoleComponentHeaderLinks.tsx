@@ -4,8 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './ConsoleComponent.module.scss';
-import closeIcon from '../../../../public/icons/close.svg';
-import hamburgerIcon from '../../../../public/icons/hamburger.svg';
+import closeIcon from '#public/icons/close.svg';
+import hamburgerIcon from '#public/icons/hamburger.svg';
 
 function Conditional(
   { showWhen, children }:

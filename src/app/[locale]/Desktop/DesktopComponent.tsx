@@ -4,22 +4,10 @@ import '@/styles/main.scss';
 import { useState } from 'react';
 import styles from './Desktop.module.scss';
 import TaskBar from '@/app/[locale]/TaskBar/TaskBar';
-import ConsoleComponent from '@/app/[locale]/ConsoleComponent/ConsoleComponent';
 import ProgramIcon from '@/app/[locale]/Desktop/ProgramIcon';
-import TerminalSVG from '../../../../public/icons/terminal.svg';
-
-enum Apps {
-  Kodos,
-}
-
-type Icon = {
-  key: Apps,
-  icon: {
-    name: string;
-    image: string;
-  },
-  component: React.ReactNode;
-};
+import { Icon } from '@/utils/getAppsData.type';
+import { Apps } from '@/data/apps';
+import appsData from '@/utils/getAppsData';
 
 export default function DesktopComponent() {
   const [openedApps, setOpenedApps] = useState<Apps[]>([]);
@@ -32,16 +20,7 @@ export default function DesktopComponent() {
     );
   };
 
-  const appsData: Record<Apps, Icon> = {
-    [Apps.Kodos]: {
-      key: Apps.Kodos,
-      icon: {
-        name: 'kodos',
-        image: TerminalSVG,
-      },
-      component: <ConsoleComponent key={Apps.Kodos} closeApp={() => closeApp(Apps.Kodos)} />,
-    },
-  };
+  const apps = appsData(closeApp);
 
   const openApp = (app: Apps) => {
     if (openedApps.includes(app)) return;
@@ -58,11 +37,11 @@ export default function DesktopComponent() {
     </ProgramIcon>
   );
 
-  const appIcons = Object.values(appsData).map(
+  const appIcons = Object.values(apps).map(
     (appData) => generateAppIcon(appData),
   );
 
-  const activeWindows = openedApps.map((app: Apps) => appsData[app].component);
+  const activeWindows = openedApps.map((app: Apps) => apps[app].component);
 
   return (
     <div className={`w-full h-full flex flex-col ${styles['desktop-background']}`}>

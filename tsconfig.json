@@ -19,7 +19,8 @@
     ],
     "types": ["cypress", "node"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "#public/*": ["./public/*"]
     }
   },
   "include": [
