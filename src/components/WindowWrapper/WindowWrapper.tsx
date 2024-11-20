@@ -1,6 +1,6 @@
 import './WindowWrapper.scss';
 import React, {
-  memo, useCallback, useEffect, useReducer,
+  memo,
 } from 'react';
 import Draggable from 'react-draggable';
 import { Resizable } from 'react-resizable';
@@ -9,45 +9,26 @@ import {
   WindowWrapperProps,
 } from '@/components/WindowWrapper/WindowWrapper.type';
 import {
-  adjustTranslateWithinBounds,
   calculatePercentageSize,
-  canResize, getNodeAndParentSize, getTranslateXY, isOutOfAnyBounds,
+  canResize, getNodeAndParentSize,
   nodeRefStyle,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
-import { reducer, initialState } from './WindowWrapper.state';
 import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
+import useWindowWrapperEffect from '@/custom-hooks/useWindowWrapperEffect';
 
 function WindowWrapper(props: WindowWrapperProps) {
-  const [state, dispatch] = useReducer(reducer, initialState);
   const nodeRef = React.useRef<HTMLDialogElement | null>(null);
-  const [fullscreenSwitched, setFullScreenSwitched] = React.useState(false);
-
   const {
     children, className = '',
-    initialWidth, initialHeight, minConstraints = [15, 15],
-    handle: handler = '', fullscreen = false,
+    initialWidth, initialHeight,
+    handle: handler = '',
     onResize: handleResize,
+    fullscreen, minConstraints,
   } = props;
 
-  const resizeObserverCallback: ResizeObserverCallback = useCallback((entries) => {
-    entries.forEach((entry) => {
-      const target = entry.target as HTMLElement;
-      Promise.all(target.getAnimations().map((animation) => animation.finished)).then(() => {
-        handleResize({ width: target.offsetWidth, height: target.offsetHeight });
-        if (fullscreenSwitched) {
-          if (fullscreen) target.style.transform = 'translate(0px, 0px)';
-          else target.style.transform = state.storedData.translate;
-          setFullScreenSwitched(false);
-        } else {
-          const rect = getNodeAndParentSize(target);
-          if (isOutOfAnyBounds(rect)) {
-            const translate = getTranslateXY(target);
-            target.style.transform = adjustTranslateWithinBounds(rect, translate);
-          }
-        }
-      });
-    });
-  }, [handleResize, fullscreen, fullscreenSwitched, state.storedData.translate]);
+  const [state, dispatch] = useWindowWrapperEffect({
+    minConstraints, fullscreen, nodeRef, onResize: handleResize,
+  });
 
   const onResize: OnResize = (event, { node, size, handle }) => {
     const dialog = node.parentElement;
@@ -66,87 +47,6 @@ function WindowWrapper(props: WindowWrapperProps) {
       });
     }
   };
-
-  useEffect(() => {
-    if (nodeRef.current) {
-      const nodeRect = getNodeAndParentSize(nodeRef.current);
-      const translateStyle = nodeRef.current.style.transform;
-
-      if (fullscreenSwitched) {
-        if (fullscreen) {
-          dispatch({
-            type: WindowWrapperActions.TURN_ON_FULLSCREEN,
-            payload: { nodeRect, translateStyle },
-          });
-        } else if (!fullscreen) {
-          dispatch({
-            type: WindowWrapperActions.TURN_OFF_FULLSCREEN,
-            payload: { nodeRect },
-          });
-        }
-      }
-    }
-  }, [fullscreen, fullscreenSwitched]);
-
-  useEffect(() => {
-    setFullScreenSwitched(true);
-  }, [fullscreen]);
-
-  useEffect(() => {
-    const node = nodeRef.current;
-    const resizeObserver = new ResizeObserver(resizeObserverCallback);
-    if (node) resizeObserver.observe(node);
-    return () => { if (node) resizeObserver.unobserve(node); };
-  }, [resizeObserverCallback]);
-
-  useEffect(() => {
-    if (!nodeRef.current) return;
-    const nodeRect = getNodeAndParentSize(nodeRef.current);
-    dispatch({
-      type: WindowWrapperActions.SET_SIZE,
-      payload: {
-        nodeRect,
-        minWidth: minConstraints[0],
-        minHeight: minConstraints[1],
-      },
-    });
-  }, [minConstraints]);
-
-  useEffect(() => {
-    const convertPercentages = () => {
-      if (!nodeRef.current) return;
-      const nodeRect = getNodeAndParentSize(nodeRef.current);
-      dispatch({
-        type: WindowWrapperActions.CONVERT_PERCENTAGE_SIZE,
-        payload: { nodeRect },
-      });
-    };
-    window.addEventListener('resize', convertPercentages);
-
-    dispatch({
-      type: WindowWrapperActions.SET_LOADING,
-      payload: false,
-    });
-
-    if (nodeRef.current) {
-      const nodeRect = getNodeAndParentSize(nodeRef.current);
-      const newPercentageSize = calculatePercentageSize(
-        nodeRect,
-        nodeRef.current.clientWidth,
-        nodeRef.current.clientHeight,
-      );
-      dispatch({
-        type: WindowWrapperActions.SET_STORED_PERCENTAGES,
-        payload: newPercentageSize,
-      });
-      dispatch({
-        type: WindowWrapperActions.SET_NODE_SIZE,
-        payload: { nodeRect },
-      });
-    }
-
-    return () => window.removeEventListener('resize', convertPercentages);
-  }, []);
 
   return (
     <Draggable nodeRef={nodeRef} bounds="parent" handle={handler}>
