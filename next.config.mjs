@@ -11,7 +11,7 @@ const nextConfig = {
   sassOptions: {
     includePaths: [join(__dirname, "src/styles")],
   },
-  output: process.env.BUILD_STANDALONE === "true" ? "standalone" : undefined,
+  output: process.env.BUILD_STANDALONE === "true" ? "standalone" : undefined
 };
 
 export default withNextIntl(nextConfig);

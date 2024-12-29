@@ -1,4 +1,23 @@
-<TestRoot>
-<TestTag>TestValue</TestTag>
-<TestTag2>TestValue2</TestTag2>
-</TestRoot>
+<Console>
+    <AboutMe>
+        TODO
+    </AboutMe>
+    <Projects>
+        TODO
+    </Projects>
+    <Experience>
+        TODO
+    </Experience>
+    <Languages>
+        TODO
+    </Languages>
+    <Education>
+        TODO
+    </Education>
+    <Skills>
+        TODO
+    </Skills>
+    <Certificates>
+        TODO
+    </Certificates>
+</Console>

@@ -4,9 +4,8 @@ import { ResizeCallbackData, ResizeHandle } from 'react-resizable';
 export type Dimensions = { width: number; height: number };
 
 export interface WindowWrapperProps {
+  onResize: (size: Dimensions) => void;
   children: React.ReactNode,
-  width: number,
-  height: number,
   initialWidth: string,
   initialHeight: string,
   resizeCallback: ({ height, width }: Dimensions) => void,
@@ -16,17 +15,35 @@ export interface WindowWrapperProps {
   handle?: string
 }
 
-export type IsOutOfBounds = (element: HTMLElement, direction: 'x' | 'y') => boolean;
+export interface NodeData {
+  size: {
+    width: number;
+    height: number;
+  },
+  position: {
+    top: number,
+    left: number,
+    right: number,
+    bottom: number
+  }
+}
+
+export interface NodeAndParentData {
+  element: NodeData,
+  parent: NodeData
+}
+
+export type IsOutOfBounds = (nodeRect: NodeAndParentData, direction: 'x' | 'y') => boolean;
 
 export type CanResize = (
   handle: ResizeHandle,
-  element: HTMLElement,
+  nodeRect: NodeAndParentData,
   size: Dimensions,
   newSize: Dimensions,
 ) => boolean;
 
 export type CalculateElementSize = (
-  element: HTMLElement,
+  nodeRect: NodeAndParentData,
   percentageSize: Dimensions,
   limits: [number, number],
 ) => Dimensions;
@@ -34,7 +51,7 @@ export type CalculateElementSize = (
 export type OnResize = (event: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => void;
 
 export type CalculatePercentageSize = (
-  element: HTMLElement,
+  nodeRect: NodeAndParentData,
   newWidth: number,
   newHeight: number,
 ) => Dimensions;

@@ -1,0 +1,64 @@
+@use 'variables';
+@use 'sass:map';
+
+.search-bar {
+  background-color: #B9B9B9;
+  background-image: url("/icons/magnifier.svg");
+  background-repeat: no-repeat;
+  padding: 0.05rem 0.5rem 0.05rem 2.3rem;
+  background-size: 1.3rem;
+  background-position: 0.4rem center;
+  color: black;
+
+  :hover {
+    background-color: #CDCDCD;
+  }
+
+  :focus, :active {
+    background-color: white;
+    outline: none;
+  }
+
+  ::placeholder {
+    color: #434343;
+    opacity: 1;
+  }
+}
+
+.turn-off-button {
+  min-width: 24px;
+
+  img {
+    filter: map.get(variables.$filter, 'ffffff');;
+  }
+
+  :hover {
+    cursor: pointer;
+
+    img {
+      filter: map.get(variables.$filter, 'ffb5b5');;
+    }
+  }
+
+  :active {
+    cursor: pointer;
+
+    img {
+      filter: map.get(variables.$filter, 'ff5757');;
+    }
+  }
+
+  :focus-visible {
+    border-radius: 9999px;
+    outline: 0.15rem white dashed;
+
+    img {
+      filter: map.get(variables.$filter, 'ffb5b5');;
+    }
+  }
+}
+
+.task-bar {
+  overflow: hidden;
+  backdrop-filter: blur(3px);
+}
