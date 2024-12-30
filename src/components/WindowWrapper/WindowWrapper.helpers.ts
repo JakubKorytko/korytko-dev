@@ -2,23 +2,12 @@ import {
   CalculateElementSize,
   CalculatePercentageSize,
   CanResize,
-  Dimensions,
   IsOutOfBounds,
   NodeAndParentData,
   NodeData,
   NodeRefStyle,
 } from '@/components/WindowWrapper/WindowWrapper.type';
 import { WindowWrapperState } from '@/components/WindowWrapper/WindowWrapper.state.type';
-
-export const isOutOfAnyBounds = (nodeRect: NodeAndParentData) => {
-  const parent = nodeRect.parent.position;
-  const elem = nodeRect.element.position;
-
-  return elem.left < parent.left
-      || elem.right > parent.right
-      || elem.bottom > parent.bottom
-      || elem.top < parent.top;
-};
 
 const isOutOfBounds: IsOutOfBounds = (nodeRect: NodeAndParentData, direction) => {
   const parent = nodeRect.parent.position;
@@ -83,11 +72,6 @@ export const getNodeAndParentSize = (element: HTMLElement | null): NodeAndParent
   return sizes;
 };
 
-export const areDimensionsEqual = (
-  dim1: Dimensions,
-  dim2: Dimensions,
-) => !(dim1.width !== dim2.width || dim1.height !== dim2.height);
-
 export const canResize: CanResize = (
   handle,
   nodeRect,
@@ -139,42 +123,28 @@ export function getTranslateXY(element: HTMLElement) {
   };
 }
 
-const adjustTranslateWithinX = (nodeRect: NodeAndParentData, x: number) => {
-  const elementRect = nodeRect.element.position;
-  const parentRect = nodeRect.parent.position;
+export const getMaxCenteredTranslate = (nodeRect: NodeAndParentData) => {
+  const maxTranslateX = (nodeRect.parent.size.width - nodeRect.element.size.width) / 2;
+  const maxTranslateY = (nodeRect.parent.size.height - nodeRect.element.size.height) / 2;
 
-  if (elementRect.left < parentRect.left) {
-    return x + Math.abs(parentRect.left - elementRect.left);
-  }
-  if (elementRect.right > parentRect.right) {
-    return x - Math.abs(parentRect.right - elementRect.right);
-  }
-  return x;
-};
-
-const adjustTranslateWithinY = (nodeRect: NodeAndParentData, y: number) => {
-  const elementRect = nodeRect.element.position;
-  const parentRect = nodeRect.parent.position;
-
-  if (elementRect.top < parentRect.top) {
-    return y + Math.abs(parentRect.top - elementRect.top);
-  }
-  if (elementRect.bottom > parentRect.bottom) {
-    return y - Math.abs(parentRect.bottom - elementRect.bottom);
-  }
-  return y;
+  return {
+    maxTranslateX,
+    maxTranslateY,
+  };
 };
 
 export const adjustTranslateWithinBounds = (
   nodeRect: NodeAndParentData,
   translate: { x: number, y: number },
 ) => {
-  const { x: currentX, y: currentY } = translate;
+  const { x, y } = translate;
 
-  const x = adjustTranslateWithinX(nodeRect, currentX);
-  const y = adjustTranslateWithinY(nodeRect, currentY);
+  const { maxTranslateX, maxTranslateY } = getMaxCenteredTranslate(nodeRect);
 
-  return `translate(${x}px,${y}px)`;
+  const translateX = x >= 0 ? Math.min(x, maxTranslateX) : Math.max(x, -maxTranslateX);
+  const translateY = y >= 0 ? Math.min(y, maxTranslateY) : Math.max(y, -maxTranslateY);
+
+  return { x: translateX, y: translateY };
 };
 
 export const nodeRefStyle = (

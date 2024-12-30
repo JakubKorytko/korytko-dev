@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
+import { DraggableData } from 'react-draggable';
 import {
   adjustTranslateWithinBounds,
   calculatePercentageSize,
   getNodeAndParentSize, getTranslateXY,
-  isOutOfAnyBounds,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
 import { Action, WindowWrapperActions, WindowWrapperState } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import { initialState, reducer } from '@/components/WindowWrapper/WindowWrapper.state';
@@ -33,16 +33,21 @@ WindowWrapperEffectProps): [WindowWrapperState, React.Dispatch<Action>] {
           if (fullscreen) target.style.transform = 'translate(0px, 0px)';
           else target.style.transform = state.storedData.translate;
           setFullScreenSwitched(false);
-        } else {
+        } else if (!fullscreen && state.storedData.draggableData) {
           const rect = getNodeAndParentSize(target);
-          if (isOutOfAnyBounds(rect)) {
-            const translate = getTranslateXY(target);
-            target.style.transform = adjustTranslateWithinBounds(rect, translate);
-          }
+          const translate = getTranslateXY(target);
+          const { x, y } = adjustTranslateWithinBounds(rect, translate);
+          const draggableData: DraggableData = { ...state.storedData.draggableData, x, y };
+          dispatch({
+            type: WindowWrapperActions.SET_DRAGGABLE_DATA,
+            payload: draggableData,
+          });
         }
       });
     });
-  }, [handleResize, fullscreen, fullscreenSwitched, state.storedData.translate]);
+  }, [handleResize, fullscreenSwitched,
+    fullscreen, state.storedData.translate,
+    state.storedData.draggableData]);
 
   useEffect(() => {
     if (nodeRef.current) {

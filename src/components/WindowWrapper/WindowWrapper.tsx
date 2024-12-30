@@ -1,16 +1,12 @@
 import './WindowWrapper.scss';
-import React, {
-  memo,
-} from 'react';
-import Draggable from 'react-draggable';
+import React, { memo } from 'react';
+import Draggable, { DraggableEventHandler } from 'react-draggable';
 import { Resizable } from 'react-resizable';
-import {
-  OnResize,
-  WindowWrapperProps,
-} from '@/components/WindowWrapper/WindowWrapper.type';
+import { OnResize, WindowWrapperProps } from '@/components/WindowWrapper/WindowWrapper.type';
 import {
   calculatePercentageSize,
-  canResize, getNodeAndParentSize,
+  canResize,
+  getNodeAndParentSize,
   nodeRefStyle,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
 import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
@@ -48,8 +44,24 @@ function WindowWrapper(props: WindowWrapperProps) {
     }
   };
 
+  const onDrag: DraggableEventHandler = (_, draggableData) => {
+    dispatch({
+      type: WindowWrapperActions.SET_DRAGGABLE_DATA,
+      payload: draggableData,
+    });
+  };
+
   return (
-    <Draggable nodeRef={nodeRef} bounds="parent" handle={handler}>
+    <Draggable
+      nodeRef={nodeRef}
+      bounds="parent"
+      handle={handler}
+      onDrag={onDrag}
+      position={{
+        x: state.storedData.draggableData?.x || 0,
+        y: state.storedData.draggableData?.y || 0,
+      }}
+    >
       <Resizable
         axis="both"
         resizeHandles={['n', 'w', 'e', 's']}

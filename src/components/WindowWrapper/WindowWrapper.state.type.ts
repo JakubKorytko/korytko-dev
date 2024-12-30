@@ -1,3 +1,4 @@
+import { DraggableData } from 'react-draggable';
 import { Dimensions, NodeAndParentData } from '@/components/WindowWrapper/WindowWrapper.type';
 
 export enum WindowWrapperActions {
@@ -5,6 +6,7 @@ export enum WindowWrapperActions {
   TURN_OFF_FULLSCREEN,
   SET_NODE_SIZE,
   CONVERT_PERCENTAGE_SIZE,
+  SET_DRAGGABLE_DATA,
   SET_SIZE,
   SET_STORED_PERCENTAGES,
   SET_TRANSLATE,
@@ -50,6 +52,10 @@ export type SetLoading = {
   type: WindowWrapperActions.SET_LOADING;
   payload: boolean
 };
+export type SetDraggableData = {
+  type: WindowWrapperActions.SET_DRAGGABLE_DATA;
+  payload: DraggableData
+};
 
 export interface WindowWrapperState {
   loading: boolean,
@@ -60,6 +66,7 @@ export interface WindowWrapperState {
     minHeight: number,
   },
   storedData: {
+    draggableData: DraggableData | undefined,
     translate: string,
     percentageSize: {
       width: number,
@@ -74,6 +81,7 @@ export type Action =
     | TurnOffFullscreen
     | SetNodeSize
     | SetSize
+    | SetDraggableData
     | SetStoredPercentages
     | ConvertPercentageSize
     | SetTranslate
