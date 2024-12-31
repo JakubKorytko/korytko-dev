@@ -1,14 +1,12 @@
 import { Action, WindowWrapperActions, WindowWrapperState } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import {
   convertPercentageSize,
-  setNodeSize,
   setSize,
   turnOffFullscreen,
   turnOnFullscreen,
 } from '@/components/WindowWrapper/WindowWrapper.state.helpers';
 
 export const initialState: WindowWrapperState = {
-  loading: true,
   size: {
     width: 0,
     height: 0,
@@ -25,45 +23,18 @@ export const initialState: WindowWrapperState = {
     },
   },
   fullscreen: false,
+  loading: true,
 };
 
 export function reducer(state: WindowWrapperState, action: Action) {
   switch (action.type) {
-    case WindowWrapperActions.TURN_ON_FULLSCREEN:
-      return turnOnFullscreen(state, action);
-    case WindowWrapperActions.TURN_OFF_FULLSCREEN:
+    case WindowWrapperActions.SWITCH_FULLSCREEN:
+      if (action.payload.enabled) return turnOnFullscreen(state, action);
       return turnOffFullscreen(state, action);
-    case WindowWrapperActions.SET_NODE_SIZE:
-      return setNodeSize(state, action);
     case WindowWrapperActions.CONVERT_PERCENTAGE_SIZE:
       return convertPercentageSize(state, action);
     case WindowWrapperActions.SET_SIZE:
       return setSize(state, action);
-    case WindowWrapperActions.SET_STORED_PERCENTAGES:
-      if (state.fullscreen) return state;
-      return {
-        ...state,
-        storedData: {
-          ...state.storedData,
-          percentageSize: action.payload,
-        },
-      };
-    case WindowWrapperActions.SET_DRAGGABLE_DATA:
-      return {
-        ...state,
-        storedData: {
-          ...state.storedData,
-          percentageSize:
-            {
-              ...state.storedData.percentageSize,
-              translateX: action.payload.translatePercentageSize.translateX,
-              translateY: action.payload.translatePercentageSize.translateY,
-            },
-          draggableData: action.payload.draggableData,
-        },
-      };
-    case WindowWrapperActions.SET_TRANSLATE:
-      return { ...state, storedTranslate: action.payload };
     case WindowWrapperActions.SET_LOADING:
       return { ...state, loading: action.payload };
     default:

@@ -6,7 +6,8 @@ import { OnResize, WindowWrapperProps } from '@/components/WindowWrapper/WindowW
 import {
   calculatePercentageSize,
   canResize,
-  getNodeAndParentSize, getTranslateXY,
+  getNodeAndParentSize,
+  getTranslateXY,
   nodeRefStyle,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
 import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
@@ -36,12 +37,13 @@ function WindowWrapper(props: WindowWrapperProps) {
 
     if (canResize(handle, nodeRect, { width: state.size.width, height: state.size.height }, size)) {
       dispatch({
-        type: WindowWrapperActions.SET_STORED_PERCENTAGES,
-        payload: calculatePercentageSize(nodeRect, translate, size.width, size.height),
-      });
-      dispatch({
         type: WindowWrapperActions.SET_SIZE,
-        payload: { width: size.width, height: size.height, nodeRect },
+        payload: {
+          width: size.width,
+          height: size.height,
+          nodeRect,
+          percentageSize: calculatePercentageSize(nodeRect, translate, size.width, size.height),
+        },
       });
     }
   };
@@ -55,8 +57,12 @@ function WindowWrapper(props: WindowWrapperProps) {
     const percentageSize = calculateTranslatePercentageSize(nodeRect, translate);
 
     dispatch({
-      type: WindowWrapperActions.SET_DRAGGABLE_DATA,
-      payload: { draggableData, translatePercentageSize: percentageSize },
+      type: WindowWrapperActions.SET_SIZE,
+      payload: {
+        nodeRect,
+        translatePercentageSize: percentageSize,
+        draggableData,
+      },
     });
   };
 

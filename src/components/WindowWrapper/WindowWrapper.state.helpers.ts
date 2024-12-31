@@ -1,8 +1,6 @@
 import {
   ConvertPercentageSize,
-  SetNodeSize, SetSize,
-  TurnOffFullscreen,
-  TurnOnFullscreen,
+  SetSize, SwitchFullscreen,
   WindowWrapperState,
 } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import {
@@ -34,7 +32,7 @@ export const convertTranslatePercentageSize = (
   return adjustTranslateWithinBounds(nodeRect, calculatedSize);
 };
 
-export const turnOnFullscreen = (state: WindowWrapperState, action: TurnOnFullscreen) => {
+export const turnOnFullscreen = (state: WindowWrapperState, action: SwitchFullscreen) => {
   const storedData = { ...state.storedData };
   const size = { ...state.size };
 
@@ -63,7 +61,7 @@ export const turnOnFullscreen = (state: WindowWrapperState, action: TurnOnFullsc
   };
 };
 
-export const turnOffFullscreen = (state: WindowWrapperState, action: TurnOffFullscreen) => {
+export const turnOffFullscreen = (state: WindowWrapperState, action: SwitchFullscreen) => {
   const percentageSize = { ...state.storedData.percentageSize };
   const size = { ...state.size };
   const storedData = { ...state.storedData };
@@ -91,15 +89,6 @@ export const turnOffFullscreen = (state: WindowWrapperState, action: TurnOffFull
   return {
     ...state, size, fullscreen: false,
   };
-};
-
-export const setNodeSize = (state: WindowWrapperState, action: SetNodeSize) => {
-  const refDim = {
-    width: action.payload.nodeRect.element.size.width,
-    height: action.payload.nodeRect.element.size.height,
-  };
-
-  return { ...state, size: { ...state.size, width: refDim.width, height: refDim.height } };
 };
 
 export const convertPercentageSize = (state: WindowWrapperState, action: ConvertPercentageSize) => {
@@ -130,14 +119,31 @@ export const convertPercentageSize = (state: WindowWrapperState, action: Convert
 };
 
 export const setSize = (state: WindowWrapperState, action: SetSize) => {
-  const newSize = {
-    ...state.size,
-    width: action.payload.width ? action.payload.width : state.size.width,
-    height: action.payload.height ? action.payload.height : state.size.height,
-    minWidth: action.payload.minWidth ? action.payload.minWidth : state.size.minWidth,
-    minHeight: action.payload.minHeight ? action.payload.minHeight : state.size.minHeight,
+  const newState: WindowWrapperState = {
+    ...state,
+    size: {
+      ...state.size,
+      width: action.payload.width ?? state.size.width,
+      height: action.payload.height ?? state.size.height,
+      minWidth: action.payload.minWidth ?? state.size.minWidth,
+      minHeight: action.payload.minHeight ?? state.size.minHeight,
+    },
+    storedData: {
+      ...state.storedData,
+      percentageSize: { ...(action.payload.percentageSize ?? state.storedData.percentageSize) },
+      draggableData: action.payload.draggableData ?? state.storedData.draggableData,
+    },
   };
-  return {
-    ...state, size: { ...newSize },
-  };
+
+  if (action.payload.translatePercentageSize) {
+    newState.storedData.percentageSize = {
+      ...newState.storedData.percentageSize,
+      translateX: action.payload.translatePercentageSize.translateX
+          ?? newState.storedData.percentageSize.translateX,
+      translateY: action.payload.translatePercentageSize.translateY
+          ?? newState.storedData.percentageSize.translateY,
+    };
+  }
+
+  return newState;
 };

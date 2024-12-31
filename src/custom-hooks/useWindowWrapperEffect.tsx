@@ -39,8 +39,12 @@ WindowWrapperEffectProps): [WindowWrapperState, React.Dispatch<Action>] {
           };
           const draggableData: DraggableData = { ...state.storedData.draggableData, x, y };
           dispatch({
-            type: WindowWrapperActions.SET_DRAGGABLE_DATA,
-            payload: { draggableData, translatePercentageSize },
+            type: WindowWrapperActions.SET_SIZE,
+            payload: {
+              nodeRect: rect,
+              translatePercentageSize,
+              draggableData,
+            },
           });
         }
       });
@@ -55,17 +59,10 @@ WindowWrapperEffectProps): [WindowWrapperState, React.Dispatch<Action>] {
       const translate = getTranslateXY(nodeRef.current);
 
       if (fullscreenSwitched) {
-        if (fullscreen) {
-          dispatch({
-            type: WindowWrapperActions.TURN_ON_FULLSCREEN,
-            payload: { nodeRect, translate },
-          });
-        } else if (!fullscreen) {
-          dispatch({
-            type: WindowWrapperActions.TURN_OFF_FULLSCREEN,
-            payload: { nodeRect, translate },
-          });
-        }
+        dispatch({
+          type: WindowWrapperActions.SWITCH_FULLSCREEN,
+          payload: { enabled: fullscreen, nodeRect, translate },
+        });
       }
     }
   }, [fullscreen, fullscreenSwitched, nodeRef]);
@@ -83,7 +80,9 @@ WindowWrapperEffectProps): [WindowWrapperState, React.Dispatch<Action>] {
 
   useEffect(() => {
     if (!nodeRef.current) return;
+
     const nodeRect = getNodeAndParentSize(nodeRef.current);
+
     dispatch({
       type: WindowWrapperActions.SET_SIZE,
       payload: {
@@ -122,12 +121,11 @@ WindowWrapperEffectProps): [WindowWrapperState, React.Dispatch<Action>] {
       );
 
       dispatch({
-        type: WindowWrapperActions.SET_STORED_PERCENTAGES,
-        payload: newPercentageSize,
-      });
-      dispatch({
-        type: WindowWrapperActions.SET_NODE_SIZE,
-        payload: { nodeRect },
+        type: WindowWrapperActions.SET_SIZE,
+        payload: {
+          nodeRect,
+          percentageSize: newPercentageSize,
+        },
       });
     }
 
