@@ -29,41 +29,41 @@ WindowWrapperEffectProps): [WindowWrapperState, React.Dispatch<Action>] {
       const target = entry.target as HTMLElement;
       Promise.all(target.getAnimations().map((animation) => animation.finished)).then(() => {
         handleResize({ width: target.offsetWidth, height: target.offsetHeight });
-        if (fullscreenSwitched) {
-          if (fullscreen) target.style.transform = 'translate(0px, 0px)';
-          else target.style.transform = state.storedData.translate;
-          setFullScreenSwitched(false);
-        } else if (!fullscreen && state.storedData.draggableData) {
+        if (!fullscreenSwitched && !fullscreen && state.storedData.draggableData) {
           const rect = getNodeAndParentSize(target);
           const translate = getTranslateXY(target);
           const { x, y } = adjustTranslateWithinBounds(rect, translate);
+          const translatePercentageSize = {
+            translateX: translate.x / rect.parent.size.width,
+            translateY: translate.y / rect.parent.size.height,
+          };
           const draggableData: DraggableData = { ...state.storedData.draggableData, x, y };
           dispatch({
             type: WindowWrapperActions.SET_DRAGGABLE_DATA,
-            payload: draggableData,
+            payload: { draggableData, translatePercentageSize },
           });
         }
       });
     });
   }, [handleResize, fullscreenSwitched,
-    fullscreen, state.storedData.translate,
+    fullscreen,
     state.storedData.draggableData]);
 
   useEffect(() => {
     if (nodeRef.current) {
       const nodeRect = getNodeAndParentSize(nodeRef.current);
-      const translateStyle = nodeRef.current.style.transform;
+      const translate = getTranslateXY(nodeRef.current);
 
       if (fullscreenSwitched) {
         if (fullscreen) {
           dispatch({
             type: WindowWrapperActions.TURN_ON_FULLSCREEN,
-            payload: { nodeRect, translateStyle },
+            payload: { nodeRect, translate },
           });
         } else if (!fullscreen) {
           dispatch({
             type: WindowWrapperActions.TURN_OFF_FULLSCREEN,
-            payload: { nodeRect },
+            payload: { nodeRect, translate },
           });
         }
       }
@@ -112,11 +112,15 @@ WindowWrapperEffectProps): [WindowWrapperState, React.Dispatch<Action>] {
 
     if (nodeRef.current) {
       const nodeRect = getNodeAndParentSize(nodeRef.current);
+      const translate = getTranslateXY(nodeRef.current);
+
       const newPercentageSize = calculatePercentageSize(
         nodeRect,
+        translate,
         nodeRef.current.clientWidth,
         nodeRef.current.clientHeight,
       );
+
       dispatch({
         type: WindowWrapperActions.SET_STORED_PERCENTAGES,
         payload: newPercentageSize,

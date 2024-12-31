@@ -17,10 +17,11 @@ export const initialState: WindowWrapperState = {
   },
   storedData: {
     draggableData: undefined,
-    translate: '',
     percentageSize: {
       width: 0,
       height: 0,
+      translateX: 0,
+      translateY: 0,
     },
   },
   fullscreen: false,
@@ -40,9 +41,27 @@ export function reducer(state: WindowWrapperState, action: Action) {
       return setSize(state, action);
     case WindowWrapperActions.SET_STORED_PERCENTAGES:
       if (state.fullscreen) return state;
-      return { ...state, storedData: { ...state.storedData, percentageSize: action.payload } };
+      return {
+        ...state,
+        storedData: {
+          ...state.storedData,
+          percentageSize: action.payload,
+        },
+      };
     case WindowWrapperActions.SET_DRAGGABLE_DATA:
-      return { ...state, storedData: { ...state.storedData, draggableData: action.payload } };
+      return {
+        ...state,
+        storedData: {
+          ...state.storedData,
+          percentageSize:
+            {
+              ...state.storedData.percentageSize,
+              translateX: action.payload.translatePercentageSize.translateX,
+              translateY: action.payload.translatePercentageSize.translateY,
+            },
+          draggableData: action.payload.draggableData,
+        },
+      };
     case WindowWrapperActions.SET_TRANSLATE:
       return { ...state, storedTranslate: action.payload };
     case WindowWrapperActions.SET_LOADING:

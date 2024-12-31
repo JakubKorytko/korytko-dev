@@ -101,16 +101,23 @@ export const calculateElementSize: CalculateElementSize = (
 
 export const calculatePercentageSize: CalculatePercentageSize = (
   nodeRect: NodeAndParentData,
+  translate,
   newWidth,
   newHeight,
 ) => {
   const parentSize = nodeRect.parent.size;
 
-  if (parentSize.width === 0 || parentSize.height === 0) return { width: 1, height: 1 };
+  if (parentSize.width === 0 || parentSize.height === 0) {
+    return {
+      width: 1, height: 1, translateX: 0, translateY: 0,
+    };
+  }
 
   return {
     width: newWidth / parentSize.width,
     height: newHeight / parentSize.height,
+    translateX: translate.x / parentSize.width,
+    translateY: translate.y / parentSize.height,
   };
 };
 

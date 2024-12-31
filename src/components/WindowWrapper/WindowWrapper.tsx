@@ -6,11 +6,12 @@ import { OnResize, WindowWrapperProps } from '@/components/WindowWrapper/WindowW
 import {
   calculatePercentageSize,
   canResize,
-  getNodeAndParentSize,
+  getNodeAndParentSize, getTranslateXY,
   nodeRefStyle,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
 import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import useWindowWrapperEffect from '@/custom-hooks/useWindowWrapperEffect';
+import { calculateTranslatePercentageSize } from '@/components/WindowWrapper/WindowWrapper.state.helpers';
 
 function WindowWrapper(props: WindowWrapperProps) {
   const nodeRef = React.useRef<HTMLDialogElement | null>(null);
@@ -31,11 +32,12 @@ function WindowWrapper(props: WindowWrapperProps) {
     if (!dialog || state.fullscreen) return;
 
     const nodeRect = getNodeAndParentSize(dialog);
+    const translate = getTranslateXY(dialog);
 
     if (canResize(handle, nodeRect, { width: state.size.width, height: state.size.height }, size)) {
       dispatch({
         type: WindowWrapperActions.SET_STORED_PERCENTAGES,
-        payload: calculatePercentageSize(nodeRect, size.width, size.height),
+        payload: calculatePercentageSize(nodeRect, translate, size.width, size.height),
       });
       dispatch({
         type: WindowWrapperActions.SET_SIZE,
@@ -45,9 +47,16 @@ function WindowWrapper(props: WindowWrapperProps) {
   };
 
   const onDrag: DraggableEventHandler = (_, draggableData) => {
+    if (!nodeRef.current) return;
+
+    const nodeRect = getNodeAndParentSize(nodeRef.current);
+    const translate = getTranslateXY(nodeRef.current);
+
+    const percentageSize = calculateTranslatePercentageSize(nodeRect, translate);
+
     dispatch({
       type: WindowWrapperActions.SET_DRAGGABLE_DATA,
-      payload: draggableData,
+      payload: { draggableData, translatePercentageSize: percentageSize },
     });
   };
 

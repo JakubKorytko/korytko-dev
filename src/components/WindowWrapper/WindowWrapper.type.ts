@@ -52,9 +52,10 @@ export type OnResize = (event: SyntheticEvent, { node, size, handle }: ResizeCal
 
 export type CalculatePercentageSize = (
   nodeRect: NodeAndParentData,
+  translate: { x: number, y: number },
   newWidth: number,
   newHeight: number,
-) => Dimensions;
+) => Dimensions & { translateX: number, translateY: number };
 
 export type NodeRefStyle = {
   width: string,

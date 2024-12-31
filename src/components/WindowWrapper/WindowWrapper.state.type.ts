@@ -15,13 +15,23 @@ export enum WindowWrapperActions {
 
 export type TurnOnFullscreen = {
   type: WindowWrapperActions.TURN_ON_FULLSCREEN;
-  payload: { nodeRect: NodeAndParentData,
-    translateStyle: string
+  payload: {
+    nodeRect: NodeAndParentData,
+    translate: {
+      x: number,
+      y: number,
+    }
   }
 };
 export type TurnOffFullscreen = {
   type: WindowWrapperActions.TURN_OFF_FULLSCREEN;
-  payload: { nodeRect: NodeAndParentData }
+  payload: {
+    nodeRect: NodeAndParentData,
+    translate: {
+      x: number,
+      y: number
+    }
+  }
 };
 export type SetNodeSize = {
   type: WindowWrapperActions.SET_NODE_SIZE;
@@ -42,11 +52,14 @@ export type SetSize = {
 };
 export type SetStoredPercentages = {
   type: WindowWrapperActions.SET_STORED_PERCENTAGES;
-  payload: Dimensions
+  payload: Dimensions & { translateX: number, translateY: number };
 };
 export type SetTranslate = {
   type: WindowWrapperActions.SET_TRANSLATE;
-  payload: string
+  payload: {
+    x: number,
+    y: number,
+  }
 };
 export type SetLoading = {
   type: WindowWrapperActions.SET_LOADING;
@@ -54,7 +67,9 @@ export type SetLoading = {
 };
 export type SetDraggableData = {
   type: WindowWrapperActions.SET_DRAGGABLE_DATA;
-  payload: DraggableData
+  payload: {
+    draggableData: DraggableData,
+    translatePercentageSize: { translateX: number, translateY: number } }
 };
 
 export interface WindowWrapperState {
@@ -67,10 +82,11 @@ export interface WindowWrapperState {
   },
   storedData: {
     draggableData: DraggableData | undefined,
-    translate: string,
     percentageSize: {
       width: number,
       height: number,
+      translateX: number,
+      translateY: number,
     },
   },
   fullscreen: boolean,
