@@ -2,7 +2,6 @@ import { Action, WindowWrapperActions, WindowWrapperState } from '@/components/W
 import {
   convertPercentageSize,
   setSize,
-  turnOffFullscreen,
   turnOnFullscreen,
 } from '@/components/WindowWrapper/WindowWrapper.state.helpers';
 
@@ -33,7 +32,7 @@ export function reducer(state: WindowWrapperState, action: Action) {
   switch (action.type) {
     case WindowWrapperActions.SWITCH_FULLSCREEN:
       if (action.payload.enabled) return turnOnFullscreen(state, action);
-      return turnOffFullscreen(state, action);
+      return convertPercentageSize(state, action, false);
     case WindowWrapperActions.CONVERT_PERCENTAGE_SIZE:
       return convertPercentageSize(state, action);
     case WindowWrapperActions.SET_SIZE:

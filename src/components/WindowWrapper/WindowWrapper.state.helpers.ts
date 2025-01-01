@@ -2,7 +2,6 @@ import {
   IConvertPercentageSize,
   IConvertTranslatePercentageSize,
   ISetSize,
-  ITurnOffFullscreen,
   ITurnOnFullscreen,
 } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import {
@@ -63,41 +62,14 @@ export const turnOnFullscreen: ITurnOnFullscreen = (
   };
 };
 
-export const turnOffFullscreen: ITurnOffFullscreen = (
-  state,
-  action,
-) => {
-  const { size } = state;
-  const newNodeRect = { ...action.payload.nodeRect };
-
-  const newSize = calculateElementSize(
-    newNodeRect,
-    size.relativeToParent,
-    [size.min.width, size.min.height],
-  );
-
-  const translateSize = convertTranslatePercentageSize(newNodeRect, size, newSize);
-
-  return {
-    ...state,
-    size: {
-      ...size,
-      ...newSize,
-      translate: {
-        ...size.translate,
-        ...translateSize,
-      },
-    },
-    fullscreen: false,
-  };
-};
-
 export const convertPercentageSize: IConvertPercentageSize = (
   state,
   action,
+  setFullscreen,
 ) => {
+  const { size } = state;
   const newNodeRect = { ...action.payload.nodeRect };
-  const { size, fullscreen } = state;
+  const fullscreen = setFullscreen ?? state.fullscreen;
 
   const newSize = fullscreen ? newNodeRect.parent.size : calculateElementSize(
     newNodeRect,
@@ -117,6 +89,7 @@ export const convertPercentageSize: IConvertPercentageSize = (
         ...translateSize,
       },
     },
+    fullscreen,
   };
 };
 

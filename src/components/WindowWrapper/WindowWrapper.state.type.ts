@@ -73,14 +73,10 @@ export type IConvertTranslatePercentageSize = (
   newSize: Dimensions,
 ) => Position;
 
-export type ITurnOffFullscreen = (
-  state: WindowWrapperState,
-  action: SwitchFullscreen,
-) => WindowWrapperState;
-
 export type IConvertPercentageSize = (
   state: WindowWrapperState,
-  action: ConvertPercentageSize,
+  action: ConvertPercentageSize | SwitchFullscreen,
+  fullscreen?: boolean
 ) => WindowWrapperState;
 
 export type ISetSize = (state: WindowWrapperState, action: SetSize) => WindowWrapperState;
