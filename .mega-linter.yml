@@ -35,7 +35,8 @@ REPOSITORY_TRUFFLEHOG_ARGUMENTS: --exclude-paths=linters/exclude.txt
 REPOSITORY_KICS_RULES_PATH: ./linters
 REPOSITORY_KICS_CONFIG_FILE: .kics.config.json
 ADDITIONAL_EXCLUDED_DIRECTORIES:
-  # Excluded because some linters do not respect gitignored directories and running mega-linter locally can be really slow and cause false positives
+  # Excluded because some linters do not respect gitignored directories
+  # and running mega-linter locally can be really slow and cause false positives
   - node_modules
   - .next
   - .idea

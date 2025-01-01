@@ -2,6 +2,8 @@ import React, { SyntheticEvent } from 'react';
 import { ResizeCallbackData, ResizeHandle } from 'react-resizable';
 
 export type Dimensions = { width: number; height: number };
+export type Position = { x: number; y: number };
+export type LastPosition = { lastX: number; lastY: number };
 
 export interface WindowWrapperProps {
   onResize: (size: Dimensions) => void;
@@ -15,11 +17,11 @@ export interface WindowWrapperProps {
   handle?: string
 }
 
+interface TranslateData extends Position, LastPosition {}
+
 export interface NodeData {
-  size: {
-    width: number;
-    height: number;
-  },
+  size: Dimensions,
+  translate: TranslateData
   position: {
     top: number,
     left: number,
@@ -30,7 +32,7 @@ export interface NodeData {
 
 export interface NodeAndParentData {
   element: NodeData,
-  parent: NodeData
+  parent: Omit<NodeData, 'translate'>
 }
 
 export type IsOutOfBounds = (nodeRect: NodeAndParentData, direction: 'x' | 'y') => boolean;
@@ -52,14 +54,22 @@ export type OnResize = (event: SyntheticEvent, { node, size, handle }: ResizeCal
 
 export type CalculatePercentageSize = (
   nodeRect: NodeAndParentData,
-  translate: { x: number, y: number },
+  translate: Position,
   newWidth: number,
   newHeight: number,
-) => Dimensions & { translateX: number, translateY: number };
+) => {
+  relativeToParent: Dimensions,
+  translate: LastPosition,
+};
 
-export type NodeRefStyle = {
-  width: string,
-  height: string,
+export type NodeRefStyle = { [Key in keyof Dimensions]: string } & {
   visibility: 'hidden' | 'visible',
   borderRadius: string | undefined
 };
+
+export type GetNodeData = (element: HTMLElement | null) => NodeAndParentData;
+
+export type AdjustTranslateWithinBounds = (
+  nodeRect: NodeAndParentData,
+  translate: Position,
+) => Position;

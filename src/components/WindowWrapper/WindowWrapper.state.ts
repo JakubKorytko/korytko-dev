@@ -10,16 +10,19 @@ export const initialState: WindowWrapperState = {
   size: {
     width: 0,
     height: 0,
-    minWidth: 0,
-    minHeight: 0,
-  },
-  storedData: {
-    draggableData: undefined,
-    percentageSize: {
+    min: {
       width: 0,
       height: 0,
-      translateX: 0,
-      translateY: 0,
+    },
+    relativeToParent: {
+      width: 0,
+      height: 0,
+    },
+    translate: {
+      x: 0,
+      y: 0,
+      lastX: 0,
+      lastY: 0,
     },
   },
   fullscreen: false,

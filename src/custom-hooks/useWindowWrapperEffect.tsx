@@ -1,21 +1,18 @@
-import React, { useCallback, useEffect, useReducer } from 'react';
-import { DraggableData } from 'react-draggable';
+import { useCallback, useEffect, useReducer } from 'react';
 import {
   adjustTranslateWithinBounds,
   calculatePercentageSize,
-  getNodeAndParentSize, getTranslateXY,
+  getNodeData,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
-import { Action, WindowWrapperActions, WindowWrapperState } from '@/components/WindowWrapper/WindowWrapper.state.type';
+import {
+  WindowWrapperActions,
+  UseWindowWrapperEffectReturn,
+  WindowWrapperEffectProps,
+} from '@/components/WindowWrapper/WindowWrapper.state.type';
 import { initialState, reducer } from '@/components/WindowWrapper/WindowWrapper.state';
-import { WindowWrapperProps } from '@/components/WindowWrapper/WindowWrapper.type';
 
-type WindowWrapperEffectProps = Partial<WindowWrapperProps> &
-{ nodeRef: React.MutableRefObject<HTMLDialogElement | null> };
-
-function useWindowWrapperEffect(props:
-WindowWrapperEffectProps): [WindowWrapperState, React.Dispatch<Action>] {
+function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapperEffectReturn {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const [fullscreenSwitched, setFullScreenSwitched] = React.useState(false);
 
   const {
     minConstraints = [15, 15],
@@ -24,112 +21,107 @@ WindowWrapperEffectProps): [WindowWrapperState, React.Dispatch<Action>] {
     nodeRef,
   } = props;
 
-  const resizeObserverCallback: ResizeObserverCallback = useCallback((entries) => {
-    entries.forEach((entry) => {
-      const target = entry.target as HTMLElement;
-      Promise.all(target.getAnimations().map((animation) => animation.finished)).then(() => {
-        handleResize({ width: target.offsetWidth, height: target.offsetHeight });
-        if (!fullscreenSwitched && !fullscreen && state.storedData.draggableData) {
-          const rect = getNodeAndParentSize(target);
-          const translate = getTranslateXY(target);
-          const { x, y } = adjustTranslateWithinBounds(rect, translate);
-          const translatePercentageSize = {
-            translateX: translate.x / rect.parent.size.width,
-            translateY: translate.y / rect.parent.size.height,
-          };
-          const draggableData: DraggableData = { ...state.storedData.draggableData, x, y };
-          dispatch({
-            type: WindowWrapperActions.SET_SIZE,
-            payload: {
-              nodeRect: rect,
-              translatePercentageSize,
-              draggableData,
-            },
-          });
-        }
-      });
-    });
-  }, [handleResize, fullscreenSwitched,
-    fullscreen,
-    state.storedData.draggableData]);
+  const updateSizeAndTranslate = useCallback(
+    (target: HTMLElement) => {
+      handleResize({ width: target.offsetWidth, height: target.offsetHeight });
+      const nodeData = getNodeData(target);
 
-  useEffect(() => {
-    if (nodeRef.current) {
-      const nodeRect = getNodeAndParentSize(nodeRef.current);
-      const translate = getTranslateXY(nodeRef.current);
+      if (!state.fullscreen) {
+        const { translate } = nodeData.element;
+        const { x, y } = adjustTranslateWithinBounds(nodeData, translate);
 
-      if (fullscreenSwitched) {
         dispatch({
-          type: WindowWrapperActions.SWITCH_FULLSCREEN,
-          payload: { enabled: fullscreen, nodeRect, translate },
+          type: WindowWrapperActions.SET_SIZE,
+          payload: {
+            translateLast: {
+              lastX: translate.x / nodeData.parent.size.width,
+              lastY: translate.y / nodeData.parent.size.height,
+            },
+            translate: { x, y },
+          },
         });
       }
-    }
-  }, [fullscreen, fullscreenSwitched, nodeRef]);
+    },
+    [handleResize, state.fullscreen],
+  );
+
+  const resizeObserverCallback: ResizeObserverCallback = useCallback(
+    (entries) => {
+      entries.forEach((entry) => {
+        const target = entry.target as HTMLElement;
+        Promise.all(target.getAnimations().map((animation) => animation.finished)).then(() => {
+          updateSizeAndTranslate(target);
+        });
+      });
+    },
+    [updateSizeAndTranslate],
+  );
 
   useEffect(() => {
-    setFullScreenSwitched(true);
-  }, [fullscreen]);
+    const nodeRect = getNodeData(nodeRef.current);
+    const { translate } = nodeRect.element;
+
+    dispatch({
+      type: WindowWrapperActions.SWITCH_FULLSCREEN,
+      payload: { enabled: fullscreen, nodeRect, translate },
+    });
+  }, [fullscreen, nodeRef]);
 
   useEffect(() => {
     const node = nodeRef.current;
     const resizeObserver = new ResizeObserver(resizeObserverCallback);
+
     if (node) resizeObserver.observe(node);
-    return () => { if (node) resizeObserver.unobserve(node); };
+    return () => {
+      if (node) resizeObserver.unobserve(node);
+    };
   }, [resizeObserverCallback, nodeRef]);
 
   useEffect(() => {
-    if (!nodeRef.current) return;
+    dispatch({
+      type: WindowWrapperActions.SET_SIZE,
+      payload: {
+        min: {
+          width: minConstraints[0],
+          height: minConstraints[1],
+        },
+      },
+    });
+  }, [minConstraints]);
 
-    const nodeRect = getNodeAndParentSize(nodeRef.current);
+  useEffect(() => {
+    const nodeRect = getNodeData(nodeRef.current);
+    const { translate } = nodeRect.element;
+
+    const { translate: translateLast, relativeToParent } = calculatePercentageSize(
+      nodeRect,
+      translate,
+      nodeRect.element.size.width,
+      nodeRect.element.size.height,
+    );
 
     dispatch({
       type: WindowWrapperActions.SET_SIZE,
       payload: {
-        nodeRect,
-        minWidth: minConstraints[0],
-        minHeight: minConstraints[1],
+        translateLast,
+        relativeToParent,
       },
     });
-  }, [minConstraints, nodeRef]);
-
-  useEffect(() => {
-    const convertPercentages = () => {
-      if (!nodeRef.current) return;
-      const nodeRect = getNodeAndParentSize(nodeRef.current);
-      dispatch({
-        type: WindowWrapperActions.CONVERT_PERCENTAGE_SIZE,
-        payload: { nodeRect },
-      });
-    };
-    window.addEventListener('resize', convertPercentages);
 
     dispatch({
       type: WindowWrapperActions.SET_LOADING,
       payload: false,
     });
 
-    if (nodeRef.current) {
-      const nodeRect = getNodeAndParentSize(nodeRef.current);
-      const translate = getTranslateXY(nodeRef.current);
-
-      const newPercentageSize = calculatePercentageSize(
-        nodeRect,
-        translate,
-        nodeRef.current.clientWidth,
-        nodeRef.current.clientHeight,
-      );
-
+    const handleResizeEvent = () => {
       dispatch({
-        type: WindowWrapperActions.SET_SIZE,
-        payload: {
-          nodeRect,
-          percentageSize: newPercentageSize,
-        },
+        type: WindowWrapperActions.CONVERT_PERCENTAGE_SIZE,
+        payload: { nodeRect: getNodeData(nodeRef.current) },
       });
-    }
+    };
 
-    return () => window.removeEventListener('resize', convertPercentages);
+    window.addEventListener('resize', handleResizeEvent);
+    return () => window.removeEventListener('resize', handleResizeEvent);
   }, [nodeRef]);
 
   return [state, dispatch];

@@ -1,15 +1,13 @@
 import {
+  AdjustTranslateWithinBounds,
   CalculateElementSize,
   CalculatePercentageSize,
-  CanResize,
+  CanResize, GetNodeData,
   IsOutOfBounds,
-  NodeAndParentData,
-  NodeData,
-  NodeRefStyle,
 } from '@/components/WindowWrapper/WindowWrapper.type';
-import { WindowWrapperState } from '@/components/WindowWrapper/WindowWrapper.state.type';
+import { INodeRefStyle } from '@/components/WindowWrapper/WindowWrapper.state.type';
 
-const isOutOfBounds: IsOutOfBounds = (nodeRect: NodeAndParentData, direction) => {
+const isOutOfBounds: IsOutOfBounds = (nodeRect, direction) => {
   const parent = nodeRect.parent.position;
   const elem = nodeRect.element.position;
 
@@ -23,155 +21,136 @@ const isOutOfBounds: IsOutOfBounds = (nodeRect: NodeAndParentData, direction) =>
   return direction === 'x' ? bounds.x : bounds.y;
 };
 
-type NumericKeys<T> = {
-  [K in keyof T]: T[K] extends number ? K : never
-}[keyof T];
+export const getNodeData: GetNodeData = (element) => {
+  if (!element) {
+    return {
+      element: {
+        size: { width: 0, height: 0 },
+        position: {
+          top: 0, left: 0, right: 0, bottom: 0,
+        },
+        translate: {
+          x: 0, y: 0, lastX: 0, lastY: 0,
+        },
+      },
+      parent: {
+        size: { width: 0, height: 0 },
+        position: {
+          top: 0, left: 0, right: 0, bottom: 0,
+        },
+      },
+    };
+  }
 
-const filterByKeys = <K extends NumericKeys<DOMRect>>(
-  rect: DOMRect, keys: K[]): { [P in K]: number } => keys.reduce((acc, key) => {
-    acc[key] = rect[key] as number;
-    return acc;
-  }, {} as { [P in K]: number });
+  const style = window.getComputedStyle(element);
+  const { m41: translateX, m42: translateY } = new DOMMatrixReadOnly(style.transform);
+  const {
+    width, height, top, left, right, bottom,
+  } = element.getBoundingClientRect();
 
-export const getNodeAndParentSize = (element: HTMLElement | null): NodeAndParentData => {
-  const sizes: NodeAndParentData = {
+  const parent = element.parentElement;
+  const parentRect = parent
+    ? parent.getBoundingClientRect()
+    : {
+      width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0,
+    };
+
+  return {
     element: {
-      size: { width: 0, height: 0 },
+      size: { width, height },
       position: {
-        top: 0, left: 0, right: 0, bottom: 0,
+        top, left, right, bottom,
+      },
+      translate: {
+        x: translateX,
+        y: translateY,
+        lastX: translateX / parentRect.width,
+        lastY: translateY / parentRect.height,
       },
     },
     parent: {
-      size: { width: 0, height: 0 },
+      size: { width: parentRect.width, height: parentRect.height },
       position: {
-        top: 0, left: 0, right: 0, bottom: 0,
+        top: parentRect.top,
+        left: parentRect.left,
+        right: parentRect.right,
+        bottom: parentRect.bottom,
       },
     },
   };
-
-  if (!element) return sizes;
-
-  const elementClientRect = element.getBoundingClientRect();
-  const elementSize: NodeData['size'] = filterByKeys(elementClientRect, ['width', 'height']);
-  const elementPosition = filterByKeys(elementClientRect, ['top', 'left', 'right', 'bottom']);
-
-  sizes.element.size = elementSize;
-  sizes.element.position = elementPosition;
-
-  const parent = element.parentElement;
-
-  if (!parent) return sizes;
-
-  const parentClientRect = parent.getBoundingClientRect();
-  const parentSize = filterByKeys(parentClientRect, ['width', 'height']);
-  const parentPosition = filterByKeys(parentClientRect, ['top', 'left', 'right', 'bottom']);
-
-  sizes.parent.size = parentSize;
-  sizes.parent.position = parentPosition;
-
-  return sizes;
 };
 
-export const canResize: CanResize = (
-  handle,
-  nodeRect,
-  size,
-  newSize,
-) => {
+export const canResize: CanResize = (handle, nodeRect, size, newSize) => {
   const isWidthHandle = ['e', 'w'].includes(handle);
   const isHeightHandle = ['s', 'n'].includes(handle);
 
-  if (isWidthHandle && newSize.width > size.width && isOutOfBounds(nodeRect, 'x')) return false;
-
-  return !(isHeightHandle && newSize.height > size.height && isOutOfBounds(nodeRect, 'y'));
+  return !(
+    (isWidthHandle && newSize.width > size.width && isOutOfBounds(nodeRect, 'x'))
+      || (isHeightHandle && newSize.height > size.height && isOutOfBounds(nodeRect, 'y'))
+  );
 };
 
-export const calculateElementSize: CalculateElementSize = (
-  nodeRect,
-  percentageSize,
-  limits,
-) => {
-  const parentSize = nodeRect.parent.size;
+export const calculateElementSize: CalculateElementSize = (nodeRect, percentageSize, limits) => {
+  const { width, height } = nodeRect.parent.size;
 
   return {
-    width: Math.max(percentageSize.width * parentSize.width, limits[0]),
-    height: Math.max(percentageSize.height * parentSize.height, limits[1]),
+    width: Math.max(percentageSize.width * width, limits[0]),
+    height: Math.max(percentageSize.height * height, limits[1]),
   };
 };
 
 export const calculatePercentageSize: CalculatePercentageSize = (
-  nodeRect: NodeAndParentData,
+  nodeRect,
   translate,
   newWidth,
   newHeight,
 ) => {
-  const parentSize = nodeRect.parent.size;
+  const { width, height } = nodeRect.parent.size;
 
-  if (parentSize.width === 0 || parentSize.height === 0) {
+  if (width === 0 || height === 0) {
     return {
-      width: 1, height: 1, translateX: 0, translateY: 0,
+      relativeToParent: {
+        width: 1,
+        height: 1,
+      },
+      translate: {
+        lastX: 0,
+        lastY: 0,
+      },
     };
   }
 
   return {
-    width: newWidth / parentSize.width,
-    height: newHeight / parentSize.height,
-    translateX: translate.x / parentSize.width,
-    translateY: translate.y / parentSize.height,
+    relativeToParent: {
+      width: newWidth / width,
+      height: newHeight / height,
+    },
+    translate: {
+      lastX: translate.x / width,
+      lastY: translate.y / height,
+    },
   };
 };
 
-export function getTranslateXY(element: HTMLElement) {
-  const style = window.getComputedStyle(element);
-  const matrix = new DOMMatrixReadOnly(style.transform);
-  return {
-    x: matrix.m41,
-    y: matrix.m42,
-  };
-}
-
-export const getMaxCenteredTranslate = (nodeRect: NodeAndParentData) => {
+export const adjustTranslateWithinBounds: AdjustTranslateWithinBounds = (
+  nodeRect,
+  translate,
+) => {
   const maxTranslateX = (nodeRect.parent.size.width - nodeRect.element.size.width) / 2;
   const maxTranslateY = (nodeRect.parent.size.height - nodeRect.element.size.height) / 2;
 
   return {
-    maxTranslateX,
-    maxTranslateY,
+    x: Math.min(Math.max(translate.x, -maxTranslateX), maxTranslateX),
+    y: Math.min(Math.max(translate.y, -maxTranslateY), maxTranslateY),
   };
 };
 
-export const adjustTranslateWithinBounds = (
-  nodeRect: NodeAndParentData,
-  translate: { x: number, y: number },
-) => {
-  const { x, y } = translate;
-
-  const { maxTranslateX, maxTranslateY } = getMaxCenteredTranslate(nodeRect);
-
-  const translateX = x >= 0 ? Math.min(x, maxTranslateX) : Math.max(x, -maxTranslateX);
-  const translateY = y >= 0 ? Math.min(y, maxTranslateY) : Math.max(y, -maxTranslateY);
-
-  return { x: translateX, y: translateY };
-};
-
-export const nodeRefStyle = (
-  state: WindowWrapperState,
-  initialSize: { width: string, height: string },
-): NodeRefStyle => {
-  const style: Pick<NodeRefStyle, 'visibility' | 'borderRadius'> = {
-    visibility: state.loading ? 'hidden' : 'visible',
-    borderRadius: state.fullscreen ? '0' : undefined,
-  };
-  if (state.fullscreen) {
-    return {
-      width: '100%',
-      height: '100%',
-      ...style,
-    };
-  }
-  return {
-    width: state.size.width === 0 ? initialSize.width : `${state.size.width}px`,
-    height: state.size.height === 0 ? initialSize.height : `${state.size.height}px`,
-    ...style,
-  };
-};
+export const nodeRefStyle: INodeRefStyle = (
+  state,
+  initialSize,
+) => ({
+  visibility: state.loading ? 'hidden' : 'visible',
+  borderRadius: state.fullscreen ? '0' : undefined,
+  width: state.size.width === 0 ? initialSize.width : `${state.size.width}px`,
+  height: state.size.height === 0 ? initialSize.height : `${state.size.height}px`,
+});

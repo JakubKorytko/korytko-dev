@@ -1,5 +1,10 @@
-import { DraggableData } from 'react-draggable';
-import { Dimensions, NodeAndParentData } from '@/components/WindowWrapper/WindowWrapper.type';
+import React from 'react';
+import {
+  Dimensions, LastPosition,
+  NodeAndParentData,
+  NodeRefStyle, Position,
+  WindowWrapperProps,
+} from '@/components/WindowWrapper/WindowWrapper.type';
 
 export enum WindowWrapperActions {
   SWITCH_FULLSCREEN,
@@ -13,10 +18,7 @@ export type SwitchFullscreen = {
   payload: {
     enabled: boolean;
     nodeRect: NodeAndParentData,
-    translate: {
-      x: number,
-      y: number,
-    }
+    translate: Position
   }
 };
 export type ConvertPercentageSize = {
@@ -26,14 +28,11 @@ export type ConvertPercentageSize = {
 export type SetSize = {
   type: WindowWrapperActions.SET_SIZE;
   payload: {
-    nodeRect: NodeAndParentData,
-    width?: number,
-    height?: number,
-    minWidth?: number,
-    minHeight?: number
-    percentageSize?: Dimensions & { translateX: number, translateY: number },
-    draggableData?: DraggableData,
-    translatePercentageSize?: { translateX: number, translateY: number }
+    size?: Dimensions,
+    min?: Dimensions,
+    relativeToParent?: Dimensions,
+    translate?: Position,
+    translateLast?: LastPosition
   }
 };
 export type SetLoading = {
@@ -42,23 +41,13 @@ export type SetLoading = {
 };
 
 export interface WindowWrapperState {
-  loading: boolean,
-  size: {
-    width: number,
-    height: number,
-    minWidth: number,
-    minHeight: number,
-  },
-  storedData: {
-    draggableData: DraggableData | undefined,
-    percentageSize: {
-      width: number,
-      height: number,
-      translateX: number,
-      translateY: number,
-    },
+  size: Dimensions & {
+    min: Dimensions,
+    relativeToParent: Dimensions,
+    translate: Position & LastPosition
   },
   fullscreen: boolean,
+  loading: boolean,
 }
 
 export type Action =
@@ -66,3 +55,37 @@ export type Action =
     | SetSize
     | ConvertPercentageSize
     | SetLoading;
+
+export type WindowWrapperEffectProps = Partial<WindowWrapperProps> & {
+  nodeRef: React.MutableRefObject<HTMLDialogElement | null>;
+};
+
+export type UseWindowWrapperEffectReturn = [WindowWrapperState, React.Dispatch<Action>];
+
+export type ITurnOnFullscreen = (
+  state: WindowWrapperState,
+  action: SwitchFullscreen,
+) => WindowWrapperState;
+
+export type IConvertTranslatePercentageSize = (
+  nodeRect: NodeAndParentData,
+  size: WindowWrapperState['size'],
+  newSize: Dimensions,
+) => Position;
+
+export type ITurnOffFullscreen = (
+  state: WindowWrapperState,
+  action: SwitchFullscreen,
+) => WindowWrapperState;
+
+export type IConvertPercentageSize = (
+  state: WindowWrapperState,
+  action: ConvertPercentageSize,
+) => WindowWrapperState;
+
+export type ISetSize = (state: WindowWrapperState, action: SetSize) => WindowWrapperState;
+
+export type INodeRefStyle = (
+  state: WindowWrapperState,
+  initialSize: { [Key in keyof Dimensions]: string },
+) => NodeRefStyle;
