@@ -1,7 +1,7 @@
 import type { Preview } from '@storybook/react';
 import { Noto_Sans } from 'next/font/google';
 
-import '../styles/main.scss';
+import '../src/styles/main.scss';
 
 const notoSans = Noto_Sans({ subsets: ['latin'] });
 
