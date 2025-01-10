@@ -1,5 +1,6 @@
-import TerminalSVG from '#public/icons/terminal.svg';
 import ConsoleComponent from '@/app/[locale]/ConsoleComponent/ConsoleComponent';
+
+import TerminalSVG from '#public/icons/terminal.svg';
 
 export enum Apps {
   Kodos,

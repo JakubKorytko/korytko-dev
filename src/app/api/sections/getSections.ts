@@ -1,5 +1,6 @@
-import { readLayout } from '@/utils/readData';
 import { Sections } from '@/app/api/sections/getSections.type';
+
+import { readLayout } from '@/utils/readData';
 
 const getSections = (): Sections => {
   const sections = readLayout();

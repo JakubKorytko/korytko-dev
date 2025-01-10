@@ -1,23 +1,19 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
+
+import { ConsoleComponentHeaderLinksProps, HamburgerProps } from '@/app/[locale]/ConsoleComponent/ConsoleComponent.type';
+
+import Conditional from '@/components/Conditional';
+
 import styles from './ConsoleComponent.module.scss';
+
 import closeIcon from '#public/icons/close.svg';
 import hamburgerIcon from '#public/icons/hamburger.svg';
 
-function Conditional(
-  { showWhen, children }:
-  {
-    showWhen: boolean, children: React.JSX.Element | React.JSX.Element[]
-  },
-) {
-  if (showWhen) return children;
-  return null;
-}
-
-function Hamburger(props: { onClick: () => void, showWhen: boolean }) {
+function Hamburger(props: HamburgerProps) {
   const { onClick: toggleMenu, showWhen } = props;
 
   return (
@@ -35,12 +31,9 @@ function Hamburger(props: { onClick: () => void, showWhen: boolean }) {
   );
 }
 
-function ConsoleComponentHeaderLinks(props: {
-  consoleSize: { width: number, height: number },
-  sections: Record<string, string>,
-  menuVisibility: boolean
-}) {
+function ConsoleComponentHeaderLinks(props: ConsoleComponentHeaderLinksProps) {
   const { sections, consoleSize, menuVisibility } = props;
+
   const isMobile = consoleSize.width > 0 && consoleSize.width < 700;
   const displayLinks = consoleSize.width >= 700 || (consoleSize.width > 0 && menuVisibility);
 

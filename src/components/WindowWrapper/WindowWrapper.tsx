@@ -1,15 +1,19 @@
-import './WindowWrapper.scss';
 import React, { memo } from 'react';
 import Draggable, { DraggableEventHandler } from 'react-draggable';
 import { Resizable } from 'react-resizable';
+
+import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import { OnResize, WindowWrapperProps } from '@/components/WindowWrapper/WindowWrapper.type';
+
 import {
   calculatePercentageSize,
   canResize,
   getNodeData,
   nodeRefStyle,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
-import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
+
+import './WindowWrapper.scss';
+
 import useWindowWrapperEffect from '@/custom-hooks/useWindowWrapperEffect';
 
 function WindowWrapper(props: WindowWrapperProps) {
@@ -50,7 +54,7 @@ function WindowWrapper(props: WindowWrapperProps) {
   };
 
   const onDrag: DraggableEventHandler = (_, draggableData) => {
-    const nodeRect = getNodeData(nodeRef.current);
+    const nodeRect = getNodeData(draggableData.node);
     const { x, y } = draggableData;
 
     dispatch({
@@ -68,6 +72,7 @@ function WindowWrapper(props: WindowWrapperProps) {
       bounds="parent"
       handle={handler}
       onStop={onDrag}
+      disabled={state.fullscreen}
       position={state.size.translate}
     >
       <Resizable

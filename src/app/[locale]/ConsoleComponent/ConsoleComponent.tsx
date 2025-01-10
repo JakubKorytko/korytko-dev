@@ -1,100 +1,106 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import styles from './ConsoleComponent.module.scss';
-import ConsoleComponentHeaderLinks from '@/app/[locale]/ConsoleComponent/ConsoleComponentHeaderLinks';
-import minimizeIcon from '#public/icons/minimize.svg';
-import maximizeIcon from '#public/icons/maximize.svg';
-import closeIcon from '#public/icons/close.svg';
-import WindowWrapper from '@/components/WindowWrapper/WindowWrapper';
+import React, { useCallback, useEffect, useState } from 'react';
+
+import {
+  ConsoleComponentProps,
+  ConsoleData,
+  SectionsObject,
+  Size,
+} from '@/app/[locale]/ConsoleComponent/ConsoleComponent.type';
 import { Sections } from '@/app/api/sections/getSections.type';
 
-function ConsoleComponent(props: {
-  closeApp: () => void,
-  minimizeApp: () => void, visible: boolean }) {
-  const [consoleSize, setConsoleSize] = useState({
-    width: 1000,
-    height: 0,
-  });
-  const [sections, setSections] = useState<Record<string, string>>({});
-  const [fullscreen, setFullscreen] = useState(false);
-  const [menuVisibility, setMenuVisibility] = useState(false);
+import ConsoleComponentButtons from '@/app/[locale]/ConsoleComponent/ConsoleComponentButtons';
+import ConsoleComponentHeaderLinks from '@/app/[locale]/ConsoleComponent/ConsoleComponentHeaderLinks';
 
-  const { closeApp, minimizeApp, visible } = props;
+import Conditional from '@/components/Conditional';
+import WindowWrapper from '@/components/WindowWrapper/WindowWrapper';
+
+import styles from './ConsoleComponent.module.scss';
+
+function ConsoleComponent(props: ConsoleComponentProps) {
+  const [consoleData, setConsoleData] = useState<ConsoleData>({
+    size: {
+      width: 1000,
+      height: 0,
+    },
+    fullscreen: false,
+    headerVisible: false,
+    sections: {},
+  });
 
   useEffect(() => {
     fetch('/api/sections')
       .then((response) => response.json())
       .then((data: Sections) => {
-        const sectionsObject: Record<string, string> = {};
+        const sectionsObject: SectionsObject = {};
         Object.keys(data).forEach((val) => {
           sectionsObject[data[val].name] = `#${val}`;
         });
-        setSections(sectionsObject);
+        setConsoleData((prevState) => ({
+          ...prevState,
+          sections: sectionsObject,
+        }));
       });
   }, []);
 
-  const toggleFullscreen = () => setFullscreen(!fullscreen);
-  const toggleMenu = () => {
-    setMenuVisibility(!menuVisibility);
+  const { closeApp, minimizeApp, visible } = props;
+  const setConsoleSize = useCallback(({ width, height }: Size) => {
+    setConsoleData((prevState) => ({
+      ...prevState,
+      size: {
+        width, height,
+      },
+    }));
+  }, []);
+
+  const toggleFullscreen = () => setConsoleData((
+    { fullscreen, ...rest },
+  ) => ({ ...rest, fullscreen: !fullscreen }));
+  const toggleMenu = () => setConsoleData((
+    { headerVisible, ...rest },
+  ) => ({ ...rest, headerVisible: !headerVisible }));
+  const shouldRenderWindow = Object.keys(consoleData.sections).length !== 0;
+  const shouldRenderHeader = consoleData.size.width > 0 && consoleData.size.width < 700;
+
+  const callbacks = {
+    minimize: minimizeApp,
+    close: closeApp,
+    maximize: toggleFullscreen,
   };
 
-  const shouldRenderWindow = Object.keys(sections).length !== 0;
-
-  return shouldRenderWindow && (
-  <WindowWrapper
-    onResize={setConsoleSize}
-    initialHeight="95%"
-    initialWidth="90%"
-    resizeCallback={setConsoleSize}
-    fullscreen={fullscreen}
-    className={`${styles['console-component']} flex flex-col ${!visible && 'invisible'}`}
-    minConstraints={[385, 85]}
-    handle={`.${styles['console-header-handler']}`}
-  >
-    <header className={styles['console-header']}>
-      <ConsoleComponentHeaderLinks.Hamburger
-        showWhen={consoleSize.width > 0 && consoleSize.width < 700}
-        onClick={toggleMenu}
-      />
-      <div className={`${styles['console-header-handler']} absolute w-full h-full z-0 left-0 top-0`} />
-      <div className={styles['console-header-name']}>
-        <h4 className="z-10">
-          jakub@korytko.dev: ~
-        </h4>
-      </div>
-      <div className={styles['console-header-buttons']}>
-        <button type="button" className={`${styles['console-header-button']}`} onClick={minimizeApp}>
-          <Image
-            src={minimizeIcon}
-            alt="Minimize console button"
-            className={`h-full w-full ${styles['filter-BEBEBE']}`}
+  return (
+    <Conditional showWhen={shouldRenderWindow}>
+      <WindowWrapper
+        onResize={setConsoleSize}
+        initialHeight="95%"
+        initialWidth="90%"
+        fullscreen={consoleData.fullscreen}
+        className={`${styles['console-component']} flex flex-col ${!visible && 'invisible'}`}
+        minConstraints={[385, 85]}
+        handle={`.${styles['console-header-handler']}`}
+      >
+        <header className={styles['console-header']}>
+          <ConsoleComponentHeaderLinks.Hamburger
+            showWhen={shouldRenderHeader}
+            onClick={toggleMenu}
           />
-        </button>
-        <button type="button" className={`${styles['console-header-button']}`} onClick={toggleFullscreen}>
-          <Image
-            src={maximizeIcon}
-            alt="Maximize console button"
-            className={`h-full w-full ${styles['filter-BEBEBE']}`}
+          <div className={`${styles['console-header-handler']} absolute w-full h-full z-0 left-0 top-0`} />
+          <div className={styles['console-header-name']}>
+            <h4 className="z-10">
+              jakub@korytko.dev: ~
+            </h4>
+          </div>
+          <ConsoleComponentButtons callbacks={callbacks} />
+          <ConsoleComponentHeaderLinks
+            sections={consoleData.sections}
+            consoleSize={consoleData.size}
+            menuVisibility={consoleData.headerVisible}
           />
-        </button>
-        <button type="button" className={`${styles['console-header-button']}`} onClick={closeApp}>
-          <Image
-            src={closeIcon}
-            alt="Close console button"
-            className={`h-full w-full ${styles['filter-C77777']}`}
-          />
-        </button>
-      </div>
-      <ConsoleComponentHeaderLinks
-        sections={sections}
-        consoleSize={consoleSize}
-        menuVisibility={menuVisibility}
-      />
-    </header>
-    <div className={`${styles['console-content']} flex-grow`} />
-  </WindowWrapper>
+        </header>
+        <div className={`${styles['console-content']} flex-grow`} />
+      </WindowWrapper>
+    </Conditional>
   );
 }
 

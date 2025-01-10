@@ -1,7 +1,7 @@
+import { XMLParser } from 'fast-xml-parser';
 import fs from 'fs';
 import path from 'path';
 import YAML from 'yaml';
-import { XMLParser } from 'fast-xml-parser';
 
 const readXML = (XMLpath: string) => {
   const XMLdata = fs.readFileSync(path.resolve(process.cwd(), XMLpath));

@@ -1,8 +1,12 @@
 'use client';
 
+import TaskBar from '@/app/[locale]/TaskBar/TaskBar';
+
+import Conditional from '@/components/Conditional';
+
 import '@/styles/main.scss';
 import styles from './Desktop.module.scss';
-import TaskBar from '@/app/[locale]/TaskBar/TaskBar';
+
 import useAppsLogic from '@/custom-hooks/useAppsLogic';
 
 export default function DesktopComponent() {
@@ -20,13 +24,13 @@ export default function DesktopComponent() {
         <div className={`grow relative overflow-hidden ${styles['desktop-content']} p-4`}>
           {icons}
         </div>
-        {areThereMinimizedApps && (
-        <div className="flex justify-center items-center absolute w-full h-16 left-0 bottom-12">
-          <div className={styles['desktop-minimized']}>
-            {minimized}
+        <Conditional showWhen={areThereMinimizedApps}>
+          <div className="flex justify-center items-center absolute w-full h-16 left-0 bottom-12">
+            <div className={styles['desktop-minimized']}>
+              {minimized}
+            </div>
           </div>
-        </div>
-        )}
+        </Conditional>
       </div>
     </div>
   );

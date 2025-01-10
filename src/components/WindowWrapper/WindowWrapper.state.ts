@@ -1,4 +1,5 @@
 import { Action, WindowWrapperActions, WindowWrapperState } from '@/components/WindowWrapper/WindowWrapper.state.type';
+
 import {
   convertPercentageSize,
   setSize,

@@ -10,7 +10,6 @@ export interface WindowWrapperProps {
   children: React.ReactNode,
   initialWidth: string,
   initialHeight: string,
-  resizeCallback: ({ height, width }: Dimensions) => void,
   className?: string,
   minConstraints?: [number, number],
   fullscreen?: boolean,

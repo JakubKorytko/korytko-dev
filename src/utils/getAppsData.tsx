@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { App, GetAppComponents } from '@/utils/getAppsData.type';
+
 import { Apps, apps } from '@/data/apps';
 
 const getAppsData = (): Record<Apps, App> => {

@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import { Apps } from '@/data/apps';
+
+import { AppsRecord, SetAppProperty } from '@/custom-hooks/useAppsLogic.type';
 import { App } from '@/utils/getAppsData.type';
-import appsData, { getAppComponents } from '@/utils/getAppsData';
+
 import ProgramIcon from '@/app/[locale]/Desktop/ProgramIcon';
 
-const setAppProperty = (
-  apps: Record<Apps, App>,
-  app: Apps,
-  property: keyof App,
-  status: boolean,
-): Record<Apps, App> => {
+import appsData, { getAppComponents } from '@/utils/getAppsData';
+
+import { Apps } from '@/data/apps';
+
+const setAppProperty: SetAppProperty = (apps, app, property, status) => {
   if (status === apps[app][property]) return apps;
   return {
     ...apps,
@@ -21,7 +21,7 @@ const setAppProperty = (
 };
 
 function useAppsLogic() {
-  const [apps, setApps] = useState<Record<Apps, App>>(appsData());
+  const [apps, setApps] = useState<AppsRecord>(appsData());
 
   const closeApp = (app: Apps) => setApps(setAppProperty(apps, app, 'opened', false));
 
@@ -29,7 +29,7 @@ function useAppsLogic() {
 
   const minimizeApp = (app: Apps) => setApps(setAppProperty(apps, app, 'minimized', true));
 
-  const unminimizeApp = (app: Apps) => setApps(setAppProperty(apps, app, 'minimized', false));
+  const restoreApp = (app: Apps) => setApps(setAppProperty(apps, app, 'minimized', false));
 
   const generateAppIcon = (app: App) => (
     <ProgramIcon onClick={() => openApp(app.key)} key={app.key}>
@@ -38,37 +38,18 @@ function useAppsLogic() {
     </ProgramIcon>
   );
 
-  const generateMinimizedApp = (app: App) => {
-    const style = {
-      root: {
-        width: 'auto',
-        height: '100%',
-      },
-      image: {
-        width: '100%',
-        height: '90%',
-      },
-      hr: {
-        width: '35%',
-        border: '0.2rem solid #D9D9D9',
-        borderRadius: '999999px',
-      },
-    };
-
-    return (
-      <ProgramIcon
-        onClick={() => unminimizeApp(app.key)}
-        key={app.key}
-        size={style.root}
-      >
-        <ProgramIcon.Image
-          src={app.icon.image}
-          size={style.image}
-        />
-        <hr style={style.hr} />
-      </ProgramIcon>
-    );
-  };
+  const generateMinimizedApp = (app: App) => (
+    <ProgramIcon
+      onClick={() => restoreApp(app.key)}
+      key={app.key}
+      minimized
+    >
+      <ProgramIcon.Image
+        src={app.icon.image}
+        minimized
+      />
+    </ProgramIcon>
+  );
 
   const components = getAppComponents(closeApp, minimizeApp, apps);
 

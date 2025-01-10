@@ -1,3 +1,4 @@
+import { INodeRefStyle } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import {
   AdjustTranslateWithinBounds,
   CalculateElementSize,
@@ -5,7 +6,6 @@ import {
   CanResize, GetNodeData,
   IsOutOfBounds,
 } from '@/components/WindowWrapper/WindowWrapper.type';
-import { INodeRefStyle } from '@/components/WindowWrapper/WindowWrapper.state.type';
 
 const isOutOfBounds: IsOutOfBounds = (nodeRect, direction) => {
   const parent = nodeRect.parent.position;

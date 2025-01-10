@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useReducer } from 'react';
+
+import {
+  UseWindowWrapperEffectReturn,
+  WindowWrapperActions,
+  WindowWrapperEffectProps,
+} from '@/components/WindowWrapper/WindowWrapper.state.type';
+
 import {
   adjustTranslateWithinBounds,
   calculatePercentageSize,
   getNodeData,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
-import {
-  WindowWrapperActions,
-  UseWindowWrapperEffectReturn,
-  WindowWrapperEffectProps,
-} from '@/components/WindowWrapper/WindowWrapper.state.type';
 import { initialState, reducer } from '@/components/WindowWrapper/WindowWrapper.state';
 
 function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapperEffectReturn {

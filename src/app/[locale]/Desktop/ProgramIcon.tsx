@@ -1,30 +1,33 @@
 import Image from 'next/image';
 
-function ProgramIcon(props: {
-  children: React.ReactNode | React.ReactNode[],
-  onClick: () => void, size?: { width?: string, height?: string } }) {
-  const { children, onClick: clickCallback, size } = props;
+import { ProgramIconImageProps, ProgramIconNameProps, ProgramIconProps } from '@/app/[locale]/Desktop/ProgramIcon.type';
+
+import styles from './Desktop.module.scss';
+
+function ProgramIcon(props: ProgramIconProps) {
+  const { children, onClick: clickCallback, minimized } = props;
 
   return (
-    <button type="button" onClick={clickCallback} className="flex flex-col items-center w-5/6 h-5/6" style={size}>
+    <button type="button" onClick={clickCallback} className={`flex flex-col items-center ${minimized ? styles['minimized-icon'] : 'w-5/6 h-5/6'}`}>
       {children}
+      {minimized && (<hr className={styles['minimized-hr']} />)}
     </button>
   );
 }
 
-function Name(props: { children: string }) {
+function ProgramIconName(props: ProgramIconNameProps) {
   const { children } = props;
   return (<span>{children}</span>);
 }
 
-function PImage(props: { src: string, size?: { width?: string, height?: string } }) {
-  const { src, size } = props;
+function ProgramIconImage(props: ProgramIconImageProps) {
+  const { src, minimized } = props;
   return (
-    <Image src={src} alt="Program icon" className="h-4/6 w-auto" style={size} />
+    <Image src={src} alt="Program icon" className={minimized ? styles['minimized-image'] : 'h-4/6 w-auto'} />
   );
 }
 
-ProgramIcon.Name = Name;
-ProgramIcon.Image = PImage;
+ProgramIcon.Name = ProgramIconName;
+ProgramIcon.Image = ProgramIconImage;
 
 export default ProgramIcon;

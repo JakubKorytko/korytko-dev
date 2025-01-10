@@ -4,6 +4,7 @@ import {
   ISetSize,
   ITurnOnFullscreen,
 } from '@/components/WindowWrapper/WindowWrapper.state.type';
+
 import {
   adjustTranslateWithinBounds,
   calculateElementSize,

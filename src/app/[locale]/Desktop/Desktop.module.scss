@@ -23,3 +23,21 @@
     width: auto;
   }
 }
+
+.minimized {
+  &-icon {
+    width: auto;
+    height: 100%;
+  }
+
+  &-image {
+    width: 100%;
+    height: 90%;
+  }
+
+  &-hr {
+    width: 35%;
+    border: 0.15rem solid #D9D9D9;
+    border-radius: 999999px;
+  }
+}
