@@ -149,7 +149,7 @@ export const nodeRefStyle: INodeRefStyle = (
   state,
   initialSize,
 ) => ({
-  visibility: state.loading ? 'hidden' : 'visible',
+  visibility: state.loading ? 'hidden' : undefined,
   borderRadius: state.fullscreen ? '0' : undefined,
   width: state.size.width === 0 ? initialSize.width : `${state.size.width}px`,
   height: state.size.height === 0 ? initialSize.height : `${state.size.height}px`,

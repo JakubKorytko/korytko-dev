@@ -63,7 +63,7 @@ export type CalculatePercentageSize = (
 };
 
 export type NodeRefStyle = { [Key in keyof Dimensions]: string } & {
-  visibility: 'hidden' | 'visible',
+  visibility: 'hidden' | undefined,
   borderRadius: string | undefined
 };
 

@@ -10,7 +10,9 @@ import closeIcon from '#public/icons/close.svg';
 import WindowWrapper from '@/components/WindowWrapper/WindowWrapper';
 import { Sections } from '@/app/api/sections/getSections.type';
 
-function ConsoleComponent(props: { closeApp: () => void }) {
+function ConsoleComponent(props: {
+  closeApp: () => void,
+  minimizeApp: () => void, visible: boolean }) {
   const [consoleSize, setConsoleSize] = useState({
     width: 1000,
     height: 0,
@@ -19,7 +21,7 @@ function ConsoleComponent(props: { closeApp: () => void }) {
   const [fullscreen, setFullscreen] = useState(false);
   const [menuVisibility, setMenuVisibility] = useState(false);
 
-  const { closeApp } = props;
+  const { closeApp, minimizeApp, visible } = props;
 
   useEffect(() => {
     fetch('/api/sections')
@@ -47,7 +49,7 @@ function ConsoleComponent(props: { closeApp: () => void }) {
     initialWidth="90%"
     resizeCallback={setConsoleSize}
     fullscreen={fullscreen}
-    className={`${styles['console-component']} flex flex-col`}
+    className={`${styles['console-component']} flex flex-col ${!visible && 'invisible'}`}
     minConstraints={[385, 85]}
     handle={`.${styles['console-header-handler']}`}
   >
@@ -63,7 +65,7 @@ function ConsoleComponent(props: { closeApp: () => void }) {
         </h4>
       </div>
       <div className={styles['console-header-buttons']}>
-        <button type="button" className={`${styles['console-header-button']}`}>
+        <button type="button" className={`${styles['console-header-button']}`} onClick={minimizeApp}>
           <Image
             src={minimizeIcon}
             alt="Minimize console button"
