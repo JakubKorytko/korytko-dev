@@ -13,7 +13,8 @@ export interface WindowWrapperProps {
   className?: string,
   minConstraints?: [number, number],
   fullscreen?: boolean,
-  handle?: string
+  handle?: string,
+  centered?: boolean,
 }
 
 interface TranslateData extends Position, LastPosition {}
@@ -63,7 +64,8 @@ export type CalculatePercentageSize = (
 
 export type NodeRefStyle = { [Key in keyof Dimensions]: string } & {
   visibility: 'hidden' | undefined,
-  borderRadius: string | undefined
+  borderRadius: string | undefined,
+  margin: number
 };
 
 export type GetNodeData = (element: HTMLElement | null) => NodeAndParentData;
@@ -71,4 +73,5 @@ export type GetNodeData = (element: HTMLElement | null) => NodeAndParentData;
 export type AdjustTranslateWithinBounds = (
   nodeRect: NodeAndParentData,
   translate: Position,
+  centered: boolean,
 ) => Position;

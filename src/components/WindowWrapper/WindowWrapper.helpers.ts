@@ -7,6 +7,12 @@ import {
   IsOutOfBounds,
 } from '@/components/WindowWrapper/WindowWrapper.type';
 
+export const waitForAnimationsToFinish = (target: HTMLElement, callback: () => void) => {
+  Promise.all(target.getAnimations().map((animation) => animation.finished)).then(() => {
+    callback();
+  });
+};
+
 const isOutOfBounds: IsOutOfBounds = (nodeRect, direction) => {
   const parent = nodeRect.parent.position;
   const elem = nodeRect.element.position;
@@ -135,9 +141,12 @@ export const calculatePercentageSize: CalculatePercentageSize = (
 export const adjustTranslateWithinBounds: AdjustTranslateWithinBounds = (
   nodeRect,
   translate,
+  centered,
 ) => {
-  const maxTranslateX = (nodeRect.parent.size.width - nodeRect.element.size.width) / 2;
-  const maxTranslateY = (nodeRect.parent.size.height - nodeRect.element.size.height) / 2;
+  const maxTranslateX = (nodeRect.parent.size.width - nodeRect.element.size.width)
+      / (centered ? 2 : 1);
+  const maxTranslateY = (nodeRect.parent.size.height - nodeRect.element.size.height)
+      / (centered ? 2 : 1);
 
   return {
     x: Math.min(Math.max(translate.x, -maxTranslateX), maxTranslateX),
@@ -153,4 +162,5 @@ export const nodeRefStyle: INodeRefStyle = (
   borderRadius: state.fullscreen ? '0' : undefined,
   width: state.size.width === 0 ? initialSize.width : `${state.size.width}px`,
   height: state.size.height === 0 ? initialSize.height : `${state.size.height}px`,
+  margin: 0,
 });

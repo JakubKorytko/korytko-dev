@@ -79,6 +79,7 @@ function ConsoleComponent(props: ConsoleComponentProps) {
         className={`${styles['console-component']} flex flex-col ${!visible && 'invisible'}`}
         minConstraints={[385, 85]}
         handle={`.${styles['console-header-handler']}`}
+        centered
       >
         <header className={styles['console-header']}>
           <ConsoleComponentHeaderLinks.Hamburger

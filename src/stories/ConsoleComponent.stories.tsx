@@ -5,6 +5,15 @@ import ConsoleComponent from '@/app/[locale]/ConsoleComponent/ConsoleComponent';
 const meta = {
   title: 'ConsoleComponent',
   component: ConsoleComponent,
+  decorators: [
+    (Story) => (
+        <div>
+            </div>
+    )
+  ]
+  parameters: {
+    layout: 'fullscreen',
+  },
 } satisfies Meta<typeof ConsoleComponent>;
 
 export default meta;
@@ -15,5 +24,9 @@ export const ConsoleComponentStory: Story = {
     closeApp: () => {},
     minimizeApp: () => {},
     visible: true,
+    sections: {
+      AboutMe: '#',
+      AboutYou: '#',
+    },
   },
 };

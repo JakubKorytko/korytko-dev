@@ -19,15 +19,16 @@ import useWindowWrapperEffect from '@/custom-hooks/useWindowWrapperEffect';
 function WindowWrapper(props: WindowWrapperProps) {
   const nodeRef = React.useRef<HTMLDialogElement | null>(null);
   const {
-    children, className = '',
+    children, className,
     initialWidth, initialHeight,
-    handle: handler = '',
+    handle: handler,
     onResize: handleResize,
     fullscreen, minConstraints,
+    centered,
   } = props;
 
   const [state, dispatch] = useWindowWrapperEffect({
-    minConstraints, fullscreen, nodeRef, onResize: handleResize,
+    minConstraints, fullscreen, nodeRef, onResize: handleResize, centered,
   });
 
   const onResize: OnResize = (_, { node, size, handle }) => {
@@ -70,7 +71,7 @@ function WindowWrapper(props: WindowWrapperProps) {
     <Draggable
       nodeRef={nodeRef}
       bounds="parent"
-      handle={handler}
+      handle={handler ?? ''}
       onStop={onDrag}
       disabled={state.fullscreen}
       position={state.size.translate}
@@ -87,7 +88,7 @@ function WindowWrapper(props: WindowWrapperProps) {
           open
           ref={nodeRef}
           style={nodeRefStyle(state, { width: initialWidth, height: initialHeight })}
-          className={`${className} ${!state.loading ? 'animate-appear' : null}`}
+          className={`${className ?? ''} ${!state.loading ? 'animate-appear' : null} static`}
         >
           {children}
         </dialog>

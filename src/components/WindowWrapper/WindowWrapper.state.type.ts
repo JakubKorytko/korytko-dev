@@ -12,6 +12,7 @@ export enum WindowWrapperActions {
   CONVERT_PERCENTAGE_SIZE,
   SET_SIZE,
   SET_LOADING,
+  SET_CENTERED,
 }
 
 export type SwitchFullscreen = {
@@ -41,6 +42,18 @@ export type SetLoading = {
   payload: boolean
 };
 
+export type SetCentered = {
+  type: WindowWrapperActions.SET_CENTERED;
+  payload: boolean
+};
+
+export type Action =
+    | SwitchFullscreen
+    | SetSize
+    | ConvertPercentageSize
+    | SetLoading
+    | SetCentered;
+
 export interface WindowWrapperState {
   size: Dimensions & {
     min: Dimensions,
@@ -49,13 +62,8 @@ export interface WindowWrapperState {
   },
   fullscreen: boolean,
   loading: boolean,
+  centered: boolean
 }
-
-export type Action =
-    | SwitchFullscreen
-    | SetSize
-    | ConvertPercentageSize
-    | SetLoading;
 
 export type WindowWrapperEffectProps = Partial<WindowWrapperProps> & {
   nodeRef: React.MutableRefObject<HTMLDialogElement | null>;
@@ -72,6 +80,7 @@ export type IConvertTranslatePercentageSize = (
   nodeRect: NodeAndParentData,
   size: WindowWrapperState['size'],
   newSize: Dimensions,
+  centered: boolean
 ) => Position;
 
 export type IConvertPercentageSize = (

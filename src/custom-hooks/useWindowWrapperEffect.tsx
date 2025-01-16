@@ -9,28 +9,31 @@ import {
 import {
   adjustTranslateWithinBounds,
   calculatePercentageSize,
-  getNodeData,
+  getNodeData, waitForAnimationsToFinish,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
 import { initialState, reducer } from '@/components/WindowWrapper/WindowWrapper.state';
+
+const defaultMinConstraints = [50, 50];
 
 function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapperEffectReturn {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const {
-    minConstraints = [15, 15],
-    fullscreen = false,
-    onResize: handleResize = () => {},
+    minConstraints,
+    fullscreen,
+    onResize: handleResize,
     nodeRef,
+    centered,
   } = props;
 
   const updateSizeAndTranslate = useCallback(
     (target: HTMLElement) => {
-      handleResize({ width: target.offsetWidth, height: target.offsetHeight });
+      if (handleResize) handleResize({ width: target.offsetWidth, height: target.offsetHeight });
       const nodeData = getNodeData(target);
 
       if (!state.fullscreen) {
         const { translate } = nodeData.element;
-        const { x, y } = adjustTranslateWithinBounds(nodeData, translate);
+        const { x, y } = adjustTranslateWithinBounds(nodeData, translate, state.centered);
 
         dispatch({
           type: WindowWrapperActions.SET_SIZE,
@@ -44,16 +47,14 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
         });
       }
     },
-    [handleResize, state.fullscreen],
+    [handleResize, state.fullscreen, state.centered],
   );
 
   const resizeObserverCallback: ResizeObserverCallback = useCallback(
     (entries) => {
       entries.forEach((entry) => {
         const target = entry.target as HTMLElement;
-        Promise.all(target.getAnimations().map((animation) => animation.finished)).then(() => {
-          updateSizeAndTranslate(target);
-        });
+        waitForAnimationsToFinish(target, () => updateSizeAndTranslate(target));
       });
     },
     [updateSizeAndTranslate],
@@ -65,7 +66,7 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
 
     dispatch({
       type: WindowWrapperActions.SWITCH_FULLSCREEN,
-      payload: { enabled: fullscreen, nodeRect, translate },
+      payload: { enabled: fullscreen ?? false, nodeRect, translate },
     });
   }, [fullscreen, nodeRef]);
 
@@ -84,12 +85,19 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
       type: WindowWrapperActions.SET_SIZE,
       payload: {
         min: {
-          width: minConstraints[0],
-          height: minConstraints[1],
+          width: (minConstraints ?? defaultMinConstraints)[0],
+          height: (minConstraints ?? defaultMinConstraints)[1],
         },
       },
     });
   }, [minConstraints]);
+
+  useEffect(() => {
+    dispatch({
+      type: WindowWrapperActions.SET_CENTERED,
+      payload: centered ?? false,
+    });
+  }, [centered]);
 
   useEffect(() => {
     const nodeRect = getNodeData(nodeRef.current);
@@ -125,6 +133,24 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
     window.addEventListener('resize', handleResizeEvent);
     return () => window.removeEventListener('resize', handleResizeEvent);
   }, [nodeRef]);
+
+  useEffect(() => {
+    if (!state.loading && nodeRef.current) {
+      waitForAnimationsToFinish(nodeRef.current, () => {
+        const nodeRect = getNodeData(nodeRef.current);
+
+        dispatch({
+          type: WindowWrapperActions.SET_SIZE,
+          payload: {
+            size: {
+              width: nodeRect.element.size.width,
+              height: nodeRect.element.size.height,
+            },
+          },
+        });
+      });
+    }
+  }, [nodeRef, state.loading]);
 
   return [state, dispatch];
 }
