@@ -36,5 +36,6 @@ export type ConsoleComponentHeaderLinksProps = {
 export type ConsoleComponentProps = {
   closeApp: VoidFunction,
   minimizeApp: VoidFunction,
-  visible: boolean
+  visible: boolean,
+  sections?: SectionsObject,
 };

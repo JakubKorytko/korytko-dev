@@ -29,22 +29,32 @@ function ConsoleComponent(props: ConsoleComponentProps) {
     sections: {},
   });
 
-  useEffect(() => {
-    fetch('/api/sections')
-      .then((response) => response.json())
-      .then((data: Sections) => {
-        const sectionsObject: SectionsObject = {};
-        Object.keys(data).forEach((val) => {
-          sectionsObject[data[val].name] = `#${val}`;
-        });
-        setConsoleData((prevState) => ({
-          ...prevState,
-          sections: sectionsObject,
-        }));
-      });
-  }, []);
+  const {
+    closeApp, minimizeApp, visible, sections,
+  } = props;
 
-  const { closeApp, minimizeApp, visible } = props;
+  useEffect(() => {
+    if (!sections) {
+      fetch('/api/sections')
+        .then((response) => response.json())
+        .then((data: Sections) => {
+          const sectionsObject: SectionsObject = {};
+          Object.keys(data).forEach((val) => {
+            sectionsObject[data[val].name] = `#${val}`;
+          });
+          setConsoleData((prevState) => ({
+            ...prevState,
+            sections: sectionsObject,
+          }));
+        });
+    } else {
+      setConsoleData((prevState) => ({
+        ...prevState,
+        sections,
+      }));
+    }
+  }, [sections]);
+
   const setConsoleSize = useCallback(({ width, height }: Size) => {
     setConsoleData((prevState) => ({
       ...prevState,

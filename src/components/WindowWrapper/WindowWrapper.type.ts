@@ -15,6 +15,7 @@ export interface WindowWrapperProps {
   fullscreen?: boolean,
   handle?: string,
   centered?: boolean,
+  style?: React.CSSProperties,
 }
 
 interface TranslateData extends Position, LastPosition {}

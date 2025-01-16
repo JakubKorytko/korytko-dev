@@ -7,13 +7,19 @@ const meta = {
   component: ConsoleComponent,
   decorators: [
     (Story) => (
-        <div>
-            </div>
-    )
-  ]
-  parameters: {
-    layout: 'fullscreen',
-  },
+      <div style={{
+        height: '500px',
+        width: '700px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'beige',
+      }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof ConsoleComponent>;
 
 export default meta;
@@ -25,8 +31,8 @@ export const ConsoleComponentStory: Story = {
     minimizeApp: () => {},
     visible: true,
     sections: {
-      AboutMe: '#',
-      AboutYou: '#',
+      'About me': '#',
+      'About you': '#',
     },
   },
 };

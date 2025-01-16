@@ -25,6 +25,7 @@ function WindowWrapper(props: WindowWrapperProps) {
     onResize: handleResize,
     fullscreen, minConstraints,
     centered,
+    style,
   } = props;
 
   const [state, dispatch] = useWindowWrapperEffect({
@@ -87,8 +88,11 @@ function WindowWrapper(props: WindowWrapperProps) {
         <dialog
           open
           ref={nodeRef}
-          style={nodeRefStyle(state, { width: initialWidth, height: initialHeight })}
-          className={`${className ?? ''} ${!state.loading ? 'animate-appear' : null} static`}
+          style={{
+            ...nodeRefStyle(state, { width: initialWidth, height: initialHeight }),
+            ...(style ?? {}),
+          }}
+          className={`${className ?? ''} ${!state.loading ? 'animate-appear' : null}`}
         >
           {children}
         </dialog>
