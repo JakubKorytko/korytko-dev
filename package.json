@@ -25,9 +25,11 @@
     "react-dom": "^18",
     "react-draggable": "^4.4.6",
     "react-resizable": "^3.0.5",
+    "uuid": "^11.0.5",
     "yaml": "^2.5.0"
   },
   "devDependencies": {
+    "@4tw/cypress-drag-drop": "^2.2.5",
     "@chromatic-com/storybook": "^1.6.1",
     "@storybook/addon-essentials": "^8.4.7",
     "@storybook/addon-interactions": "^8.4.7",
@@ -45,7 +47,7 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "autoprefixer": "^10.0.1",
-    "cypress": "13.17.0",
+    "cypress": "14.0.0",
     "eslint": "^8.56.0",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-airbnb-typescript": "^18.0.0",
