@@ -6,7 +6,7 @@ export type Position = { x: number; y: number };
 export type LastPosition = { lastX: number; lastY: number };
 
 export interface WindowWrapperProps {
-  onResize: (size: Dimensions) => void;
+  onResize?: (size: Dimensions) => void;
   children: React.ReactNode,
   initialWidth: string,
   initialHeight: string,
@@ -16,6 +16,7 @@ export interface WindowWrapperProps {
   handle?: string,
   centered?: boolean,
   style?: React.CSSProperties,
+  noAnimate?: boolean,
 }
 
 interface TranslateData extends Position, LastPosition {}
@@ -36,13 +37,22 @@ export interface NodeAndParentData {
   parent: Omit<NodeData, 'translate'>
 }
 
-export type IsOutOfBounds = (nodeRect: NodeAndParentData, direction: 'x' | 'y') => boolean;
+export type Direction = 'x' | 'y' | 'e' | 'n' | 'w' | 's';
+
+export type CenteredHandle = { [Key in keyof Omit<Bounds, 'x' | 'y'>]: Direction };
+
+export type Bounds = {
+  [key in Direction]: boolean;
+};
+
+export type IsOutOfBounds = (nodeRect: NodeAndParentData, direction: Direction) => boolean;
 
 export type CanResize = (
   handle: ResizeHandle,
   nodeRect: NodeAndParentData,
   size: Dimensions,
   newSize: Dimensions,
+  centered: boolean
 ) => boolean;
 
 export type CalculateElementSize = (
@@ -66,7 +76,7 @@ export type CalculatePercentageSize = (
 export type NodeRefStyle = { [Key in keyof Dimensions]: string } & {
   visibility: 'hidden' | undefined,
   borderRadius: string | undefined,
-  margin: number
+  margin: number,
 };
 
 export type GetNodeData = (element: HTMLElement | null) => NodeAndParentData;

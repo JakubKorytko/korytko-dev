@@ -26,6 +26,7 @@ function WindowWrapper(props: WindowWrapperProps) {
     fullscreen, minConstraints,
     centered,
     style,
+    noAnimate,
   } = props;
 
   const [state, dispatch] = useWindowWrapperEffect({
@@ -43,7 +44,13 @@ function WindowWrapper(props: WindowWrapperProps) {
       relativeToParent,
     } = calculatePercentageSize(nodeRect, translate, size.width, size.height);
 
-    if (canResize(handle, nodeRect, { width: state.size.width, height: state.size.height }, size)) {
+    if (canResize(
+      handle,
+      nodeRect,
+      { width: state.size.width, height: state.size.height },
+      size,
+      centered ?? false,
+    )) {
       dispatch({
         type: WindowWrapperActions.SET_SIZE,
         payload: {
@@ -92,7 +99,7 @@ function WindowWrapper(props: WindowWrapperProps) {
             ...nodeRefStyle(state, { width: initialWidth, height: initialHeight }),
             ...(style ?? {}),
           }}
-          className={`${className ?? ''} ${!state.loading ? 'animate-appear' : null}`}
+          className={`${className ?? ''} ${!state.loading && !noAnimate ? 'animate-appear' : null}`}
         >
           {children}
         </dialog>

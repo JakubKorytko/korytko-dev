@@ -1,9 +1,11 @@
+import { ResizeHandle } from 'react-resizable';
+
 import { INodeRefStyle } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import {
-  AdjustTranslateWithinBounds,
+  AdjustTranslateWithinBounds, Bounds,
   CalculateElementSize,
   CalculatePercentageSize,
-  CanResize, GetNodeData,
+  CanResize, CenteredHandle, GetNodeData,
   IsOutOfBounds,
 } from '@/components/WindowWrapper/WindowWrapper.type';
 
@@ -19,12 +21,22 @@ const isOutOfBounds: IsOutOfBounds = (nodeRect, direction) => {
 
   if (!parent) return false;
 
-  const bounds = {
-    x: elem.left <= parent.left || elem.right >= parent.right,
-    y: elem.top <= parent.top || elem.bottom >= parent.bottom,
+  const directions = {
+    // w: elem.left <= parent.left,
+    w: elem.right >= parent.right,
+    e: elem.right >= parent.right,
+    // n: elem.top <= parent.top,
+    n: elem.bottom >= parent.bottom,
+    s: elem.bottom >= parent.bottom,
   };
 
-  return direction === 'x' ? bounds.x : bounds.y;
+  const bounds: Bounds = {
+    ...directions,
+    x: directions.w || directions.e,
+    y: directions.n || directions.s,
+  };
+
+  return bounds[direction];
 };
 
 export const getNodeData: GetNodeData = (element) => {
@@ -48,6 +60,11 @@ export const getNodeData: GetNodeData = (element) => {
     };
   }
 
+  const scroll = {
+    top: document.documentElement.scrollTop,
+    left: document.documentElement.scrollLeft,
+  };
+
   const style = window.getComputedStyle(element);
   const { m41: translateX, m42: translateY } = new DOMMatrixReadOnly(style.transform);
   const {
@@ -65,7 +82,10 @@ export const getNodeData: GetNodeData = (element) => {
     element: {
       size: { width, height },
       position: {
-        top, left, right, bottom,
+        top: top + scroll.top,
+        left: left + scroll.left,
+        right,
+        bottom,
       },
       translate: {
         x: translateX,
@@ -77,8 +97,8 @@ export const getNodeData: GetNodeData = (element) => {
     parent: {
       size: { width: parentRect.width, height: parentRect.height },
       position: {
-        top: parentRect.top,
-        left: parentRect.left,
+        top: parentRect.top + scroll.top,
+        left: parentRect.left + scroll.left,
         right: parentRect.right,
         bottom: parentRect.bottom,
       },
@@ -86,14 +106,32 @@ export const getNodeData: GetNodeData = (element) => {
   };
 };
 
-export const canResize: CanResize = (handle, nodeRect, size, newSize) => {
+// designed for 4 directions: e, w, n, s
+export const canResize: CanResize = (handle, nodeRect, size, newSize, centered) => {
+  const centeredHandle: CenteredHandle = {
+    n: 'y', s: 'y', e: 'x', w: 'x',
+  };
+
+  const isCenteredHandleKey = (
+    handler: ResizeHandle,
+  ): handler is keyof CenteredHandle => handler in centeredHandle;
+
+  if (!isCenteredHandleKey(handle)) return false;
+
+  const widthGrow = newSize.width > size.width;
+  const heightGrow = newSize.height > size.height;
+
+  const direction = centered ? centeredHandle[handle] : handle;
+
   const isWidthHandle = ['e', 'w'].includes(handle);
   const isHeightHandle = ['s', 'n'].includes(handle);
+  const isHandleOutOfBounds = isOutOfBounds(nodeRect, direction);
+  const isBiggerThanParent = newSize.width > nodeRect.parent.size.width
+      || newSize.height > nodeRect.parent.size.height;
 
-  return !(
-    (isWidthHandle && newSize.width > size.width && isOutOfBounds(nodeRect, 'x'))
-      || (isHeightHandle && newSize.height > size.height && isOutOfBounds(nodeRect, 'y'))
-  );
+  if (isWidthHandle && widthGrow && isHandleOutOfBounds) return false;
+  if (isHeightHandle && heightGrow && isHandleOutOfBounds) return false;
+  return !isBiggerThanParent;
 };
 
 export const calculateElementSize: CalculateElementSize = (nodeRect, percentageSize, limits) => {
