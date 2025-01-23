@@ -99,7 +99,7 @@ function WindowWrapper(props: WindowWrapperProps) {
             ...nodeRefStyle(state, { width: initialWidth, height: initialHeight }),
             ...(style ?? {}),
           }}
-          className={`${className ?? ''} ${!state.loading && !noAnimate ? 'animate-appear' : null}`}
+          className={`${className ?? ''} ${!state.loading && !noAnimate ? 'animate-appear' : null} relative`}
         >
           {children}
         </dialog>

@@ -84,8 +84,8 @@ export const getNodeData: GetNodeData = (element) => {
       position: {
         top: top + scroll.top,
         left: left + scroll.left,
-        right,
-        bottom,
+        right: right + scroll.left,
+        bottom: bottom + scroll.top,
       },
       translate: {
         x: translateX,

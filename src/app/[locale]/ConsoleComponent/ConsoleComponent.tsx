@@ -91,7 +91,7 @@ function ConsoleComponent(props: ConsoleComponentProps) {
         handle={`.${styles['console-header-handler']}`}
         centered
       >
-        <header className={styles['console-header']}>
+        <header className={styles['console-header']} is-mobile={shouldRenderHeader.toString()}>
           <ConsoleComponentHeaderLinks.Hamburger
             showWhen={shouldRenderHeader}
             onClick={toggleMenu}

@@ -34,12 +34,11 @@ function WindowWrapperDummy({ centered }: { centered?: boolean }) {
       <WindowWrapper
         initialHeight="250px"
         initialWidth="250px"
-        className={elementClassName}
+        className={`${elementClassName} ${styles.window}`}
         handle={`.${elementClassName}-handler`}
         centered={centered}
         noAnimate
         fullscreen={isFullscreen}
-        style={{ position: 'relative' }}
       >
         <div className={`${elementClassName}-handler ${styles.handler}`} />
       </WindowWrapper>

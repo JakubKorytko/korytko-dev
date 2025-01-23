@@ -56,3 +56,4 @@ PRE_COMMANDS:
   - command: yarn install --immutable
     cwd: "workspace"
     secured_env: true
+CLEAR_REPORT_FOLDER: true

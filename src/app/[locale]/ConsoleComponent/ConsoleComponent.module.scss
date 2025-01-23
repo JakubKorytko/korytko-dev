@@ -13,14 +13,8 @@
 
 .hamburger-wrapper {
   grid-area: hamburger;
-  display: flex;
   align-items: center;
-
-  @container console (width < 700px) {
-    > .console-header-button {
-      height: 100%;
-    }
-  }
+  display: none;
 }
 
 .modal-menu-header {
@@ -34,7 +28,6 @@
     background-color: rgb(35 35 35 / 70%);
     border-radius: 0.5rem;
     overflow: hidden;
-    position: static;
     container-name: console;
     container-type: inline-size;
     contain: layout;
@@ -141,13 +134,36 @@
       }
     }
 
-    @container console (width < 700px) {
-      padding: 0.5rem;
-      min-height: 3.5rem;
-      max-height: 3.5rem;
-      grid: "hamburger name buttons" 100%
-      / minmax(5rem, 1.5fr) 3fr minmax(5rem, 1.5fr);
+  }
 
+  &-content {
+    overflow: hidden scroll;
+    padding: 0.7rem;
+    backdrop-filter: blur(3px);
+  }
+}
+
+@container console (width < 700px) {
+  .console-header[is-mobile="true"] {
+    padding: 0.5rem;
+    min-height: 3.5rem;
+    max-height: 3.5rem;
+    grid: "hamburger name buttons" 100%
+        / minmax(5rem, 1.5fr) 3fr minmax(5rem, 1.5fr);
+
+    .console-header-button {
+      height: 60%
+    }
+
+    .hamburger-wrapper {
+      display: flex;
+
+      > .console-header-button {
+        height: 100%
+      }
+    }
+
+    .console-header {
       &-handler {
         min-height: 3.5rem;
         max-height: 3.5rem;
@@ -155,10 +171,6 @@
 
       > div {
         align-items: start;
-      }
-
-      &-button {
-        height: 60%;
       }
 
       &-links {
@@ -183,7 +195,7 @@
       }
 
       &-buttons {
-        >button {
+        > button {
           margin: 0.25rem;
 
           :last-child {
@@ -191,13 +203,6 @@
           }
         }
       }
-
     }
-  }
-
-  &-content {
-    overflow: hidden scroll;
-    padding: 0.7rem;
-    backdrop-filter: blur(3px);
   }
 }

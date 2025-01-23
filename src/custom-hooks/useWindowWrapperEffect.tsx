@@ -28,9 +28,14 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
 
   const updateSizeAndTranslate = useCallback(
     (target: HTMLElement) => {
-      if (handleResize) handleResize({ width: target.offsetWidth, height: target.offsetHeight });
       const nodeData = getNodeData(target);
 
+      if (handleResize) {
+        handleResize({
+          width: nodeData.element.size.width,
+          height: nodeData.element.size.height,
+        });
+      }
       if (!state.fullscreen) {
         const { translate } = nodeData.element;
         const { x, y } = adjustTranslateWithinBounds(nodeData, translate, state.centered);
