@@ -27,7 +27,6 @@ export const initialState: WindowWrapperState = {
   },
   fullscreen: false,
   loading: true,
-  centered: false,
 };
 
 export function reducer(state: WindowWrapperState, action: Action) {
@@ -37,8 +36,6 @@ export function reducer(state: WindowWrapperState, action: Action) {
       return convertPercentageSize(state, action, false);
     case WindowWrapperActions.CONVERT_PERCENTAGE_SIZE:
       return convertPercentageSize(state, action);
-    case WindowWrapperActions.SET_CENTERED:
-      return { ...state, centered: action.payload };
     case WindowWrapperActions.SET_SIZE:
       return setSize(state, action);
     case WindowWrapperActions.SET_LOADING:

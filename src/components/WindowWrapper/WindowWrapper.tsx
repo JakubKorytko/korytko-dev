@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
-import Draggable, { DraggableEventHandler } from 'react-draggable';
-import { Resizable } from 'react-resizable';
+import { DraggableEventHandler } from 'react-draggable';
+import { Rnd, RndResizeCallback } from 'react-rnd';
 
 import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
-import { OnResize, WindowWrapperProps } from '@/components/WindowWrapper/WindowWrapper.type';
+import { WindowWrapperProps } from '@/components/WindowWrapper/WindowWrapper.type';
 
 import {
   calculatePercentageSize,
@@ -17,7 +17,7 @@ import './WindowWrapper.scss';
 import useWindowWrapperEffect from '@/custom-hooks/useWindowWrapperEffect';
 
 function WindowWrapper(props: WindowWrapperProps) {
-  const nodeRef = React.useRef<HTMLDialogElement | null>(null);
+  const nodeRef = React.useRef<Rnd | null>(null);
   const {
     children, className,
     initialWidth, initialHeight,
@@ -33,8 +33,13 @@ function WindowWrapper(props: WindowWrapperProps) {
     minConstraints, fullscreen, nodeRef, onResize: handleResize, centered,
   });
 
-  const onResize: OnResize = (_, { node, size, handle }) => {
-    const dialog = node.parentElement;
+  const onResize: RndResizeCallback = (_, dir, refToElement, delta, __) => {
+    const newSize = {
+      width: delta.width + state.size.width,
+      height: delta.height + state.size.height,
+    };
+
+    const dialog = refToElement;
     if (!dialog || state.fullscreen) return;
 
     const nodeRect = getNodeData(dialog);
@@ -42,19 +47,19 @@ function WindowWrapper(props: WindowWrapperProps) {
     const {
       translate: translateLast,
       relativeToParent,
-    } = calculatePercentageSize(nodeRect, translate, size.width, size.height);
+    } = calculatePercentageSize(nodeRect, translate, newSize.width, newSize.height);
 
     if (canResize(
-      handle,
+      dir,
       nodeRect,
       { width: state.size.width, height: state.size.height },
-      size,
+      newSize,
       centered ?? false,
     )) {
       dispatch({
         type: WindowWrapperActions.SET_SIZE,
         payload: {
-          size,
+          size: newSize,
           translateLast,
           relativeToParent,
         },
@@ -75,36 +80,37 @@ function WindowWrapper(props: WindowWrapperProps) {
     });
   };
 
+  const size = state.size.height !== 0 && state.size.width !== 0 ? state.size : undefined;
+  const shouldAnimate = !state.loading && !noAnimate;
+  const animation = shouldAnimate ? `animate-appear${centered ? '-centered' : ''}` : null;
+
   return (
-    <Draggable
-      nodeRef={nodeRef}
+    <Rnd
+      className={`${className ?? ''} ${animation} relative`}
       bounds="parent"
-      handle={handler ?? ''}
-      onStop={onDrag}
-      disabled={state.fullscreen}
+      disableDragging={state.fullscreen}
+      style={{
+        ...nodeRefStyle(state),
+        ...(style ?? {}),
+      }}
+      default={{
+        x: 0,
+        y: 0,
+        width: initialWidth,
+        height: initialHeight,
+      }}
+      dragHandleClassName={handler ?? ''}
+      minWidth={state.size.min.width}
+      minHeight={state.size.min.height}
+      dragAxis="both"
+      size={size}
       position={state.size.translate}
+      onResizeStop={onResize}
+      onDragStop={onDrag}
+      ref={nodeRef}
     >
-      <Resizable
-        axis="both"
-        resizeHandles={['n', 'w', 'e', 's']}
-        width={state.size.width}
-        height={state.size.height}
-        minConstraints={[state.size.min.width, state.size.min.height]}
-        onResize={onResize}
-      >
-        <dialog
-          open
-          ref={nodeRef}
-          style={{
-            ...nodeRefStyle(state, { width: initialWidth, height: initialHeight }),
-            ...(style ?? {}),
-          }}
-          className={`${className ?? ''} ${!state.loading && !noAnimate ? 'animate-appear' : null} relative`}
-        >
-          {children}
-        </dialog>
-      </Resizable>
-    </Draggable>
+      {children}
+    </Rnd>
   );
 }
 

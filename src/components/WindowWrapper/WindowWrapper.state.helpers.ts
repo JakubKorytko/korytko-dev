@@ -15,7 +15,6 @@ export const convertTranslatePercentageSize: IConvertTranslatePercentageSize = (
   nodeRect,
   size,
   newSize,
-  centered,
 ) => {
   const updatedNodeRect = { ...nodeRect, element: { ...nodeRect.element, size: newSize } };
   const parentSize = updatedNodeRect.parent.size;
@@ -25,7 +24,7 @@ export const convertTranslatePercentageSize: IConvertTranslatePercentageSize = (
     y: parentSize.height * size.translate.lastY,
   };
 
-  return adjustTranslateWithinBounds(updatedNodeRect, calculatedSize, centered);
+  return adjustTranslateWithinBounds(updatedNodeRect, calculatedSize);
 };
 
 export const turnOnFullscreen: ITurnOnFullscreen = (
@@ -69,7 +68,7 @@ export const convertPercentageSize: IConvertPercentageSize = (
   action,
   setFullscreen,
 ) => {
-  const { size, centered } = state;
+  const { size } = state;
   const newNodeRect = { ...action.payload.nodeRect };
   const fullscreen = setFullscreen ?? state.fullscreen;
 
@@ -79,7 +78,7 @@ export const convertPercentageSize: IConvertPercentageSize = (
     [size.min.width, size.min.height],
   );
 
-  const translateSize = convertTranslatePercentageSize(newNodeRect, size, newSize, centered);
+  const translateSize = convertTranslatePercentageSize(newNodeRect, size, newSize);
 
   return {
     ...state,

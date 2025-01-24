@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useReducer } from 'react';
+import { Rnd } from 'react-rnd';
 
 import {
   UseWindowWrapperEffectReturn,
@@ -9,11 +10,35 @@ import {
 import {
   adjustTranslateWithinBounds,
   calculatePercentageSize,
-  getNodeData, waitForAnimationsToFinish,
+  getNodeData,
+  waitForAnimationsToFinish,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
 import { initialState, reducer } from '@/components/WindowWrapper/WindowWrapper.state';
 
+// todo: change or remove this
+const getElement = (ref: Rnd | null) => {
+  if (!ref) return null;
+  return ref.getSelfElement();
+};
+
 const defaultMinConstraints = [50, 50];
+
+// todo: change or remove this
+const calculateCentered = (el: Rnd | null) => {
+  if (!el) return { x: 0, y: 0 };
+  const node = el.getSelfElement();
+  if (!node) return { x: 0, y: 0 };
+  const parent = node.parentElement;
+  if (!parent) return { x: 0, y: 0 };
+
+  const parentRect = parent.getBoundingClientRect();
+  const childRect = node.getBoundingClientRect();
+
+  const x = (parentRect.width - childRect.width) / 2;
+  const y = (parentRect.height - childRect.height) / 2;
+
+  return { x, y };
+};
 
 function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapperEffectReturn {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -38,7 +63,7 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
       }
       if (!state.fullscreen) {
         const { translate } = nodeData.element;
-        const { x, y } = adjustTranslateWithinBounds(nodeData, translate, state.centered);
+        const { x, y } = adjustTranslateWithinBounds(nodeData, translate);
 
         dispatch({
           type: WindowWrapperActions.SET_SIZE,
@@ -52,7 +77,7 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
         });
       }
     },
-    [handleResize, state.fullscreen, state.centered],
+    [handleResize, state.fullscreen],
   );
 
   const resizeObserverCallback: ResizeObserverCallback = useCallback(
@@ -66,7 +91,7 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
   );
 
   useEffect(() => {
-    const nodeRect = getNodeData(nodeRef.current);
+    const nodeRect = getNodeData(getElement(nodeRef.current));
     const { translate } = nodeRect.element;
 
     dispatch({
@@ -76,7 +101,7 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
   }, [fullscreen, nodeRef]);
 
   useEffect(() => {
-    const node = nodeRef.current;
+    const node = getElement(nodeRef.current);
     const resizeObserver = new ResizeObserver(resizeObserverCallback);
 
     if (node) resizeObserver.observe(node);
@@ -98,14 +123,18 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
   }, [minConstraints]);
 
   useEffect(() => {
-    dispatch({
-      type: WindowWrapperActions.SET_CENTERED,
-      payload: centered ?? false,
-    });
-  }, [centered]);
+    if (centered) {
+      dispatch({
+        type: WindowWrapperActions.SET_SIZE,
+        payload: {
+          translate: calculateCentered(nodeRef.current),
+        },
+      });
+    }
+  }, [centered, nodeRef]);
 
   useEffect(() => {
-    const nodeRect = getNodeData(nodeRef.current);
+    const nodeRect = getNodeData(getElement(nodeRef.current));
     const { translate } = nodeRect.element;
 
     const { translate: translateLast, relativeToParent } = calculatePercentageSize(
@@ -131,7 +160,7 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
     const handleResizeEvent = () => {
       dispatch({
         type: WindowWrapperActions.CONVERT_PERCENTAGE_SIZE,
-        payload: { nodeRect: getNodeData(nodeRef.current) },
+        payload: { nodeRect: getNodeData(getElement(nodeRef.current)) },
       });
     };
 
@@ -140,9 +169,10 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
   }, [nodeRef]);
 
   useEffect(() => {
-    if (!state.loading && nodeRef.current) {
-      waitForAnimationsToFinish(nodeRef.current, () => {
-        const nodeRect = getNodeData(nodeRef.current);
+    const element = getElement(nodeRef.current);
+    if (!state.loading && element) {
+      waitForAnimationsToFinish(element, () => {
+        const nodeRect = getNodeData(element);
 
         dispatch({
           type: WindowWrapperActions.SET_SIZE,

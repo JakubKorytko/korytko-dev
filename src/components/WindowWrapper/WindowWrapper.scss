@@ -1,51 +1,23 @@
-.react-resizable {
-  &-handle {
-    position: absolute;
+@mixin appear($top, $left, $translateX, $translateY, $scale) {
+  top: $top;
+  left: $left;
+  transform: scale($scale) translate($translateX, $translateY)
+}
 
-    &-n, &-s {
-      width: calc(100% - 20px);
-      height: 10px;
-      left: 10px;
-    }
+@keyframes appear {
+  from { @include appear(0, 0, 0, 150vh, 0); }
+  to { @include appear(0, 0, 0, 0, 1); }
+}
 
-    &-e, &-w {
-      width: 10px;
-      height: calc(100% - 20px);
-      top: 10px;
-    }
-
-    &-n {
-      cursor: n-resize;
-      top: 0;
-    }
-
-    &-s {
-      cursor: s-resize;
-      bottom: 0;
-    }
-
-    &-w {
-      cursor: w-resize;
-      left: 0;
-    }
-
-    &-e {
-      cursor: e-resize;
-      right: 0;
-    }
-  }
+@keyframes appear-centered {
+  from { @include appear(50%, 50%, -50%, 150vh, 0); }
+  to { @include appear(50%, 50%, -50%, -50%, 1); }
 }
 
 .animate-appear {
   animation: 0.2s appear;
 
-  @keyframes appear {
-    from {
-      transform: scale(0) translateY(150vh);
-    }
-
-    to {
-      transform: scale(1) translateY(0);
-    }
+  &-centered {
+    animation: 0.2s appear-centered;
   }
 }

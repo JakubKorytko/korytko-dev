@@ -1,4 +1,5 @@
 import React from 'react';
+import { Rnd } from 'react-rnd';
 
 import {
   Dimensions, LastPosition,
@@ -12,7 +13,6 @@ export enum WindowWrapperActions {
   CONVERT_PERCENTAGE_SIZE,
   SET_SIZE,
   SET_LOADING,
-  SET_CENTERED,
 }
 
 export type SwitchFullscreen = {
@@ -42,17 +42,11 @@ export type SetLoading = {
   payload: boolean
 };
 
-export type SetCentered = {
-  type: WindowWrapperActions.SET_CENTERED;
-  payload: boolean
-};
-
 export type Action =
     | SwitchFullscreen
     | SetSize
     | ConvertPercentageSize
-    | SetLoading
-    | SetCentered;
+    | SetLoading;
 
 export interface WindowWrapperState {
   size: Dimensions & {
@@ -62,11 +56,10 @@ export interface WindowWrapperState {
   },
   fullscreen: boolean,
   loading: boolean,
-  centered: boolean
 }
 
 export type WindowWrapperEffectProps = Partial<WindowWrapperProps> & {
-  nodeRef: React.MutableRefObject<HTMLDialogElement | null>;
+  nodeRef: React.MutableRefObject<Rnd | null>;
 };
 
 export type UseWindowWrapperEffectReturn = [WindowWrapperState, React.Dispatch<Action>];
@@ -80,7 +73,6 @@ export type IConvertTranslatePercentageSize = (
   nodeRect: NodeAndParentData,
   size: WindowWrapperState['size'],
   newSize: Dimensions,
-  centered: boolean
 ) => Position;
 
 export type IConvertPercentageSize = (
@@ -93,5 +85,4 @@ export type ISetSize = (state: WindowWrapperState, action: SetSize) => WindowWra
 
 export type INodeRefStyle = (
   state: WindowWrapperState,
-  initialSize: { [Key in keyof Dimensions]: string },
 ) => NodeRefStyle;

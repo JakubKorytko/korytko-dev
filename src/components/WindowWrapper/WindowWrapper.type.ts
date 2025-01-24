@@ -1,5 +1,4 @@
-import React, { SyntheticEvent } from 'react';
-import { ResizeCallbackData, ResizeHandle } from 'react-resizable';
+import React from 'react';
 
 export type Dimensions = { width: number; height: number };
 export type Position = { x: number; y: number };
@@ -47,8 +46,11 @@ export type Bounds = {
 
 export type IsOutOfBounds = (nodeRect: NodeAndParentData, direction: Direction) => boolean;
 
+export type ResizeDirection = 'top' | 'right' | 'bottom' | 'left'
+| 'topRight' | 'bottomRight' | 'bottomLeft' | 'topLeft';
+
 export type CanResize = (
-  handle: ResizeHandle,
+  handle: ResizeDirection,
   nodeRect: NodeAndParentData,
   size: Dimensions,
   newSize: Dimensions,
@@ -61,8 +63,6 @@ export type CalculateElementSize = (
   limits: [number, number],
 ) => Dimensions;
 
-export type OnResize = (event: SyntheticEvent, { node, size, handle }: ResizeCallbackData) => void;
-
 export type CalculatePercentageSize = (
   nodeRect: NodeAndParentData,
   translate: Position,
@@ -73,7 +73,7 @@ export type CalculatePercentageSize = (
   translate: LastPosition,
 };
 
-export type NodeRefStyle = { [Key in keyof Dimensions]: string } & {
+export type NodeRefStyle = {
   visibility: 'hidden' | undefined,
   borderRadius: string | undefined,
   margin: number,
@@ -84,5 +84,4 @@ export type GetNodeData = (element: HTMLElement | null) => NodeAndParentData;
 export type AdjustTranslateWithinBounds = (
   nodeRect: NodeAndParentData,
   translate: Position,
-  centered: boolean,
 ) => Position;

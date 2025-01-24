@@ -2,11 +2,14 @@ import { ResizeHandle } from 'react-resizable';
 
 import { INodeRefStyle } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import {
-  AdjustTranslateWithinBounds, Bounds,
+  AdjustTranslateWithinBounds,
+  Bounds,
   CalculateElementSize,
   CalculatePercentageSize,
-  CanResize, CenteredHandle, GetNodeData,
-  IsOutOfBounds,
+  CanResize,
+  CenteredHandle,
+  GetNodeData,
+  IsOutOfBounds, ResizeDirection,
 } from '@/components/WindowWrapper/WindowWrapper.type';
 
 export const waitForAnimationsToFinish = (target: HTMLElement, callback: () => void) => {
@@ -22,12 +25,10 @@ const isOutOfBounds: IsOutOfBounds = (nodeRect, direction) => {
   if (!parent) return false;
 
   const directions = {
-    // w: elem.left <= parent.left,
-    w: elem.right >= parent.right,
-    e: elem.right >= parent.right,
-    // n: elem.top <= parent.top,
-    n: elem.bottom >= parent.bottom,
-    s: elem.bottom >= parent.bottom,
+    w: elem.left < parent.left,
+    e: elem.right > parent.right,
+    n: elem.top < parent.top,
+    s: elem.bottom > parent.bottom,
   };
 
   const bounds: Bounds = {
@@ -106,8 +107,37 @@ export const getNodeData: GetNodeData = (element) => {
   };
 };
 
+// todo: remove this
+const convert = (dir: ResizeDirection): ResizeHandle | false => {
+  type ConversionObject = {
+    top: 'n',
+    right: 'e',
+    bottom: 's',
+    left: 'w',
+  };
+
+  const conversionObject: ConversionObject = {
+    top: 'n',
+    bottom: 's',
+    left: 'w',
+    right: 'e',
+  };
+
+  const isConvertible = (
+    direction: ResizeDirection,
+  ): direction is keyof ConversionObject => direction in conversionObject;
+
+  if (!isConvertible(dir)) return false;
+
+  return conversionObject[dir];
+};
+
 // designed for 4 directions: e, w, n, s
-export const canResize: CanResize = (handle, nodeRect, size, newSize, centered) => {
+export const canResize: CanResize = (dir, nodeRect, size, newSize, centered) => {
+  const handle = convert(dir);
+
+  if (!handle) return false;
+
   const centeredHandle: CenteredHandle = {
     n: 'y', s: 'y', e: 'x', w: 'x',
   };
@@ -179,12 +209,9 @@ export const calculatePercentageSize: CalculatePercentageSize = (
 export const adjustTranslateWithinBounds: AdjustTranslateWithinBounds = (
   nodeRect,
   translate,
-  centered,
 ) => {
-  const maxTranslateX = (nodeRect.parent.size.width - nodeRect.element.size.width)
-      / (centered ? 2 : 1);
-  const maxTranslateY = (nodeRect.parent.size.height - nodeRect.element.size.height)
-      / (centered ? 2 : 1);
+  const maxTranslateX = (nodeRect.parent.size.width - nodeRect.element.size.width);
+  const maxTranslateY = (nodeRect.parent.size.height - nodeRect.element.size.height);
 
   return {
     x: Math.min(Math.max(translate.x, -maxTranslateX), maxTranslateX),
@@ -194,11 +221,8 @@ export const adjustTranslateWithinBounds: AdjustTranslateWithinBounds = (
 
 export const nodeRefStyle: INodeRefStyle = (
   state,
-  initialSize,
 ) => ({
   visibility: state.loading ? 'hidden' : undefined,
   borderRadius: state.fullscreen ? '0' : undefined,
-  width: state.size.width === 0 ? initialSize.width : `${state.size.width}px`,
-  height: state.size.height === 0 ? initialSize.height : `${state.size.height}px`,
   margin: 0,
 });
