@@ -9,7 +9,7 @@ import {
   calculatePercentageSize,
   canResize,
   getNodeData,
-  nodeRefStyle,
+  nodeRefStyle, resizeHandleClasses,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
 
 import './WindowWrapper.scss';
@@ -99,6 +99,7 @@ function WindowWrapper(props: WindowWrapperProps) {
         width: initialWidth,
         height: initialHeight,
       }}
+      resizeHandleClasses={resizeHandleClasses}
       dragHandleClassName={handler ?? ''}
       minWidth={state.size.min.width}
       minHeight={state.size.min.height}

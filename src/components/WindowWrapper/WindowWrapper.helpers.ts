@@ -12,6 +12,17 @@ import {
   IsOutOfBounds, ResizeDirection,
 } from '@/components/WindowWrapper/WindowWrapper.type';
 
+export const resizeHandleClasses = {
+  top: 'resize-top',
+  right: 'resize-right',
+  bottom: 'resize-bottom',
+  left: 'resize-left',
+  topRight: 'resize-topRight',
+  bottomRight: 'resize-bottomRight',
+  bottomLeft: 'resize-bottomLeft',
+  topLeft: 'resize-topLeft',
+};
+
 export const waitForAnimationsToFinish = (target: HTMLElement, callback: () => void) => {
   Promise.all(target.getAnimations().map((animation) => animation.finished)).then(() => {
     callback();

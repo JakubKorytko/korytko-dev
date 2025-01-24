@@ -35,10 +35,11 @@ function WindowWrapperDummy({ centered }: { centered?: boolean }) {
         initialHeight="250px"
         initialWidth="250px"
         className={`${elementClassName} ${styles.window}`}
-        handle={`.${elementClassName}-handler`}
+        handle={`${elementClassName}-handler`}
         centered={centered}
         noAnimate
         fullscreen={isFullscreen}
+        style={{ backgroundColor: 'white' }}
       >
         <div className={`${elementClassName}-handler ${styles.handler}`} />
       </WindowWrapper>
@@ -56,16 +57,16 @@ const dragTestCases = [
 
 const resizeTestCases = [
   {
-    description: 'bottom', deltaX: 0, deltaY: 5000, handler: 's',
+    description: 'bottom', deltaX: 0, deltaY: 5000, handler: 'bottom',
   },
   {
-    description: 'top', deltaX: 0, deltaY: -5000, handler: 'n',
+    description: 'top', deltaX: 0, deltaY: -5000, handler: 'top',
   },
   {
-    description: 'right', deltaX: 5000, deltaY: 0, handler: 'e',
+    description: 'right', deltaX: 5000, deltaY: 0, handler: 'right',
   },
   {
-    description: 'left', deltaX: -5000, deltaY: 0, handler: 'w',
+    description: 'left', deltaX: -5000, deltaY: 0, handler: 'left',
   },
 ];
 
@@ -87,7 +88,7 @@ describe('WindowWrapper', () => {
     it(`cannot be resized outside parent - ${description} (centered: ${isCentered})`, () => {
       cy.viewport(600, 600);
       cy.mount(<WindowWrapperDummy centered={isCentered} />);
-      cy.resize(`.react-resizable-handle-${handler}`, { x: deltaX, y: deltaY });
+      cy.resize(`.resize-${handler}`, { x: deltaX, y: deltaY });
       cy.isInParentBounds({ parent: `.${parentClassName}`, element: `.${elementClassName}` });
     });
   });
