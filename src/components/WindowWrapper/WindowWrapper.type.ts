@@ -36,16 +36,6 @@ export interface NodeAndParentData {
   parent: Omit<NodeData, 'translate'>
 }
 
-export type Direction = 'x' | 'y' | 'e' | 'n' | 'w' | 's';
-
-export type CenteredHandle = { [Key in keyof Omit<Bounds, 'x' | 'y'>]: Direction };
-
-export type Bounds = {
-  [key in Direction]: boolean;
-};
-
-export type IsOutOfBounds = (nodeRect: NodeAndParentData, direction: Direction) => boolean;
-
 export type ResizeDirection = 'top' | 'right' | 'bottom' | 'left'
 | 'topRight' | 'bottomRight' | 'bottomLeft' | 'topLeft';
 

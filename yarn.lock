@@ -3937,15 +3937,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-resizable@npm:^3":
-  version: 3.0.8
-  resolution: "@types/react-resizable@npm:3.0.8"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/77d7896703531a32e8efdf0c7208c0f6af8eadf3d8dc5fd2b5e6032ed834f4d8ea52f14ebee8b39af6fb63642bbaacf785dd9962b1f284f070a63143251315fb
-  languageName: node
-  linkType: hard
-
 "@types/react@npm:*, @types/react@npm:^18":
   version: 18.3.2
   resolution: "@types/react@npm:18.3.2"
@@ -10406,7 +10397,6 @@ __metadata:
     "@types/node": "npm:^20"
     "@types/react": "npm:^18"
     "@types/react-dom": "npm:^18"
-    "@types/react-resizable": "npm:^3"
     "@typescript-eslint/eslint-plugin": "npm:^7.0.0"
     "@typescript-eslint/parser": "npm:^7.0.0"
     autoprefixer: "npm:^10.0.1"
@@ -10432,8 +10422,6 @@ __metadata:
     prettier: "npm:3.3.3"
     react: "npm:^18"
     react-dom: "npm:^18"
-    react-draggable: "npm:^4.4.6"
-    react-resizable: "npm:^3.0.5"
     react-rnd: "npm:^10.4.14"
     sass: "npm:^1.71.0"
     sort-package-json: "npm:^2.10.0"
@@ -13214,7 +13202,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:15.x, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -13566,7 +13554,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-draggable@npm:4.4.6, react-draggable@npm:^4.0.3, react-draggable@npm:^4.4.6":
+"react-draggable@npm:4.4.6":
   version: 4.4.6
   resolution: "react-draggable@npm:4.4.6"
   dependencies:
@@ -13597,18 +13585,6 @@ __metadata:
   version: 0.14.2
   resolution: "react-refresh@npm:0.14.2"
   checksum: 10c0/875b72ef56b147a131e33f2abd6ec059d1989854b3ff438898e4f9310bfcc73acff709445b7ba843318a953cb9424bcc2c05af2b3d80011cee28f25aef3e2ebb
-  languageName: node
-  linkType: hard
-
-"react-resizable@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "react-resizable@npm:3.0.5"
-  dependencies:
-    prop-types: "npm:15.x"
-    react-draggable: "npm:^4.0.3"
-  peerDependencies:
-    react: ">= 16.3"
-  checksum: 10c0/cfe50aa6efb79e0aa09bd681a5beab2fcd1186737c4952eb4c3974ed9395d5d263ccd1130961d06b8f5e24c8f544dd2967b5c740ce68719962d1771de7bdb350
   languageName: node
   linkType: hard
 

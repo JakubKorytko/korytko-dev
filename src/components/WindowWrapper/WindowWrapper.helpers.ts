@@ -1,15 +1,10 @@
-import { ResizeHandle } from 'react-resizable';
-
 import { INodeRefStyle } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import {
   AdjustTranslateWithinBounds,
-  Bounds,
   CalculateElementSize,
   CalculatePercentageSize,
   CanResize,
-  CenteredHandle,
   GetNodeData,
-  IsOutOfBounds, ResizeDirection,
 } from '@/components/WindowWrapper/WindowWrapper.type';
 
 export const resizeHandleClasses = {
@@ -27,28 +22,6 @@ export const waitForAnimationsToFinish = (target: HTMLElement, callback: () => v
   Promise.all(target.getAnimations().map((animation) => animation.finished)).then(() => {
     callback();
   });
-};
-
-const isOutOfBounds: IsOutOfBounds = (nodeRect, direction) => {
-  const parent = nodeRect.parent.position;
-  const elem = nodeRect.element.position;
-
-  if (!parent) return false;
-
-  const directions = {
-    w: elem.left < parent.left,
-    e: elem.right > parent.right,
-    n: elem.top < parent.top,
-    s: elem.bottom > parent.bottom,
-  };
-
-  const bounds: Bounds = {
-    ...directions,
-    x: directions.w || directions.e,
-    y: directions.n || directions.s,
-  };
-
-  return bounds[direction];
 };
 
 export const getNodeData: GetNodeData = (element) => {
@@ -118,61 +91,40 @@ export const getNodeData: GetNodeData = (element) => {
   };
 };
 
-// todo: remove this
-const convert = (dir: ResizeDirection): ResizeHandle | false => {
-  type ConversionObject = {
-    top: 'n',
-    right: 'e',
-    bottom: 's',
-    left: 'w',
+export const canResize: CanResize = (dir, nodeRect, newSize) => {
+  const parent = nodeRect.parent.position;
+  if (!parent) return false;
+
+  const elem = nodeRect.element.position;
+
+  const bounds = {
+    left: elem.left < parent.left,
+    right: elem.right > parent.right,
+    top: elem.top < parent.top,
+    bottom: elem.bottom > parent.bottom,
   };
 
-  const conversionObject: ConversionObject = {
-    top: 'n',
-    bottom: 's',
-    left: 'w',
-    right: 'e',
-  };
+  const consistsOnlyOfBounds = (
+    words: string[],
+  ): words is ('top' | 'left' | 'bottom' | 'right')[] => words
+    .map((word) => word in bounds)
+    .every(Boolean);
 
-  const isConvertible = (
-    direction: ResizeDirection,
-  ): direction is keyof ConversionObject => direction in conversionObject;
+  const keys = dir
+    .split(/(?=[A-Z])/)
+    .map((word) => word
+      .toLowerCase());
 
-  if (!isConvertible(dir)) return false;
+  if (!consistsOnlyOfBounds(keys)) return false;
 
-  return conversionObject[dir];
-};
+  const isOutOfBounds = keys
+    .map((key) => bounds[key])
+    .every(Boolean);
 
-// designed for 4 directions: e, w, n, s
-export const canResize: CanResize = (dir, nodeRect, size, newSize, centered) => {
-  const handle = convert(dir);
-
-  if (!handle) return false;
-
-  const centeredHandle: CenteredHandle = {
-    n: 'y', s: 'y', e: 'x', w: 'x',
-  };
-
-  const isCenteredHandleKey = (
-    handler: ResizeHandle,
-  ): handler is keyof CenteredHandle => handler in centeredHandle;
-
-  if (!isCenteredHandleKey(handle)) return false;
-
-  const widthGrow = newSize.width > size.width;
-  const heightGrow = newSize.height > size.height;
-
-  const direction = centered ? centeredHandle[handle] : handle;
-
-  const isWidthHandle = ['e', 'w'].includes(handle);
-  const isHeightHandle = ['s', 'n'].includes(handle);
-  const isHandleOutOfBounds = isOutOfBounds(nodeRect, direction);
   const isBiggerThanParent = newSize.width > nodeRect.parent.size.width
       || newSize.height > nodeRect.parent.size.height;
 
-  if (isWidthHandle && widthGrow && isHandleOutOfBounds) return false;
-  if (isHeightHandle && heightGrow && isHandleOutOfBounds) return false;
-  return !isBiggerThanParent;
+  return !isBiggerThanParent || !isOutOfBounds;
 };
 
 export const calculateElementSize: CalculateElementSize = (nodeRect, percentageSize, limits) => {

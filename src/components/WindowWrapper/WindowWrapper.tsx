@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
-import { DraggableEventHandler } from 'react-draggable';
-import { Rnd, RndResizeCallback } from 'react-rnd';
+import { Rnd, RndDragCallback, RndResizeCallback } from 'react-rnd';
 
 import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
 import { WindowWrapperProps } from '@/components/WindowWrapper/WindowWrapper.type';
@@ -67,7 +66,7 @@ function WindowWrapper(props: WindowWrapperProps) {
     }
   };
 
-  const onDrag: DraggableEventHandler = (_, draggableData) => {
+  const onDrag: RndDragCallback = (_, draggableData) => {
     const nodeRect = getNodeData(draggableData.node);
     const { x, y } = draggableData;
 
