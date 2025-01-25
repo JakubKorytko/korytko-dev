@@ -87,7 +87,7 @@ function ConsoleComponent(props: ConsoleComponentProps) {
         initialWidth="90%"
         fullscreen={consoleData.fullscreen}
         className={`${styles['console-component']} flex flex-col ${!visible && 'invisible'}`}
-        minConstraints={[385, 85]}
+        minConstraints={{ width: 385, height: 85 }}
         handle={styles['console-header-handler']}
         centered
       >

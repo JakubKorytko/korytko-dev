@@ -2,7 +2,6 @@ import React from 'react';
 
 export type Dimensions = { width: number; height: number };
 export type Position = { x: number; y: number };
-export type LastPosition = { lastX: number; lastY: number };
 
 export interface WindowWrapperProps {
   onResize?: (size: Dimensions) => void;
@@ -10,7 +9,7 @@ export interface WindowWrapperProps {
   initialWidth: string,
   initialHeight: string,
   className?: string,
-  minConstraints?: [number, number],
+  minConstraints?: Dimensions,
   fullscreen?: boolean,
   handle?: string,
   centered?: boolean,
@@ -18,7 +17,7 @@ export interface WindowWrapperProps {
   noAnimate?: boolean,
 }
 
-interface TranslateData extends Position, LastPosition {}
+interface TranslateData extends Position { relative: Position }
 
 export interface NodeData {
   size: Dimensions,
@@ -36,17 +35,6 @@ export interface NodeAndParentData {
   parent: Omit<NodeData, 'translate'>
 }
 
-export type ResizeDirection = 'top' | 'right' | 'bottom' | 'left'
-| 'topRight' | 'bottomRight' | 'bottomLeft' | 'topLeft';
-
-export type CanResize = (
-  handle: ResizeDirection,
-  nodeRect: NodeAndParentData,
-  size: Dimensions,
-  newSize: Dimensions,
-  centered: boolean
-) => boolean;
-
 export type CalculateElementSize = (
   nodeRect: NodeAndParentData,
   percentageSize: Dimensions,
@@ -56,17 +44,9 @@ export type CalculateElementSize = (
 export type CalculatePercentageSize = (
   nodeRect: NodeAndParentData,
   translate: Position,
-  newWidth: number,
-  newHeight: number,
+  newSize: Dimensions
 ) => {
-  relativeToParent: Dimensions,
-  translate: LastPosition,
-};
-
-export type NodeRefStyle = {
-  visibility: 'hidden' | undefined,
-  borderRadius: string | undefined,
-  margin: number,
+  relativeToParent: Dimensions & Position;
 };
 
 export type GetNodeData = (element: HTMLElement | null) => NodeAndParentData;

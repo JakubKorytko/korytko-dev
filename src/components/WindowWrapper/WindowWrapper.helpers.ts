@@ -1,9 +1,9 @@
-import { INodeRefStyle } from '@/components/WindowWrapper/WindowWrapper.state.type';
+import { Rnd } from 'react-rnd';
+
 import {
   AdjustTranslateWithinBounds,
   CalculateElementSize,
   CalculatePercentageSize,
-  CanResize,
   GetNodeData,
 } from '@/components/WindowWrapper/WindowWrapper.type';
 
@@ -33,7 +33,11 @@ export const getNodeData: GetNodeData = (element) => {
           top: 0, left: 0, right: 0, bottom: 0,
         },
         translate: {
-          x: 0, y: 0, lastX: 0, lastY: 0,
+          x: 0,
+          y: 0,
+          relative: {
+            x: 0, y: 0,
+          },
         },
       },
       parent: {
@@ -75,8 +79,10 @@ export const getNodeData: GetNodeData = (element) => {
       translate: {
         x: translateX,
         y: translateY,
-        lastX: translateX / parentRect.width,
-        lastY: translateY / parentRect.height,
+        relative: {
+          x: translateX / parentRect.width,
+          y: translateY / parentRect.height,
+        },
       },
     },
     parent: {
@@ -91,42 +97,6 @@ export const getNodeData: GetNodeData = (element) => {
   };
 };
 
-export const canResize: CanResize = (dir, nodeRect, newSize) => {
-  const parent = nodeRect.parent.position;
-  if (!parent) return false;
-
-  const elem = nodeRect.element.position;
-
-  const bounds = {
-    left: elem.left < parent.left,
-    right: elem.right > parent.right,
-    top: elem.top < parent.top,
-    bottom: elem.bottom > parent.bottom,
-  };
-
-  const consistsOnlyOfBounds = (
-    words: string[],
-  ): words is ('top' | 'left' | 'bottom' | 'right')[] => words
-    .map((word) => word in bounds)
-    .every(Boolean);
-
-  const keys = dir
-    .split(/(?=[A-Z])/)
-    .map((word) => word
-      .toLowerCase());
-
-  if (!consistsOnlyOfBounds(keys)) return false;
-
-  const isOutOfBounds = keys
-    .map((key) => bounds[key])
-    .every(Boolean);
-
-  const isBiggerThanParent = newSize.width > nodeRect.parent.size.width
-      || newSize.height > nodeRect.parent.size.height;
-
-  return !isBiggerThanParent || !isOutOfBounds;
-};
-
 export const calculateElementSize: CalculateElementSize = (nodeRect, percentageSize, limits) => {
   const { width, height } = nodeRect.parent.size;
 
@@ -139,8 +109,7 @@ export const calculateElementSize: CalculateElementSize = (nodeRect, percentageS
 export const calculatePercentageSize: CalculatePercentageSize = (
   nodeRect,
   translate,
-  newWidth,
-  newHeight,
+  newSize,
 ) => {
   const { width, height } = nodeRect.parent.size;
 
@@ -149,22 +118,18 @@ export const calculatePercentageSize: CalculatePercentageSize = (
       relativeToParent: {
         width: 1,
         height: 1,
-      },
-      translate: {
-        lastX: 0,
-        lastY: 0,
+        x: 0,
+        y: 0,
       },
     };
   }
 
   return {
     relativeToParent: {
-      width: newWidth / width,
-      height: newHeight / height,
-    },
-    translate: {
-      lastX: translate.x / width,
-      lastY: translate.y / height,
+      width: newSize.width / width,
+      height: newSize.height / height,
+      x: translate.x / width,
+      y: translate.y / height,
     },
   };
 };
@@ -182,10 +147,16 @@ export const adjustTranslateWithinBounds: AdjustTranslateWithinBounds = (
   };
 };
 
-export const nodeRefStyle: INodeRefStyle = (
-  state,
-) => ({
-  visibility: state.loading ? 'hidden' : undefined,
-  borderRadius: state.fullscreen ? '0' : undefined,
-  margin: 0,
-});
+export const getElement = (ref: Rnd | null) => ref?.getSelfElement() || null;
+
+export const calculateCentered = (el: Rnd | null) => {
+  const node = el?.getSelfElement();
+  if (!node) return { x: 0, y: 0 };
+  const parent = node.parentElement;
+  if (!parent) return { x: 0, y: 0 };
+
+  const { width: parentWidth, height: parentHeight } = parent.getBoundingClientRect();
+  const { width: childWidth, height: childHeight } = node.getBoundingClientRect();
+
+  return { x: (parentWidth - childWidth) / 2, y: (parentHeight - childHeight) / 2 };
+};

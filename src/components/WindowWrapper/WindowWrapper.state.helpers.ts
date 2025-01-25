@@ -1,7 +1,6 @@
 import {
   IConvertPercentageSize,
-  IConvertTranslatePercentageSize,
-  ISetSize,
+  IConvertTranslatePercentageSize, ISetRelativeness,
   ITurnOnFullscreen,
 } from '@/components/WindowWrapper/WindowWrapper.state.type';
 
@@ -13,15 +12,15 @@ import {
 
 export const convertTranslatePercentageSize: IConvertTranslatePercentageSize = (
   nodeRect,
-  size,
+  relTranslate,
   newSize,
 ) => {
   const updatedNodeRect = { ...nodeRect, element: { ...nodeRect.element, size: newSize } };
   const parentSize = updatedNodeRect.parent.size;
 
   const calculatedSize = {
-    x: parentSize.width * size.translate.lastX,
-    y: parentSize.height * size.translate.lastY,
+    x: parentSize.width * relTranslate.x,
+    y: parentSize.height * relTranslate.y,
   };
 
   return adjustTranslateWithinBounds(updatedNodeRect, calculatedSize);
@@ -32,84 +31,80 @@ export const turnOnFullscreen: ITurnOnFullscreen = (
   action,
 ) => {
   const { size } = state;
+  const { min } = action.payload;
   const { nodeRect, translate: payloadTranslate } = action.payload;
 
-  const { translate, relativeToParent } = calculatePercentageSize(
+  const { relativeToParent } = calculatePercentageSize(
     nodeRect,
     payloadTranslate,
-    size.width,
-    size.height,
+    size,
   );
 
   const newSize = calculateElementSize(
     nodeRect,
     { width: 1, height: 1 },
-    [size.min.width, size.min.height],
+    [min?.width ?? 50, min?.height ?? 50],
   );
 
   return {
     ...state,
-    size: {
-      ...size,
-      ...newSize,
-      translate: {
-        ...translate,
-        x: 0,
-        y: 0,
-      },
-      relativeToParent,
+    size: { ...newSize },
+    relativeToParent: { ...relativeToParent },
+    translate: {
+      x: 0, y: 0,
     },
-    fullscreen: true,
   };
 };
 
 export const convertPercentageSize: IConvertPercentageSize = (
   state,
   action,
-  setFullscreen,
 ) => {
-  const { size } = state;
   const newNodeRect = { ...action.payload.nodeRect };
-  const fullscreen = setFullscreen ?? state.fullscreen;
+  const { min } = action.payload;
+  const { fullscreen } = action.payload;
 
   const newSize = fullscreen ? newNodeRect.parent.size : calculateElementSize(
     newNodeRect,
-    size.relativeToParent,
-    [size.min.width, size.min.height],
+    state.relativeToParent,
+    [min?.width ?? 50, min?.height ?? 50],
   );
 
-  const translateSize = convertTranslatePercentageSize(newNodeRect, size, newSize);
+  const translateSize = convertTranslatePercentageSize(
+    newNodeRect,
+    state.relativeToParent,
+    newSize,
+  );
 
   return {
     ...state,
-    size: {
-      ...size,
-      ...newSize,
-      translate: fullscreen ? size.translate : {
-        ...size.translate,
-        ...translateSize,
-      },
+    size: { ...newSize },
+    translate: fullscreen ? state.translate : {
+      ...state.translate,
+      ...translateSize,
     },
     fullscreen,
   };
 };
 
-export const setSize: ISetSize = (state, action) => {
+export const setRelativeness: ISetRelativeness = (state, action) => {
   const { payload } = action;
-  const { size } = state;
+
+  const size = {
+    width: payload.size?.width ?? state.relativeToParent.width,
+    height: payload.size?.height ?? state.relativeToParent.height,
+  };
+
+  const translate = {
+    x: payload.translate?.x ?? state.relativeToParent.x,
+    y: payload.translate?.y ?? state.relativeToParent.y,
+  };
 
   return {
     ...state,
-    size: {
+    relativeToParent: {
       ...size,
-      min: { ...(payload.min ?? size.min) },
-      translate: {
-        ...size.translate,
-        ...(payload.translate ?? {}),
-        ...(payload.translateLast ?? {}),
-      },
-      relativeToParent: { ...(payload.relativeToParent ?? size.relativeToParent) },
-      ...(payload.size || {}),
+      ...translate,
     },
   };
 };

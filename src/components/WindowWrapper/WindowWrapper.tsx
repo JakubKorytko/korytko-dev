@@ -6,9 +6,8 @@ import { WindowWrapperProps } from '@/components/WindowWrapper/WindowWrapper.typ
 
 import {
   calculatePercentageSize,
-  canResize,
   getNodeData,
-  nodeRefStyle, resizeHandleClasses,
+  resizeHandleClasses,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
 
 import './WindowWrapper.scss';
@@ -29,41 +28,36 @@ function WindowWrapper(props: WindowWrapperProps) {
   } = props;
 
   const [state, dispatch] = useWindowWrapperEffect({
-    minConstraints, fullscreen, nodeRef, onResize: handleResize, centered,
+    minConstraints, fullscreen, nodeRef, onResize: handleResize, centered, min: minConstraints,
   });
 
-  const onResize: RndResizeCallback = (_, dir, refToElement, delta, __) => {
+  const onResize: RndResizeCallback = (_, __, refToElement, delta, position) => {
     const newSize = {
       width: delta.width + state.size.width,
       height: delta.height + state.size.height,
     };
 
     const dialog = refToElement;
-    if (!dialog || state.fullscreen) return;
+    if (!dialog || fullscreen) return;
 
     const nodeRect = getNodeData(dialog);
-    const { translate } = nodeRect.element;
     const {
-      translate: translateLast,
       relativeToParent,
-    } = calculatePercentageSize(nodeRect, translate, newSize.width, newSize.height);
+    } = calculatePercentageSize(nodeRect, position, newSize);
 
-    if (canResize(
-      dir,
-      nodeRect,
-      { width: state.size.width, height: state.size.height },
-      newSize,
-      centered ?? false,
-    )) {
-      dispatch({
-        type: WindowWrapperActions.SET_SIZE,
-        payload: {
-          size: newSize,
-          translateLast,
-          relativeToParent,
-        },
-      });
-    }
+    dispatch({
+      type: WindowWrapperActions.SET_SIZE,
+      payload: {
+        size: newSize,
+      },
+    });
+    dispatch({
+      type: WindowWrapperActions.SET_RELATIVENESS,
+      payload: {
+        translate: relativeToParent,
+        size: relativeToParent,
+      },
+    });
   };
 
   const onDrag: RndDragCallback = (_, draggableData) => {
@@ -71,9 +65,14 @@ function WindowWrapper(props: WindowWrapperProps) {
     const { x, y } = draggableData;
 
     dispatch({
-      type: WindowWrapperActions.SET_SIZE,
+      type: WindowWrapperActions.SET_RELATIVENESS,
       payload: {
-        translateLast: nodeRect.element.translate,
+        translate: nodeRect.element.translate.relative,
+      },
+    });
+    dispatch({
+      type: WindowWrapperActions.SET_TRANSLATE,
+      payload: {
         translate: { x, y },
       },
     });
@@ -83,28 +82,38 @@ function WindowWrapper(props: WindowWrapperProps) {
   const shouldAnimate = !state.loading && !noAnimate;
   const animation = shouldAnimate ? `animate-appear${centered ? '-centered' : ''}` : null;
 
+  const rndDefault = {
+    x: 0,
+    y: 0,
+    width: initialWidth,
+    height: initialHeight,
+  };
+
+  const rndStyle: Partial<{
+    visibility: 'hidden' | 'visible';
+    borderRadius: string,
+    margin: number
+  }> = {
+    ...(style ?? {}),
+    visibility: state.loading ? 'hidden' : undefined,
+    borderRadius: fullscreen ? '0' : undefined,
+    margin: 0,
+  };
+
   return (
     <Rnd
       className={`${className ?? ''} ${animation} relative`}
       bounds="parent"
-      disableDragging={state.fullscreen}
-      style={{
-        ...nodeRefStyle(state),
-        ...(style ?? {}),
-      }}
-      default={{
-        x: 0,
-        y: 0,
-        width: initialWidth,
-        height: initialHeight,
-      }}
+      disableDragging={fullscreen}
+      style={rndStyle}
+      default={rndDefault}
       resizeHandleClasses={resizeHandleClasses}
       dragHandleClassName={handler ?? ''}
-      minWidth={state.size.min.width}
-      minHeight={state.size.min.height}
+      minWidth={minConstraints?.width ?? 50}
+      minHeight={minConstraints?.height ?? 50}
       dragAxis="both"
       size={size}
-      position={state.size.translate}
+      position={state.translate}
       onResizeStop={onResize}
       onDragStop={onDrag}
       ref={nodeRef}
