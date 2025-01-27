@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useRef } from 'react';
 import { Rnd, RndDragCallback, RndResizeCallback } from 'react-rnd';
 
 import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
@@ -10,12 +10,9 @@ import {
   resizeHandleClasses,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
 
-import './WindowWrapper.scss';
-
 import useWindowWrapperEffect from '@/custom-hooks/useWindowWrapperEffect';
 
 function WindowWrapper(props: WindowWrapperProps) {
-  const nodeRef = React.useRef<Rnd | null>(null);
   const {
     children, className,
     initialWidth, initialHeight,
@@ -24,11 +21,21 @@ function WindowWrapper(props: WindowWrapperProps) {
     fullscreen, minConstraints,
     centered,
     style,
-    noAnimate,
+    ref,
+    isWindowAnimated,
   } = props;
 
+  const localRef = useRef<Rnd | null>(null);
+  const nodeRef = ref ?? localRef;
+
   const [state, dispatch] = useWindowWrapperEffect({
-    minConstraints, fullscreen, nodeRef, onResize: handleResize, centered, min: minConstraints,
+    minConstraints,
+    fullscreen,
+    ref: nodeRef,
+    onResize: handleResize,
+    centered,
+    min: minConstraints,
+    isWindowAnimated,
   });
 
   const onResize: RndResizeCallback = (_, __, refToElement, delta, position) => {
@@ -79,8 +86,6 @@ function WindowWrapper(props: WindowWrapperProps) {
   };
 
   const size = state.size.height !== 0 && state.size.width !== 0 ? state.size : undefined;
-  const shouldAnimate = !state.loading && !noAnimate;
-  const animation = shouldAnimate ? `animate-appear${centered ? '-centered' : ''}` : null;
 
   const rndDefault = {
     x: 0,
@@ -102,9 +107,9 @@ function WindowWrapper(props: WindowWrapperProps) {
 
   return (
     <Rnd
-      className={`${className ?? ''} ${animation} relative`}
+      className={`${className ?? ''} relative`}
       bounds="parent"
-      disableDragging={fullscreen}
+      disableDragging={fullscreen || isWindowAnimated}
       style={rndStyle}
       default={rndDefault}
       resizeHandleClasses={resizeHandleClasses}

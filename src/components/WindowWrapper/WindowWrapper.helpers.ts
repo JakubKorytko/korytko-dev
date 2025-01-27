@@ -1,3 +1,4 @@
+import React from 'react';
 import { Rnd } from 'react-rnd';
 
 import {
@@ -6,6 +7,7 @@ import {
   CalculatePercentageSize,
   GetNodeData,
 } from '@/components/WindowWrapper/WindowWrapper.type';
+import { Animations } from '@/custom-hooks/useAnimations.type';
 
 export const resizeHandleClasses = {
   top: 'resize-top',
@@ -17,6 +19,10 @@ export const resizeHandleClasses = {
   bottomLeft: 'resize-bottomLeft',
   topLeft: 'resize-topLeft',
 };
+
+export const isWindowAnimated = (animations: Animations) => Object.values(animations)
+  .map((anim) => anim.status)
+  .some(Boolean);
 
 export const waitForAnimationsToFinish = (target: HTMLElement, callback: () => void) => {
   Promise.all(target.getAnimations().map((animation) => animation.finished)).then(() => {
@@ -147,10 +153,15 @@ export const adjustTranslateWithinBounds: AdjustTranslateWithinBounds = (
   };
 };
 
-export const getElement = (ref: Rnd | null) => ref?.getSelfElement() || null;
+export const getElement = (ref: React.RefObject<Rnd | null>) => {
+  if (ref.current && 'getSelfElement' in ref.current) {
+    return ref.current.getSelfElement();
+  }
+  return null;
+};
 
-export const calculateCentered = (el: Rnd | null) => {
-  const node = el?.getSelfElement();
+export const calculateCentered = (ref: React.RefObject<Rnd | null>) => {
+  const node = getElement(ref);
   if (!node) return { x: 0, y: 0 };
   const parent = node.parentElement;
   if (!parent) return { x: 0, y: 0 };

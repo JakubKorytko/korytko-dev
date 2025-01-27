@@ -38,4 +38,5 @@ export type ConsoleComponentProps = {
   minimizeApp: VoidFunction,
   visible: boolean,
   sections?: SectionsObject,
+  centered?: boolean
 };

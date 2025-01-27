@@ -1,4 +1,5 @@
 import React from 'react';
+import { Rnd } from 'react-rnd';
 
 export type Dimensions = { width: number; height: number };
 export type Position = { x: number; y: number };
@@ -14,7 +15,8 @@ export interface WindowWrapperProps {
   handle?: string,
   centered?: boolean,
   style?: React.CSSProperties,
-  noAnimate?: boolean,
+  ref?: React.RefObject<Rnd | null>,
+  isWindowAnimated?: boolean,
 }
 
 interface TranslateData extends Position { relative: Position }

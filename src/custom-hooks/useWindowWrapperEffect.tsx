@@ -19,14 +19,14 @@ import { initialState, reducer } from '@/components/WindowWrapper/WindowWrapper.
 function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapperEffectReturn {
   const [state, dispatch] = useReducer(reducer, initialState);
   const {
-    fullscreen, onResize: handleResize, nodeRef, centered, min,
+    fullscreen, onResize: handleResize, ref: nodeRef, centered, min, isWindowAnimated,
   } = props;
   const lastFullscreen = useRef(fullscreen);
 
   useLayoutEffect(() => {
     if (lastFullscreen.current === fullscreen) return;
     lastFullscreen.current = fullscreen;
-    const nodeRect = getNodeData(getElement(nodeRef.current));
+    const nodeRect = getNodeData(getElement(nodeRef));
     dispatch({
       type: WindowWrapperActions.SWITCH_FULLSCREEN,
       payload: {
@@ -74,7 +74,7 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
         type: WindowWrapperActions.CONVERT_PERCENTAGE_SIZE,
         payload: {
           fullscreen: fullscreen ?? false,
-          nodeRect: getNodeData(getElement(nodeRef.current)),
+          nodeRect: getNodeData(getElement(nodeRef)),
         },
       });
     };
@@ -83,25 +83,38 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
   }, [fullscreen, nodeRef]);
 
   useEffect(() => {
-    const node = getElement(nodeRef.current);
+    const node = getElement(nodeRef);
     const resizeObserver = new ResizeObserver(resizeObserverCallback);
     if (node) resizeObserver.observe(node);
     return () => { if (node) resizeObserver.unobserve(node); };
   }, [resizeObserverCallback, nodeRef]);
 
-  useEffect(() => {
-    if (centered) {
+  useLayoutEffect(() => {
+    if (centered && !isWindowAnimated) {
+      const { x, y } = calculateCentered(nodeRef);
+
       dispatch({
         type: WindowWrapperActions.SET_TRANSLATE,
         payload: {
-          translate: calculateCentered(nodeRef.current),
+          translate: { x, y },
+        },
+      });
+
+      const nodeData = getNodeData(getElement(nodeRef));
+      dispatch({
+        type: WindowWrapperActions.SET_RELATIVENESS,
+        payload: {
+          translate: {
+            x: x / nodeData.parent.size.width,
+            y: y / nodeData.parent.size.height,
+          },
         },
       });
     }
-  }, [centered, nodeRef]);
+  }, [centered, nodeRef, isWindowAnimated]);
 
   useEffect(() => {
-    const nodeRect = getNodeData(getElement(nodeRef.current));
+    const nodeRect = getNodeData(getElement(nodeRef));
     const { relativeToParent } = calculatePercentageSize(
       nodeRect,
       nodeRect.element.translate,
@@ -117,7 +130,7 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
   }, [nodeRef]);
 
   useEffect(() => {
-    const element = getElement(nodeRef.current);
+    const element = getElement(nodeRef);
     if (!state.loading && element) {
       waitForAnimationsToFinish(element, () => {
         const nodeRect = getNodeData(element);

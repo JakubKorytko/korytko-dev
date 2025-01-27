@@ -73,7 +73,7 @@ export interface WindowWrapperState {
 }
 
 export type WindowWrapperEffectProps = Partial<WindowWrapperProps> & {
-  nodeRef: React.MutableRefObject<Rnd | null>;
+  ref: React.RefObject<Rnd | null>;
   min?: Dimensions
 };
 

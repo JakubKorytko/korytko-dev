@@ -37,7 +37,6 @@ function WindowWrapperDummy({ centered }: { centered?: boolean }) {
         className={`${elementClassName} ${styles.window}`}
         handle={`${elementClassName}-handler`}
         centered={centered}
-        noAnimate
         fullscreen={isFullscreen}
         style={{ backgroundColor: 'white' }}
       >
