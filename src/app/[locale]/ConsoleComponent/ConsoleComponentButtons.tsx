@@ -8,9 +8,10 @@ import styles from '@/app/[locale]/ConsoleComponent/ConsoleComponent.module.scss
 import closeIcon from '#public/icons/close.svg';
 import maximizeIcon from '#public/icons/maximize.svg';
 import minimizeIcon from '#public/icons/minimize.svg';
+import restoreIcon from '#public/icons/restore.svg';
 
 function ConsoleComponentButtons(props: ConsoleComponentButtonsProps) {
-  const { callbacks } = props;
+  const { callbacks, fullscreen } = props;
   const { minimize, maximize, close } = callbacks;
 
   return (
@@ -24,7 +25,7 @@ function ConsoleComponentButtons(props: ConsoleComponentButtonsProps) {
       </button>
       <button type="button" className={`${styles['console-header-button']}`} onClick={maximize}>
         <Image
-          src={maximizeIcon}
+          src={fullscreen ? restoreIcon : maximizeIcon}
           alt="Maximize console button"
           className={`h-full w-full ${styles['filter-BEBEBE']}`}
         />

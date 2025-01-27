@@ -19,7 +19,8 @@ export type ConsoleComponentButtonsProps = {
     minimize: VoidFunction,
     maximize: VoidFunction,
     close: VoidFunction,
-  }
+  },
+  fullscreen?: boolean
 };
 
 export type HamburgerProps = {

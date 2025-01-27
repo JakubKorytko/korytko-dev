@@ -139,7 +139,7 @@ function ConsoleComponent(props: ConsoleComponentProps) {
                 jakub@korytko.dev: ~
               </h4>
             </div>
-            <ConsoleComponentButtons callbacks={callbacks} />
+            <ConsoleComponentButtons callbacks={callbacks} fullscreen={consoleData.fullscreen} />
             <ConsoleComponentHeaderLinks
               sections={consoleData.sections}
               consoleSize={consoleData.size}
