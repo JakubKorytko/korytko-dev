@@ -1,0 +1,52 @@
+.animate-appear {
+  animation: 0.2s appear;
+
+  &-centered {
+    margin: auto;
+    left: unset !important;
+    top: unset !important;
+    animation: 0.2s appear;
+  }
+
+  @keyframes appear {
+    from {
+      transform: scale(0) translateY(150vh);
+    }
+
+    to {
+      transform: scale(1) translateY(0);
+    }
+  }
+}
+
+.animate-disappear {
+    height: 0 !important;
+    width: 0 !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    transition: all 0.15s;
+    animation-fill-mode: forwards;
+
+    * {
+      visibility: hidden;
+    }
+}
+
+
+.animate-minimize {
+    * {
+      visibility: hidden;
+    }
+
+    top: unset !important;
+    bottom: 0;
+    animation: 0.15s minimize;
+    animation-fill-mode: forwards;
+
+    @keyframes minimize {
+      to {
+        height: 0;
+        min-height: 0;
+      }
+    }
+}
