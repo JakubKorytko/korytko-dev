@@ -22,6 +22,7 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
     fullscreen, onResize: handleResize, ref: nodeRef, centered, min, isWindowAnimated,
   } = props;
   const lastFullscreen = useRef(fullscreen);
+  const firstRender = useRef(true);
 
   useLayoutEffect(() => {
     if (lastFullscreen.current === fullscreen) return;
@@ -91,6 +92,8 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
 
   useLayoutEffect(() => {
     if (centered && !isWindowAnimated) {
+      if (!firstRender.current) return;
+      firstRender.current = false;
       const { x, y } = calculateCentered(nodeRef);
 
       dispatch({

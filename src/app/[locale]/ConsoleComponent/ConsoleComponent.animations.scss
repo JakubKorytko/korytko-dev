@@ -1,3 +1,36 @@
+@keyframes minimize-restore {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes appear {
+  from {
+    transform: scale(0) translateY(150vh);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes minimize {
+  to {
+    height: 0;
+    min-height: 0;
+    bottom: -1vh;
+  }
+}
+
+@mixin disappear {
+  height: 0 !important;
+  width: 0 !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  opacity: 0;
+}
+
 .animate-appear {
   animation: 0.2s appear;
 
@@ -7,46 +40,36 @@
     top: unset !important;
     animation: 0.2s appear;
   }
-
-  @keyframes appear {
-    from {
-      transform: scale(0) translateY(150vh);
-    }
-
-    to {
-      transform: scale(1) translateY(0);
-    }
-  }
 }
 
 .animate-disappear {
-    height: 0 !important;
-    width: 0 !important;
-    min-height: 0 !important;
-    min-width: 0 !important;
-    transition: all 0.15s;
-    animation-fill-mode: forwards;
+  * { visibility: hidden; }
 
-    * {
-      visibility: hidden;
-    }
+  @include disappear;
+
+  transition: all 0.25s;
 }
 
+.animate-maximize {
+  transition: all 0.1s;
+}
+
+.animate-maximize-restore {
+  transition: all 0.1s;
+}
+
+.animate-minimize-restore {
+  * { visibility: hidden; }
+
+  visibility: visible;
+  animation: 0.2s minimize-restore;
+}
 
 .animate-minimize {
-    * {
-      visibility: hidden;
-    }
+  * { visibility: hidden; }
 
-    top: unset !important;
-    bottom: 0;
-    animation: 0.15s minimize;
-    animation-fill-mode: forwards;
-
-    @keyframes minimize {
-      to {
-        height: 0;
-        min-height: 0;
-      }
-    }
+  top: unset !important;
+  bottom: 0;
+  animation: 0.15s minimize;
+  animation-fill-mode: forwards;
 }

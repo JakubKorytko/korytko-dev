@@ -2,10 +2,11 @@ import { ReactElement } from 'react';
 import { Rnd } from 'react-rnd';
 
 export type Animation = {
-  status: boolean;
+  status?: boolean;
   animation: string;
   callback?: VoidFunction;
   preserve?: boolean;
+  runCallbackBeforeAnimation?: boolean
 };
 
 export type Animations = {
@@ -13,6 +14,8 @@ export type Animations = {
   close: Animation;
   maximize: Animation;
   minimize: Animation;
+  maximizeRestore: Animation;
+  minimizeRestore: Animation;
 };
 
 export type UseAnimationReturn = {

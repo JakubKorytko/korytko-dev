@@ -41,10 +41,12 @@ const AnimateApp: React.FC<AnimateAppProps> = ({
 
       setCurrentAnimation(animation.animation);
 
-      await waitForAnimationEnd(refElement);
+      if (!animation.runCallbackBeforeAnimation) await waitForAnimationEnd(refElement);
 
       animation.callback?.();
       statusCallback?.(type, false);
+
+      if (animation.runCallbackBeforeAnimation) await waitForAnimationEnd(refElement);
 
       if (!animation.preserve) {
         setCurrentAnimation('');

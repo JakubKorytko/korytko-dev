@@ -31,6 +31,9 @@ function ConsoleComponent(props: ConsoleComponentProps) {
     closeApp, minimizeApp, visible, sections, centered = true,
   } = props;
 
+  const nodeRef = React.useRef<Rnd | null>(null);
+  const [visibility, setVisibility] = useState(visible);
+
   const [consoleData, setConsoleData] = useState<ConsoleData>({
     size: {
       width: 1000,
@@ -40,27 +43,44 @@ function ConsoleComponent(props: ConsoleComponentProps) {
     headerVisible: false,
     sections: {},
   });
-  const nodeRef = React.useRef<Rnd | null>(null);
 
   const animations = useAnimations({
     defaultAnimations: {
-      open: {
-        status: true,
-        animation: `animate-appear${centered ? '-centered' : ''}`,
-      },
-      close: {
-        status: false,
-        animation: 'animate-disappear',
-        callback: closeApp,
-        preserve: true,
-      },
+      open: { status: true, animation: `animate-appear${centered ? '-centered' : ''}` },
+      close: { animation: 'animate-disappear', callback: closeApp },
       minimize: {
-        status: false,
         animation: 'animate-minimize',
-        callback: minimizeApp,
+        callback: () => {
+          setVisibility(false);
+          minimizeApp();
+        },
+      },
+      maximize: {
+        animation: 'animate-maximize',
+        runCallbackBeforeAnimation: true,
+        callback: () => setConsoleData((data) => ({ ...data, fullscreen: true })),
+      },
+      maximizeRestore: {
+        animation: 'animate-maximize-restore',
+        runCallbackBeforeAnimation: true,
+        callback: () => setConsoleData((data) => ({ ...data, fullscreen: false })),
+      },
+      minimizeRestore: {
+        animation: 'animate-minimize-restore',
+        runCallbackBeforeAnimation: true,
+        callback: () => { setVisibility(true); },
       },
     },
   });
+
+  const setConsoleSize = useCallback(({ width, height }: Size) => {
+    setConsoleData((prevState) => ({
+      ...prevState,
+      size: {
+        width, height,
+      },
+    }));
+  }, []);
 
   useEffect(() => {
     if (!sections) {
@@ -84,18 +104,14 @@ function ConsoleComponent(props: ConsoleComponentProps) {
     }
   }, [sections]);
 
-  const setConsoleSize = useCallback(({ width, height }: Size) => {
-    setConsoleData((prevState) => ({
-      ...prevState,
-      size: {
-        width, height,
-      },
-    }));
-  }, []);
+  useEffect(() => {
+    if (visible && visibility !== visible) {
+      animations.setStatus('minimizeRestore', true);
+    } else {
+      setVisibility(visible);
+    }
+  }, [visible, animations, visibility]);
 
-  const toggleFullscreen = () => setConsoleData((
-    { fullscreen, ...rest },
-  ) => ({ ...rest, fullscreen: !fullscreen }));
   const toggleMenu = () => setConsoleData((
     { headerVisible, ...rest },
   ) => ({ ...rest, headerVisible: !headerVisible }));
@@ -105,10 +121,8 @@ function ConsoleComponent(props: ConsoleComponentProps) {
   const callbacks = {
     minimize: () => animations.setStatus('minimize', true),
     close: () => animations.setStatus('close', true),
-    maximize: toggleFullscreen,
+    maximize: () => animations.setStatus(`maximize${consoleData.fullscreen ? 'Restore' : ''}`, true),
   };
-
-  const isAnimated = isWindowAnimated(animations.animations);
 
   return (
     <Conditional showWhen={shouldRenderWindow}>
@@ -118,12 +132,12 @@ function ConsoleComponent(props: ConsoleComponentProps) {
       >
         <WindowWrapper
           ref={nodeRef}
-          isWindowAnimated={isAnimated}
+          isWindowAnimated={isWindowAnimated(animations.animations)}
           onResize={setConsoleSize}
           initialHeight="95%"
           initialWidth="90%"
           fullscreen={consoleData.fullscreen}
-          className={`${styles['console-component']} flex flex-col ${!visible && 'invisible'}`}
+          className={`${styles['console-component']} flex flex-col ${!visibility && 'invisible'}`}
           minConstraints={{ width: 385, height: 85 }}
           handle={styles['console-header-handler']}
           centered={centered}

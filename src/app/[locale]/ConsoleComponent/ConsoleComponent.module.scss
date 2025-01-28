@@ -23,15 +23,12 @@
 
 .console {
   &-component {
-    width: 90%;
-    height: 95%;
     background-color: rgb(35 35 35 / 70%);
     border-radius: 0.5rem;
     overflow: hidden;
     container-name: console;
     container-type: inline-size;
     contain: layout;
-    margin: 0;
     z-index: 2;
   }
 

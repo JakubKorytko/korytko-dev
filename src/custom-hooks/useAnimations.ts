@@ -2,12 +2,20 @@ import { useCallback, useState } from 'react';
 
 import { Animations, UseAnimationProps, UseAnimationReturn } from '@/custom-hooks/useAnimations.type';
 
-const defaultState: Animations = {
-  open: { status: false, animation: '', callback: undefined },
-  close: { status: false, animation: '', callback: undefined },
-  maximize: { status: false, animation: '', callback: undefined },
-  minimize: { status: false, animation: '', callback: undefined },
-};
+const createDefaultAnimationObject = () => ({
+  status: false,
+  animation: '',
+  callback: undefined,
+  runCallbackBeforeAnimation: false,
+});
+
+const animationKeys: (keyof Animations)[] = ['open', 'close', 'maximize', 'minimize', 'maximizeRestore', 'minimizeRestore'];
+
+const defaultState: Animations = Object.fromEntries(
+  animationKeys.map(
+    (state) => [state, createDefaultAnimationObject()],
+  ),
+) as Animations;
 
 const useAnimation = ({ defaultAnimations }: UseAnimationProps = {}): UseAnimationReturn => {
   const [animations, setAnimations] = useState<Animations>({
