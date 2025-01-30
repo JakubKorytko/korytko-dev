@@ -32,9 +32,10 @@ function Hamburger(props: HamburgerProps) {
 }
 
 function ConsoleComponentHeaderLinks(props: ConsoleComponentHeaderLinksProps) {
-  const { sections, consoleSize, menuVisibility } = props;
+  const {
+    sections, consoleSize, menuVisibility, isMobile,
+  } = props;
 
-  const isMobile = consoleSize.width > 0 && consoleSize.width < 700;
   const displayLinks = consoleSize.width >= 700 || (consoleSize.width > 0 && menuVisibility);
 
   const links = Object.keys(sections).map(
@@ -65,6 +66,7 @@ function ConsoleComponentHeaderLinks(props: ConsoleComponentHeaderLinksProps) {
                 />
               </button>
             </div>
+            <div className={styles['blurry-bg']} />
           </div>
         </Conditional>
         <ul className="overflow-hidden pb-1 pl-1">

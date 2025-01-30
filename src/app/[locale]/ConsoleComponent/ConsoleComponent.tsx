@@ -1,9 +1,10 @@
 'use client';
 
 import React, {
-  useCallback, useEffect, useState,
+  useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { Rnd } from 'react-rnd';
+import { loremIpsum } from 'lorem-ipsum';
 
 import {
   ConsoleComponentProps,
@@ -47,13 +48,14 @@ function ConsoleComponent(props: ConsoleComponentProps) {
   const animations = useAnimations({
     defaultAnimations: {
       open: { status: true, animation: `animate-appear${centered ? '-centered' : ''}` },
-      close: { animation: 'animate-disappear', callback: closeApp },
+      close: { animation: 'animate-disappear', callback: closeApp, convertTranslate: true },
       minimize: {
         animation: 'animate-minimize',
         callback: () => {
           setVisibility(false);
           minimizeApp();
         },
+        convertTranslate: true,
       },
       maximize: {
         animation: 'animate-maximize',
@@ -69,6 +71,7 @@ function ConsoleComponent(props: ConsoleComponentProps) {
         animation: 'animate-minimize-restore',
         runCallbackBeforeAnimation: true,
         callback: () => { setVisibility(true); },
+        convertTranslate: true,
       },
     },
   });
@@ -106,7 +109,7 @@ function ConsoleComponent(props: ConsoleComponentProps) {
 
   useEffect(() => {
     if (visible && visibility !== visible) {
-      animations.setStatus('minimizeRestore', true);
+      if (animations.animations.minimizeRestore.status !== true) animations.setStatus('minimizeRestore', true);
     } else {
       setVisibility(visible);
     }
@@ -123,6 +126,8 @@ function ConsoleComponent(props: ConsoleComponentProps) {
     close: () => animations.setStatus('close', true),
     maximize: () => animations.setStatus(`maximize${consoleData.fullscreen ? 'Restore' : ''}`, true),
   };
+
+  const text = useMemo(() => loremIpsum({ count: 100 }), []);
 
   return (
     <Conditional showWhen={shouldRenderWindow}>
@@ -142,25 +147,31 @@ function ConsoleComponent(props: ConsoleComponentProps) {
           handle={styles['console-header-handler']}
           centered={centered}
         >
-          <header className={styles['console-header']} is-mobile={shouldRenderHeader.toString()}>
-            <ConsoleComponentHeaderLinks.Hamburger
-              showWhen={shouldRenderHeader}
-              onClick={toggleMenu}
-            />
-            <div className={`${styles['console-header-handler']} absolute w-full h-full z-0 left-0 top-0`} />
-            <div className={styles['console-header-name']}>
-              <h4 className="z-10">
-                jakub@korytko.dev: ~
-              </h4>
+          <div className={styles['console-component-wrapper']}>
+            <header className={styles['console-header']} is-mobile={shouldRenderHeader.toString()}>
+              <ConsoleComponentHeaderLinks.Hamburger
+                showWhen={shouldRenderHeader}
+                onClick={toggleMenu}
+              />
+              <div className={`${styles['console-header-handler']} absolute w-full h-full z-0 left-0 top-0`} />
+              <div className={styles['console-header-name']}>
+                <h4 className="z-10">
+                  jakub@korytko.dev: ~
+                </h4>
+              </div>
+              <ConsoleComponentButtons callbacks={callbacks} fullscreen={consoleData.fullscreen} />
+              <ConsoleComponentHeaderLinks
+                sections={consoleData.sections}
+                consoleSize={consoleData.size}
+                menuVisibility={consoleData.headerVisible}
+                isMobile={shouldRenderHeader}
+              />
+            </header>
+            <div className={`${styles['console-content']}`}>
+              <p>{text}</p>
+              <div className={styles['blurry-bg']} />
             </div>
-            <ConsoleComponentButtons callbacks={callbacks} fullscreen={consoleData.fullscreen} />
-            <ConsoleComponentHeaderLinks
-              sections={consoleData.sections}
-              consoleSize={consoleData.size}
-              menuVisibility={consoleData.headerVisible}
-            />
-          </header>
-          <div className={`${styles['console-content']} flex-grow`} />
+          </div>
         </WindowWrapper>
       </AnimateApp>
     </Conditional>

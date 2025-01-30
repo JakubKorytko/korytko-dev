@@ -1,28 +1,14 @@
 'use client';
 
 import {
-  cloneElement, useCallback,
-  useEffect,
-  useState,
+  cloneElement, useCallback, useEffect, useState,
 } from 'react';
-import { Rnd } from 'react-rnd';
+
+import { AnimateAppProps, Animations } from '@/custom-hooks/useAnimations.type';
 
 import {
-  AnimateAppProps, Animations,
-} from '@/custom-hooks/useAnimations.type';
-
-const waitForAnimationEnd = (node: HTMLElement | Rnd): Promise<void> => new Promise((resolve) => {
-  const element = 'getSelfElement' in node ? node.getSelfElement() : node;
-  if (!element) return;
-
-  const handleAnimationEnd = () => {
-    element.removeEventListener('animationend', handleAnimationEnd);
-    element.removeEventListener('transitionend', handleAnimationEnd);
-    resolve();
-  };
-  element.addEventListener('animationend', handleAnimationEnd);
-  element.addEventListener('transitionend', handleAnimationEnd);
-});
+  getHTMLElement, setLeftAndTop, unsetLeftAndTop, waitForAnimationEnd,
+} from '@/components/AnimateApp.helpers';
 
 const AnimateApp: React.FC<AnimateAppProps> = ({
   animations,
@@ -37,16 +23,24 @@ const AnimateApp: React.FC<AnimateAppProps> = ({
       if (!animation || !animation.status || !animation.animation) return;
 
       const refElement = children.props.ref?.current;
-      if (!refElement) return;
+      if (!refElement) {
+        setCurrentAnimation('');
+        return;
+      }
+
+      const htmlElement = getHTMLElement(refElement);
+      const translate = htmlElement ? htmlElement.style.transform : '';
 
       setCurrentAnimation(animation.animation);
 
+      if (animation.convertTranslate) setLeftAndTop(htmlElement);
       if (!animation.runCallbackBeforeAnimation) await waitForAnimationEnd(refElement);
 
       animation.callback?.();
       statusCallback?.(type, false);
 
       if (animation.runCallbackBeforeAnimation) await waitForAnimationEnd(refElement);
+      if (animation.convertTranslate) unsetLeftAndTop(htmlElement, translate);
 
       if (!animation.preserve) {
         setCurrentAnimation('');

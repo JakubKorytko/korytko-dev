@@ -7,6 +7,7 @@ const createDefaultAnimationObject = () => ({
   animation: '',
   callback: undefined,
   runCallbackBeforeAnimation: false,
+  convertTranslate: false,
 });
 
 const animationKeys: (keyof Animations)[] = ['open', 'close', 'maximize', 'minimize', 'maximizeRestore', 'minimizeRestore'];

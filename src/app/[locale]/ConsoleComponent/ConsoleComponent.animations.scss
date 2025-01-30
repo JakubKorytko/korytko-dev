@@ -1,75 +1,91 @@
+%animate {
+  user-select: none;
+  pointer-events: none;
+}
+
 @keyframes minimize-restore {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    top: 105vh;
+    transform: scale(0);
+  }
+  to { transform: scale(1); }
 }
 
 @keyframes appear {
   from {
     transform: scale(0) translateY(150vh);
-    opacity: 0;
   }
 
   to {
     transform: scale(1) translateY(0);
-    opacity: 1;
   }
 }
 
 @keyframes minimize {
+  from {
+    transform: scale(1);
+  }
+
   to {
-    height: 0;
-    min-height: 0;
-    bottom: -1vh;
+    transform: scale(0);
+    top: 105vh;
   }
 }
 
-@mixin disappear {
-  height: 0 !important;
-  width: 0 !important;
-  min-height: 0 !important;
-  min-width: 0 !important;
-  opacity: 0;
+@keyframes disappear {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(0);
+  }
 }
 
 .animate-appear {
-  animation: 0.2s appear;
+  @extend %animate;
+
+  animation: 0.3s appear;
 
   &-centered {
+    @extend %animate;
+
     margin: auto;
     left: unset !important;
     top: unset !important;
-    animation: 0.2s appear;
+    animation: 0.3s appear;
   }
 }
 
 .animate-disappear {
-  * { visibility: hidden; }
+  @extend %animate;
 
-  @include disappear;
-
-  transition: all 0.25s;
+  animation: 0.2s disappear;
+  animation-fill-mode: forwards;
 }
 
 .animate-maximize {
+  @extend %animate;
+
   transition: all 0.1s;
 }
 
 .animate-maximize-restore {
+  @extend %animate;
+
   transition: all 0.1s;
 }
 
 .animate-minimize-restore {
-  * { visibility: hidden; }
+  @extend %animate;
 
   visibility: visible;
-  animation: 0.2s minimize-restore;
+  animation: 0.4s minimize-restore;
 }
 
 .animate-minimize {
-  * { visibility: hidden; }
+  @extend %animate;
 
-  top: unset !important;
-  bottom: 0;
-  animation: 0.15s minimize;
+  animation: 0.4s minimize;
   animation-fill-mode: forwards;
 }

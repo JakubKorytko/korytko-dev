@@ -31,7 +31,8 @@ export type HamburgerProps = {
 export type ConsoleComponentHeaderLinksProps = {
   consoleSize: Size,
   sections: SectionsObject,
-  menuVisibility: boolean
+  menuVisibility: boolean,
+  isMobile: boolean
 };
 
 export type ConsoleComponentProps = {
