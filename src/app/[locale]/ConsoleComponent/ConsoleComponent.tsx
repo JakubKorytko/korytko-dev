@@ -33,7 +33,7 @@ function ConsoleComponent(props: ConsoleComponentProps) {
   } = props;
 
   const nodeRef = React.useRef<Rnd | null>(null);
-  const [visibility, setVisibility] = useState(visible);
+  const [hijackedVisibility, setHijackedVisibility] = useState(visible);
 
   const [consoleData, setConsoleData] = useState<ConsoleData>({
     size: {
@@ -52,7 +52,7 @@ function ConsoleComponent(props: ConsoleComponentProps) {
       minimize: {
         animation: 'animate-minimize',
         callback: () => {
-          setVisibility(false);
+          setHijackedVisibility(false);
           minimizeApp();
         },
         convertTranslate: true,
@@ -69,8 +69,9 @@ function ConsoleComponent(props: ConsoleComponentProps) {
       },
       minimizeRestore: {
         animation: 'animate-minimize-restore',
-        runCallbackBeforeAnimation: true,
-        callback: () => { setVisibility(true); },
+        callback: () => {
+          setHijackedVisibility(true);
+        },
         convertTranslate: true,
       },
     },
@@ -107,13 +108,15 @@ function ConsoleComponent(props: ConsoleComponentProps) {
     }
   }, [sections]);
 
+  const isAnimated = useMemo(() => isWindowAnimated(
+    animations.animations,
+  ), [animations.animations]);
+
   useEffect(() => {
-    if (visible && visibility !== visible) {
-      if (animations.animations.minimizeRestore.status !== true) animations.setStatus('minimizeRestore', true);
-    } else {
-      setVisibility(visible);
+    if (visible && !hijackedVisibility && !isAnimated) {
+      animations.setStatus('minimizeRestore', true);
     }
-  }, [visible, animations, visibility]);
+  }, [visible, animations, hijackedVisibility, isAnimated]);
 
   const toggleMenu = () => setConsoleData((
     { headerVisible, ...rest },
@@ -129,6 +132,12 @@ function ConsoleComponent(props: ConsoleComponentProps) {
 
   const text = useMemo(() => loremIpsum({ count: 100 }), []);
 
+  const computedClassName = useMemo(
+    () => `${styles['console-component']} flex flex-col ${!hijackedVisibility && 'invisible'}`,
+    [hijackedVisibility],
+  );
+  const minConstraints = useMemo(() => ({ width: 385, height: 85 }), []);
+
   return (
     <Conditional showWhen={shouldRenderWindow}>
       <AnimateApp
@@ -137,13 +146,13 @@ function ConsoleComponent(props: ConsoleComponentProps) {
       >
         <WindowWrapper
           ref={nodeRef}
-          isWindowAnimated={isWindowAnimated(animations.animations)}
+          isWindowAnimated={isAnimated}
           onResize={setConsoleSize}
           initialHeight="95%"
           initialWidth="90%"
           fullscreen={consoleData.fullscreen}
-          className={`${styles['console-component']} flex flex-col ${!visibility && 'invisible'}`}
-          minConstraints={{ width: 385, height: 85 }}
+          className={computedClassName}
+          minConstraints={minConstraints}
           handle={styles['console-header-handler']}
           centered={centered}
         >

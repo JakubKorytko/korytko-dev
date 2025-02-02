@@ -42,20 +42,18 @@ const AnimateApp: React.FC<AnimateAppProps> = ({
       if (animation.runCallbackBeforeAnimation) await waitForAnimationEnd(refElement);
       if (animation.convertTranslate) unsetLeftAndTop(htmlElement, translate);
 
-      if (!animation.preserve) {
-        setCurrentAnimation('');
-      }
+      setCurrentAnimation('');
     },
     [animations, children, statusCallback],
   );
 
   useEffect(() => {
     Object.keys(animations).forEach((type) => {
-      if (animations[type as keyof Animations]?.status) {
+      if (animations[type as keyof Animations]?.status && currentAnimation === '') {
         handleAnimation(type as keyof Animations);
       }
     });
-  }, [animations, handleAnimation]);
+  }, [animations, handleAnimation, currentAnimation]);
 
   return cloneElement(children, {
     className: `${children.props.className || ''} ${currentAnimation}`.trim(),

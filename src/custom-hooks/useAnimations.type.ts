@@ -5,7 +5,6 @@ export type Animation = {
   status?: boolean;
   animation: string;
   callback?: VoidFunction;
-  preserve?: boolean;
   runCallbackBeforeAnimation?: boolean,
   convertTranslate?: boolean
 };

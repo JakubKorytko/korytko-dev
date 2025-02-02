@@ -61,6 +61,7 @@ export const convertPercentageSize: IConvertPercentageSize = (
   action,
 ) => {
   const newNodeRect = { ...action.payload.nodeRect };
+
   const { min } = action.payload;
   const { fullscreen } = action.payload;
 
@@ -76,6 +77,14 @@ export const convertPercentageSize: IConvertPercentageSize = (
     newSize,
   );
 
+  const isEqualToMin = min && (newSize.width === min.width || newSize.height === min.height);
+
+  const { relativeToParent } = isEqualToMin ? calculatePercentageSize(
+    newNodeRect,
+    translateSize,
+    newSize,
+  ) : state;
+
   return {
     ...state,
     size: { ...newSize },
@@ -83,6 +92,7 @@ export const convertPercentageSize: IConvertPercentageSize = (
       ...state.translate,
       ...translateSize,
     },
+    relativeToParent: { ...relativeToParent },
     fullscreen,
   };
 };

@@ -58,11 +58,16 @@ function WindowWrapper(props: WindowWrapperProps) {
         size: newSize,
       },
     });
+
+    const {
+      x, y, width, height,
+    } = relativeToParent;
+
     dispatch({
       type: WindowWrapperActions.SET_RELATIVENESS,
       payload: {
-        translate: relativeToParent,
-        size: relativeToParent,
+        translate: { x, y },
+        size: { width, height },
       },
     });
   };

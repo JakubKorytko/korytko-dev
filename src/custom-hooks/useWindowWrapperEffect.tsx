@@ -76,12 +76,13 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
         payload: {
           fullscreen: fullscreen ?? false,
           nodeRect: getNodeData(getElement(nodeRef)),
+          min,
         },
       });
     };
     window.addEventListener('resize', handleResizeEvent);
     return () => window.removeEventListener('resize', handleResizeEvent);
-  }, [fullscreen, nodeRef]);
+  }, [fullscreen, nodeRef, min]);
 
   useEffect(() => {
     const node = getElement(nodeRef);
@@ -123,10 +124,15 @@ function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapp
       nodeRect.element.translate,
       nodeRect.element.size,
     );
+
+    const {
+      x, y, width, height,
+    } = relativeToParent;
+
     dispatch({
       type: WindowWrapperActions.SET_RELATIVENESS,
       payload: {
-        size: relativeToParent, translate: relativeToParent,
+        size: { width, height }, translate: { x, y },
       },
     });
     dispatch({ type: WindowWrapperActions.SET_LOADING, payload: false });
