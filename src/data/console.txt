@@ -1,0 +1,8 @@
+Welcome to korytko.dev 1.0.0 LTS (Web)
+
+ * GitHub: [JakubKorytko](https://github.com/JakubKorytko)
+ * Contact: [jakub@korytko.me](mailto:jakub@korytko.me)
+ * Linkedin: [jakub-korytko](https://www.linkedin.com/in/jakub-korytko/)
+
+This message is shown once a day. To disable it please create the /home/jakub/.hushlogin file.
+
