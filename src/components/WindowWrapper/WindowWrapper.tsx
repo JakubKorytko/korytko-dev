@@ -45,7 +45,7 @@ function WindowWrapper(props: WindowWrapperProps) {
     };
 
     const dialog = refToElement;
-    if (!dialog || fullscreen) return false;
+    if (!dialog || fullscreen) return;
 
     const nodeRect = getNodeData(dialog);
     const {

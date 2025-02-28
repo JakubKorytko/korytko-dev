@@ -4,7 +4,6 @@ import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { Rnd } from 'react-rnd';
-import { loremIpsum } from 'lorem-ipsum';
 
 import {
   ConsoleComponentProps,
