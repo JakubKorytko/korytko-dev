@@ -1,3 +1,8 @@
+import { getRect } from '@/utils/dom';
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+import '@4tw/cypress-drag-drop';
+
 /// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
@@ -36,3 +41,35 @@
 //     }
 //   }
 // }
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Cypress {
+    interface Chainable {
+      isInParentBounds(selectors:
+      { parent: string, element: string }): Chainable<JQuery<HTMLElement>>
+      resize(selector: string, delta: { x: number, y: number }): Chainable<JQuery<HTMLElement>>
+    }
+  }
+}
+
+Cypress.Commands.add('isInParentBounds', (selectors) => cy.get(
+  selectors.parent,
+).then((parent) => cy
+  .get(selectors.element).then((element) => {
+    const parentRect = getRect(parent[0]);
+    const elementRect = getRect(element[0]);
+
+    expect(elementRect.bottom).to.be.lte(parentRect.bottom);
+    expect(elementRect.right).to.be.lte(parentRect.right);
+    expect(elementRect.top).to.be.gte(parentRect.top);
+    expect(elementRect.left).to.be.gte(parentRect.left);
+  })));
+
+Cypress.Commands.add('resize', (selector, delta) => cy
+  .get(selector)
+  .trigger('mousemove', { position: 'center' })
+  .trigger('mousedown')
+  .trigger('mousemove', delta.x, delta.y, { force: true })
+  .trigger('mouseup', delta.x, delta.y, { force: true })
+  .wait(500));

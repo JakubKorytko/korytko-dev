@@ -2,6 +2,7 @@
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
+    "baseUrl": "./",
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -17,10 +18,12 @@
         "name": "next"
       }
     ],
-    "types": ["cypress", "node"],
+    "types": ["cypress", "node", "@4tw/cypress-drag-drop"],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"],
+      "#public/*": ["./public/*"]
+    },
+    "target": "ES2017"
   },
   "include": [
     "next-env.d.ts",

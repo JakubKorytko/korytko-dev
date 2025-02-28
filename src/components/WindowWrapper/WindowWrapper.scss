@@ -1,0 +1,23 @@
+@mixin appear($top, $left, $translateX, $translateY, $scale) {
+  top: $top;
+  left: $left;
+  transform: scale($scale) translate($translateX, $translateY)
+}
+
+@keyframes appear {
+  from { @include appear(0, 0, 0, 150vh, 0); }
+  to { @include appear(0, 0, 0, 0, 1); }
+}
+
+@keyframes appear-centered {
+  from { @include appear(50%, 50%, -50%, 150vh, 0); }
+  to { @include appear(50%, 50%, -50%, -50%, 1); }
+}
+
+.animate-appear {
+  animation: 0.2s appear;
+
+  &-centered {
+    animation: 0.2s appear-centered;
+  }
+}

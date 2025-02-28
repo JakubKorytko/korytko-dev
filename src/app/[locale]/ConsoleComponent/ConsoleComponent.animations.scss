@@ -1,0 +1,91 @@
+%animate {
+  user-select: none;
+  pointer-events: none;
+}
+
+@keyframes minimize-restore {
+  from {
+    top: 105vh;
+    transform: scale(0);
+  }
+  to { transform: scale(1); }
+}
+
+@keyframes appear {
+  from {
+    transform: scale(0) translateY(150vh);
+  }
+
+  to {
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes minimize {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(0);
+    top: 105vh;
+  }
+}
+
+@keyframes disappear {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(0);
+  }
+}
+
+.animate-appear {
+  @extend %animate;
+
+  animation: 0.3s appear;
+
+  &-centered {
+    @extend %animate;
+
+    margin: auto;
+    left: unset !important;
+    top: unset !important;
+    animation: 0.3s appear;
+  }
+}
+
+.animate-disappear {
+  @extend %animate;
+
+  animation: 0.2s disappear;
+  animation-fill-mode: forwards;
+}
+
+.animate-maximize {
+  @extend %animate;
+
+  transition: all 0.1s;
+}
+
+.animate-maximize-restore {
+  @extend %animate;
+
+  transition: all 0.1s;
+}
+
+.animate-minimize-restore {
+  @extend %animate;
+
+  visibility: visible;
+  animation: 0.4s minimize-restore;
+}
+
+.animate-minimize {
+  @extend %animate;
+
+  animation: 0.4s minimize;
+  animation-fill-mode: forwards;
+}

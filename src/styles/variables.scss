@@ -1,1 +1,10 @@
-$primary-color: green;
+$filter: (
+        'bebebe': brightness(0) saturate(100%) invert(74%) sepia(20%) saturate(0%) hue-rotate(159deg) brightness(100%) contrast(88%),
+        'c77777': brightness(0) saturate(100%) invert(54%) sepia(10%) saturate(1575%) hue-rotate(311deg) brightness(96%) contrast(101%),
+        'c74848': brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(871%) hue-rotate(325deg) brightness(92%) contrast(85%),
+        'e4e3e3': brightness(0) saturate(100%) invert(88%) sepia(9%) saturate(14%) hue-rotate(314deg) brightness(101%) contrast(97%),
+        'ffffff': invert(100%) sepia(0%) saturate(0%) hue-rotate(283deg) brightness(108%) contrast(101%),
+        'ffb5b5': brightness(0) saturate(100%) invert(71%) sepia(7%) saturate(2030%) hue-rotate(312deg) brightness(110%) contrast(103%),
+        'ff5757': brightness(0) saturate(100%) invert(76%) sepia(84%) saturate(4755%) hue-rotate(321deg) brightness(93%) contrast(124%)
+);
+$header-bg: linear-gradient(180deg, rgb(75 81 75 / 100%) 0%, rgb(72 71 67 / 100%) 46%, rgb(62 61 57 / 100%) 100%);
