@@ -16,6 +16,7 @@ import { Sections } from '@/app/api/sections/getSections.type';
 
 import ConsoleComponentButtons from '@/app/[locale]/ConsoleComponent/ConsoleComponentButtons';
 import ConsoleComponentHeaderLinks from '@/app/[locale]/ConsoleComponent/ConsoleComponentHeaderLinks';
+import ConsoleContent from '@/app/[locale]/ConsoleComponent/ConsoleContent';
 
 import AnimateApp from '@/components/AnimateApp';
 import Conditional from '@/components/Conditional';
@@ -34,6 +35,7 @@ function ConsoleComponent(props: ConsoleComponentProps) {
 
   const nodeRef = React.useRef<Rnd | null>(null);
   const [hijackedVisibility, setHijackedVisibility] = useState(visible);
+  const [consoleText, setConsoleText] = useState('');
 
   const [consoleData, setConsoleData] = useState<ConsoleData>({
     size: {
@@ -106,7 +108,12 @@ function ConsoleComponent(props: ConsoleComponentProps) {
         sections,
       }));
     }
-  }, [sections]);
+    if (consoleText.length === 0) {
+      fetch('/api/console')
+        .then((response) => response.text())
+        .then((text) => setConsoleText(text));
+    }
+  }, [sections, consoleText]);
 
   const isAnimated = useMemo(() => isWindowAnimated(
     animations.animations,
@@ -129,8 +136,6 @@ function ConsoleComponent(props: ConsoleComponentProps) {
     close: () => animations.setStatus('close', true),
     maximize: () => animations.setStatus(`maximize${consoleData.fullscreen ? 'Restore' : ''}`, true),
   };
-
-  const text = useMemo(() => loremIpsum({ count: 100 }), []);
 
   const computedClassName = useMemo(
     () => `${styles['console-component']} flex flex-col ${!hijackedVisibility && 'invisible'}`,
@@ -177,7 +182,13 @@ function ConsoleComponent(props: ConsoleComponentProps) {
               />
             </header>
             <div className={`${styles['console-content']}`}>
-              <p>{text}</p>
+              <ConsoleContent inputValue="pic.sh -s 1 && mefetch">
+                <ConsoleContent.Line>
+                  <ConsoleContent.Text>
+                    {consoleText}
+                  </ConsoleContent.Text>
+                </ConsoleContent.Line>
+              </ConsoleContent>
               <div className={styles['blurry-bg']} />
             </div>
           </div>
