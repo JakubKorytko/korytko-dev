@@ -45,7 +45,7 @@ function WindowWrapper(props: WindowWrapperProps) {
     };
 
     const dialog = refToElement;
-    if (!dialog || fullscreen) return;
+    if (!dialog || fullscreen) return false;
 
     const nodeRect = getNodeData(dialog);
     const {
@@ -115,6 +115,7 @@ function WindowWrapper(props: WindowWrapperProps) {
       className={`${className ?? ''} relative`}
       bounds="parent"
       disableDragging={fullscreen || isWindowAnimated}
+      enableResizing={!fullscreen}
       style={rndStyle}
       default={rndDefault}
       resizeHandleClasses={resizeHandleClasses}

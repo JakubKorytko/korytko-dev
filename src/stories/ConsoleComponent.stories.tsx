@@ -12,6 +12,7 @@ const meta = {
         width: '700px',
         display: 'flex',
         justifyContent: 'center',
+        position: 'relative',
         alignItems: 'center',
         backgroundColor: 'beige',
       }}
