@@ -49,6 +49,8 @@
     "node_modules",
     ".storybook",
     "cypress",
-    "cypress.config.ts"
+    "cypress.config.ts",
+    "**/*.cy.ts",
+    "**/*.cy.tsx"
   ]
 }
