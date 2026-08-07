@@ -5,8 +5,9 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
-    "lint": "next lint",
+    "lint": "eslint .",
     "lint:next": "next lint",
+    "lint:fix": "eslint . --fix",
     "start": "next start"
   },
   "dependencies": {
@@ -26,6 +27,7 @@
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "^10.0.1",
     "eslint": "^9.32.0",
+    "eslint-config-flat-airbnb": "^0.4.0",
     "eslint-config-next": "15.5.21",
     "postcss": "8.5.26",
     "sass": "^1.89.2",
