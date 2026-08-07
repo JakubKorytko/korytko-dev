@@ -22,11 +22,6 @@
         "name": "next"
       }
     ],
-    "types": [
-      "cypress",
-      "node",
-      "@4tw/cypress-drag-drop"
-    ],
     "paths": {
       "@/*": [
         "./src/*"
