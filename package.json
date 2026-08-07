@@ -14,8 +14,8 @@
     "lorem-ipsum": "^2.0.8",
     "next": "^15.5.21",
     "next-intl": "4.9.2",
-    "react": "^19.0.0",
-    "react-dom": "19.0.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "react-rnd": "^10.4.14",
     "uuid": "^11.1.1",
     "yaml": "^2.8.3"
@@ -28,10 +28,10 @@
     "eslint": "^9.32.0",
     "eslint-config-next": "15.5.21",
     "postcss": "8.5.26",
+    "sass": "^1.89.2",
     "sort-package-json": "^2.10.0",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5",
-    "sass": "^1.89.2"
+    "typescript": "^5"
   },
   "resolutions": {
     "minimatch": ">=9.0.7",
