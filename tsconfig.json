@@ -51,6 +51,9 @@
     "cypress",
     "cypress.config.ts",
     "**/*.cy.ts",
-    "**/*.cy.tsx"
+    "**/*.cy.tsx",
+    "src/stories",
+    "**/*.stories.ts",
+    "**/*.stories.tsx"
   ]
 }
