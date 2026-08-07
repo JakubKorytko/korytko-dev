@@ -1,4 +1,5 @@
 import { createRequire } from 'module'
+
 import airbnb from 'eslint-config-flat-airbnb'
 
 const require = createRequire(import.meta.url)
@@ -15,6 +16,7 @@ const eslintConfig = [
       'coverage/**',
       '.storybook/**',
       'cypress/**',
+      'cypress.config.ts',
       'src/stories/**',
       '**/*.cy.ts',
       '**/*.cy.tsx',

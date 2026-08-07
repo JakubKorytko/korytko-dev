@@ -1,14 +1,14 @@
 import {
+  adjustTranslateWithinBounds,
+  calculateElementSize,
+  calculatePercentageSize,
+} from '@/components/WindowWrapper/WindowWrapper.helpers';
+import {
   IConvertPercentageSize,
   IConvertTranslatePercentageSize, ISetRelativeness,
   ITurnOnFullscreen,
 } from '@/components/WindowWrapper/WindowWrapper.state.type';
 
-import {
-  adjustTranslateWithinBounds,
-  calculateElementSize,
-  calculatePercentageSize,
-} from '@/components/WindowWrapper/WindowWrapper.helpers';
 
 export const convertTranslatePercentageSize: IConvertTranslatePercentageSize = (
   nodeRect,

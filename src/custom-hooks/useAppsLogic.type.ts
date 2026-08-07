@@ -1,6 +1,6 @@
+import { Apps } from '@/data/apps';
 import { App } from '@/utils/getAppsData.type';
 
-import { Apps } from '@/data/apps';
 
 export type AppsRecord = Record<Apps, App>;
 

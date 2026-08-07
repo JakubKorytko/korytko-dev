@@ -1,11 +1,10 @@
-import React from 'react';
 import Image from 'next/image';
 
+import powerIcon from '#public/icons/power.svg';
 import Clock from '@/app/[locale]/TaskBar/Clock';
 
 import styles from './TaskBar.module.scss';
 
-import powerIcon from '#public/icons/power.svg';
 
 function TaskBar() {
   return (

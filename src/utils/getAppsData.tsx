@@ -1,11 +1,8 @@
-import React from 'react';
-
+import { Apps, apps } from '@/data/apps';
 import { App, GetAppComponents } from '@/utils/getAppsData.type';
 
-import { Apps, apps } from '@/data/apps';
-
 const getAppsData = (): Record<Apps, App> => {
-  const entries = Object.entries(apps).map(([_, app]) => [
+  const entries = Object.entries(apps).map(([, app]) => [
     app.enumValue, {
       key: app.enumValue,
       icon: {
@@ -22,7 +19,7 @@ const getAppsData = (): Record<Apps, App> => {
 
 const getAppComponents: GetAppComponents = (closeAppCallback, minimizeAppCallback, data) => {
   const entries = Object.entries(apps)
-    .map(([_, app]) => [
+    .map(([, app]) => [
       [app.enumValue], <app.component
         key={app.enumValue}
         closeApp={() => closeAppCallback(app.enumValue)}

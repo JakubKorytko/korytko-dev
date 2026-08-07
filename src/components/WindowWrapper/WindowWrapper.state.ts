@@ -1,9 +1,9 @@
-import { Action, WindowWrapperActions, WindowWrapperState } from '@/components/WindowWrapper/WindowWrapper.state.type';
-
 import {
   convertPercentageSize, setRelativeness,
   turnOnFullscreen,
 } from '@/components/WindowWrapper/WindowWrapper.state.helpers';
+import { Action, WindowWrapperActions, WindowWrapperState } from '@/components/WindowWrapper/WindowWrapper.state.type';
+
 
 export const initialState: WindowWrapperState = {
   size: {

@@ -1,13 +1,12 @@
 'use client';
 
 import TaskBar from '@/app/[locale]/TaskBar/TaskBar';
-
 import Conditional from '@/components/Conditional';
+import useAppsLogic from '@/custom-hooks/useAppsLogic';
 
 import '@/styles/main.scss';
 import styles from './Desktop.module.scss';
 
-import useAppsLogic from '@/custom-hooks/useAppsLogic';
 
 export default function DesktopComponent() {
   const { active, icons, minimized } = useAppsLogic();

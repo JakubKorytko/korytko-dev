@@ -2,11 +2,6 @@ import {
   useCallback, useEffect, useLayoutEffect, useReducer, useRef,
 } from 'react';
 
-import {
-  UseWindowWrapperEffectReturn,
-  WindowWrapperActions,
-  WindowWrapperEffectProps,
-} from '@/components/WindowWrapper/WindowWrapper.state.type';
 
 import {
   adjustTranslateWithinBounds, calculateCentered,
@@ -15,6 +10,11 @@ import {
   waitForAnimationsToFinish,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
 import { initialState, reducer } from '@/components/WindowWrapper/WindowWrapper.state';
+import {
+  UseWindowWrapperEffectReturn,
+  WindowWrapperActions,
+  WindowWrapperEffectProps,
+} from '@/components/WindowWrapper/WindowWrapper.state.type';
 
 function useWindowWrapperEffect(props: WindowWrapperEffectProps): UseWindowWrapperEffectReturn {
   const [state, dispatch] = useReducer(reducer, initialState);

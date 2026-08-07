@@ -1,13 +1,12 @@
 import { useState } from 'react';
 
+import ProgramIcon from '@/app/[locale]/Desktop/ProgramIcon';
 import { AppsRecord, SetAppProperty } from '@/custom-hooks/useAppsLogic.type';
+import { Apps } from '@/data/apps';
+import appsData, { getAppComponents } from '@/utils/getAppsData';
 import { App } from '@/utils/getAppsData.type';
 
-import ProgramIcon from '@/app/[locale]/Desktop/ProgramIcon';
 
-import appsData, { getAppComponents } from '@/utils/getAppsData';
-
-import { Apps } from '@/data/apps';
 
 const setAppProperty: SetAppProperty = (apps, app, property, status) => {
   if (status === apps[app][property]) return apps;
@@ -58,10 +57,10 @@ function useAppsLogic() {
   );
 
   const minimized = Object.entries(apps)
-    .map(([_, app]) => (app.minimized ? generateMinimizedApp(app) : null));
+    .map(([, app]) => (app.minimized ? generateMinimizedApp(app) : null));
 
   const active = Object.entries(apps)
-    .map(([_, app]) => (app.opened ? components[app.key] : null));
+    .map(([, app]) => (app.opened ? components[app.key] : null));
 
   return {
     icons, active, minimized,

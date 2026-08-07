@@ -1,17 +1,15 @@
 'use client';
 
-import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import closeIcon from '#public/icons/close.svg';
+import hamburgerIcon from '#public/icons/hamburger.svg';
 import { ConsoleComponentHeaderLinksProps, HamburgerProps } from '@/app/[locale]/ConsoleComponent/ConsoleComponent.type';
-
 import Conditional from '@/components/Conditional';
 
 import styles from './ConsoleComponent.module.scss';
 
-import closeIcon from '#public/icons/close.svg';
-import hamburgerIcon from '#public/icons/hamburger.svg';
 
 function Hamburger(props: HamburgerProps) {
   const { onClick: toggleMenu, showWhen } = props;

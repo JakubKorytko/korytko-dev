@@ -1,15 +1,13 @@
-import React, { memo, useRef } from 'react';
+import { memo, useRef } from 'react';
 import { Rnd, RndDragCallback, RndResizeCallback } from 'react-rnd';
-
-import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
-import { WindowWrapperProps } from '@/components/WindowWrapper/WindowWrapper.type';
 
 import {
   calculatePercentageSize,
   getNodeData,
   resizeHandleClasses,
 } from '@/components/WindowWrapper/WindowWrapper.helpers';
-
+import { WindowWrapperActions } from '@/components/WindowWrapper/WindowWrapper.state.type';
+import { WindowWrapperProps } from '@/components/WindowWrapper/WindowWrapper.type';
 import useWindowWrapperEffect from '@/custom-hooks/useWindowWrapperEffect';
 
 function WindowWrapper(props: WindowWrapperProps) {
@@ -45,7 +43,7 @@ function WindowWrapper(props: WindowWrapperProps) {
     };
 
     const dialog = refToElement;
-    if (!dialog || fullscreen) return false;
+    if (!dialog || fullscreen) return;
 
     const nodeRect = getNodeData(dialog);
     const {

@@ -1,10 +1,10 @@
 'use client';
 
+import { loremIpsum } from 'lorem-ipsum';
 import React, {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 import { Rnd } from 'react-rnd';
-import { loremIpsum } from 'lorem-ipsum';
 
 import {
   ConsoleComponentProps,
@@ -12,20 +12,18 @@ import {
   SectionsObject,
   Size,
 } from '@/app/[locale]/ConsoleComponent/ConsoleComponent.type';
-import { Sections } from '@/app/api/sections/getSections.type';
-
 import ConsoleComponentButtons from '@/app/[locale]/ConsoleComponent/ConsoleComponentButtons';
 import ConsoleComponentHeaderLinks from '@/app/[locale]/ConsoleComponent/ConsoleComponentHeaderLinks';
-
+import { Sections } from '@/app/api/sections/getSections.type';
 import AnimateApp from '@/components/AnimateApp';
 import Conditional from '@/components/Conditional';
 import WindowWrapper from '@/components/WindowWrapper/WindowWrapper';
 import { isWindowAnimated } from '@/components/WindowWrapper/WindowWrapper.helpers';
+import useAnimations from '@/custom-hooks/useAnimations';
 
 import './ConsoleComponent.animations.scss';
 import styles from './ConsoleComponent.module.scss';
 
-import useAnimations from '@/custom-hooks/useAnimations';
 
 function ConsoleComponent(props: ConsoleComponentProps) {
   const {
@@ -157,7 +155,7 @@ function ConsoleComponent(props: ConsoleComponentProps) {
           centered={centered}
         >
           <div className={styles['console-component-wrapper']}>
-            <header className={styles['console-header']} is-mobile={shouldRenderHeader.toString()}>
+            <header className={styles['console-header']} data-mobile={shouldRenderHeader.toString()}>
               <ConsoleComponentHeaderLinks.Hamburger
                 showWhen={shouldRenderHeader}
                 onClick={toggleMenu}

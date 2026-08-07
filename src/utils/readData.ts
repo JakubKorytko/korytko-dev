@@ -1,6 +1,7 @@
-import { XMLParser } from 'fast-xml-parser';
 import fs from 'fs';
 import path from 'path';
+
+import { XMLParser } from 'fast-xml-parser';
 import YAML from 'yaml';
 
 const readXML = (XMLpath: string) => {

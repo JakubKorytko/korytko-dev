@@ -4,11 +4,11 @@ import {
   cloneElement, useCallback, useEffect, useState,
 } from 'react';
 
-import { AnimateAppProps, Animations } from '@/custom-hooks/useAnimations.type';
-
 import {
   getHTMLElement, setLeftAndTop, unsetLeftAndTop, waitForAnimationEnd,
 } from '@/components/AnimateApp.helpers';
+import { AnimateAppProps, Animations } from '@/custom-hooks/useAnimations.type';
+
 
 const AnimateApp: React.FC<AnimateAppProps> = ({
   animations,

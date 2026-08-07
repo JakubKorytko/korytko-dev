@@ -1,14 +1,11 @@
-import React from 'react';
 import Image from 'next/image';
-
-import { ConsoleComponentButtonsProps } from '@/app/[locale]/ConsoleComponent/ConsoleComponent.type';
-
-import styles from '@/app/[locale]/ConsoleComponent/ConsoleComponent.module.scss';
 
 import closeIcon from '#public/icons/close.svg';
 import maximizeIcon from '#public/icons/maximize.svg';
 import minimizeIcon from '#public/icons/minimize.svg';
 import restoreIcon from '#public/icons/restore.svg';
+import styles from '@/app/[locale]/ConsoleComponent/ConsoleComponent.module.scss';
+import { ConsoleComponentButtonsProps } from '@/app/[locale]/ConsoleComponent/ConsoleComponent.type';
 
 function ConsoleComponentButtons(props: ConsoleComponentButtonsProps) {
   const { callbacks, fullscreen } = props;

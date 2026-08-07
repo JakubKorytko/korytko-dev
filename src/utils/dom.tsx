@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export const getRect = (element: HTMLElement) => {
   const rect = element.getBoundingClientRect();
   const scroll = {
