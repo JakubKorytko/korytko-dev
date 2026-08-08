@@ -23,7 +23,8 @@
     "react-dom": "^19.2.8",
     "react-rnd": "^10.4.14",
     "uuid": "^11.1.1",
-    "yaml": "^2.8.3"
+    "yaml": "^2.8.3",
+    "image-size": "file:./shims/image-size"
   },
   "devDependencies": {
     "@4tw/cypress-drag-drop": "^2.3.1",
@@ -66,7 +67,7 @@
     "jws": "^4.0.1",
     "semver": "^7.7.2",
     "uuid": "^11.1.0",
-    "image-size": "^2.0.2"
+    "image-size": "$image-size"
   },
   "overrides": {
     "minimatch": ">=9.0.7",
@@ -84,7 +85,7 @@
     "jws": "^4.0.1",
     "semver": "^7.7.2",
     "uuid": "^11.1.1",
-    "image-size": "^2.0.2",
+    "image-size": "$image-size",
     "sharp": "0.35.3"
   }
 }
